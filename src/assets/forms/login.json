@@ -1,0 +1,130 @@
+{
+  "labelPosition": "top",
+  "size": "large",
+  "formItems": [
+    {
+      "itemProps": {
+        "prop": "text0"
+      },
+      "colProps": {
+        "span": 24
+      },
+      "componentProps": {
+        "slots": {
+          "default": {
+            "html": "<h2 class=\"text-2xl font-bold text-center w-[100%]\">登录</h2>"
+          }
+        }
+      }
+    },
+    {
+      "itemProps": {
+        "prop": "userCode",
+        "label": "用户名"
+      },
+      "colProps": {
+        "span": 24
+      },
+      "componentProps": {
+        "component": "Input",
+        "placeholder": "admin",
+        "on": {
+          "change": "(val) => {\n  console.log(val)\n  console.log(this.formData)\n  console.log(this.formItems)\n  if(val === '123'){\n    this.message({type: 'error', message: '1233321'})\n    this.notification({title: 'Prompt', message: 'This is a message that does not automatically close', duration: 1000})\n  }\n}"
+        },
+        "slots": {
+          "prefix": {
+            "component": "Icon",
+            "icon": "svg-icon:peoples",
+            "style": "color: red"
+          },
+          "append": {
+            "component": "Icon",
+            "icon": "svg-icon:peoples",
+            "style": "color: red"
+          }
+        },
+        "defaultValue": "admin"
+      }
+    },
+    {
+      "itemProps": {
+        "prop": "password",
+        "label": "密码"
+      },
+      "colProps": {
+        "span": 24
+      },
+      "componentProps": {
+        "component": "InputPassword",
+        "placeholder": "0kya.top!",
+        "defaultValue": "0kya.top!"
+      }
+    },
+    {
+      "itemProps": {
+        "prop": "captchaCode",
+        "label": "验证码"
+      },
+      "colProps": {
+        "span": 24
+      },
+      "componentProps": {
+        "component": "Captcha",
+        "type": "math"
+      }
+    },
+    {
+      "itemProps": {
+        "prop": "remember"
+      },
+      "colProps": {
+        "span": 6
+      },
+      "componentProps": {
+        "component": "Checkbox",
+        "label": "记住我",
+        "defaultValue": "${userStore.getRememberMe}"
+      }
+    },
+    {
+      "itemProps": {
+        "prop": "button1"
+      },
+      "colProps": {
+        "span": 24,
+        "style": "margin-top: 50px"
+      },
+      "componentProps": {
+        "component": "Button",
+        "type": "primary",
+        "on": {
+          "click": "() => this.login()"
+        },
+        "slots": {
+          "icon": {
+            "component": "Icon",
+            "icon": "svg-icon:peoples",
+            "style": "color: red"
+          },
+          "default": {
+            "html": "<span>登录</span>"
+          }
+        }
+      }
+    }
+  ],
+  "formValidators": {
+    "userCode": [
+      "required()","notSpace()"
+    ],
+    "password": [
+      "required()"
+    ],
+    "captchaCode": [
+      "required()"
+    ]
+  },
+  "lifecycle": {
+    "onMounted": "() => {\n  if(this.formData.value.remember && this.userStore.getLoginInfo !== void 0){\n    this.formData.value['userCode'] = this.userStore.getLoginInfo.userCode\n    this.formData.value['password'] = this.userStore.getLoginInfo.password\n  }\n}"
+  }
+}
