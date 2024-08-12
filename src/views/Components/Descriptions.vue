@@ -1,14 +1,10 @@
-<script setup lang="tsx">
+<script setup lang="ts">
 import { Descriptions } from '@/components/Descriptions'
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive } from 'vue'
 import { Form } from '@/components/Form'
-import { ElFormItem, ElInput } from 'element-plus'
-import { useValidator } from '@/hooks/web/useValidator'
-import { useForm } from '@/hooks/web/useForm'
 import { DescriptionsSchema } from '@/components/Descriptions'
-
-const { required } = useValidator()
+import data2 from '@/assets/forms/search_demo.json'
 
 const { t } = useI18n()
 
@@ -46,116 +42,6 @@ const schema = reactive<DescriptionsSchema[]>([
     span: 24
   }
 ])
-
-const schema2 = reactive<DescriptionsSchema[]>([
-  {
-    field: 'username',
-    label: t('descriptionsDemo.username'),
-    slots: {
-      label: (row) => {
-        return <span class="is-required--item">{row.label}</span>
-      },
-      default: () => {
-        return (
-          <ElFormItem prop="username">
-            <ElInput v-model={form.username} />
-          </ElFormItem>
-        )
-      }
-    }
-  },
-  {
-    field: 'nickName',
-    label: t('descriptionsDemo.nickName'),
-    slots: {
-      label: (row) => {
-        return <span class="is-required--item">{row.label}</span>
-      },
-      default: () => {
-        return (
-          <ElFormItem prop="nickName">
-            <ElInput v-model={form.nickName} />
-          </ElFormItem>
-        )
-      }
-    }
-  },
-  {
-    field: 'phone',
-    label: t('descriptionsDemo.phone'),
-    slots: {
-      label: (row) => {
-        return <span class="is-required--item">{row.label}</span>
-      },
-      default: () => {
-        return (
-          <ElFormItem prop="phone">
-            <ElInput v-model={form.phone} />
-          </ElFormItem>
-        )
-      }
-    }
-  },
-  {
-    field: 'email',
-    label: t('descriptionsDemo.email'),
-    slots: {
-      label: (row) => {
-        return <span class="is-required--item">{row.label}</span>
-      },
-      default: () => {
-        return (
-          <ElFormItem prop="email">
-            <ElInput v-model={form.email} />
-          </ElFormItem>
-        )
-      }
-    }
-  },
-  {
-    field: 'addr',
-    label: t('descriptionsDemo.addr'),
-    slots: {
-      label: (row) => {
-        return <span class="is-required--item">{row.label}</span>
-      },
-      default: () => {
-        return (
-          <ElFormItem prop="addr">
-            <ElInput v-model={form.addr} />
-          </ElFormItem>
-        )
-      }
-    },
-    span: 24
-  }
-])
-
-const form = reactive({
-  username: '',
-  nickName: '',
-  phone: '',
-  email: '',
-  addr: ''
-})
-
-const rules = reactive({
-  username: [required()],
-  nickName: [required()],
-  phone: [required()],
-  email: [required()],
-  addr: [required()]
-})
-
-const { formRegister, formMethods } = useForm()
-const { getElFormExpose } = formMethods
-
-const formValidation = async () => {
-  const elFormExpose = await getElFormExpose()
-  elFormExpose?.validate((isValid) => {
-    console.log(isValid)
-  })
-}
 </script>
 
 <template>
@@ -166,17 +52,7 @@ const formValidation = async () => {
     :schema="schema"
   />
 
-  <Form is-custom :model="form" :rules="rules" @register="formRegister">
-    <Descriptions
-      :title="t('descriptionsDemo.form')"
-      :data="data"
-      :schema="schema2"
-      class="mt-20px"
-    />
-    <div class="text-center mt-10px">
-      <BaseButton @click="formValidation"> {{ t('formDemo.formValidation') }} </BaseButton>
-    </div>
-  </Form>
+  <Form :schema="data2" is-description direction="vertical" />
 </template>
 
 <style lang="less" scoped>

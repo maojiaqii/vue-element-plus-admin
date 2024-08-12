@@ -68,11 +68,11 @@ const themeChange = () => {
           </div>
           <Transition appear enter-active-class="animate__animated animate__bounceInRight">
             <div
-              class="h-auto flex items-center m-auto w-[100%] at-2xl:max-w-500px at-xl:max-w-500px at-md:max-w-500px at-lg:max-w-500px"
+              class="h-full flex items-center m-auto w-[100%] at-2xl:max-w-500px at-xl:max-w-500px at-md:max-w-500px at-lg:max-w-500px"
             >
               <Form
                 :schema="data"
-                class="dark:(border-1 border-[var(--el-border-color)] border-solid) p-20px h-auto m-auto lt-xl:rounded-3xl lt-xl:light:bg-white"
+                class="p-20px h-auto m-auto lt-xl:rounded-3xl lt-xl:light:bg-white"
               />
             </div>
           </Transition>

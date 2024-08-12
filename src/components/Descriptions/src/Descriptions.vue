@@ -124,28 +124,24 @@ export default defineComponent({
                         <div class="flex items-stretch bg-[var(--el-fill-color-light)] outline-1px outline-[var(--el-border-color-lighter)] outline-solid flex-1">
                           <div
                             {...getBindItemValue(item)}
-                            class="w-120px text-left px-8px py-11px font-700 color-[var(--el-text-color-regular)] border-r-1px border-r-[var(--el-border-color-lighter)] border-r-solid "
+                            class="w-120px border-r-1px border-r-[var(--el-border-color-lighter)] border-r-solid text-left px-8px py-11px font-700 color-[var(--el-text-color-regular)]"
                           >
                             {item.label}
                           </div>
                           <div class="flex-1 px-8px py-11px bg-[var(--el-bg-color)] color-[var(--el-text-color-primary)] text-size-14px">
-                            {item.slots?.default
-                              ? item.slots?.default(props.data)
-                              : get(props.data, item.field) ?? defaultData}
+                            {get(props.data, item.field) ?? defaultData}
                           </div>
                         </div>
                       ) : (
                         <div class="bg-[var(--el-fill-color-light)] outline-1px outline-[var(--el-border-color-lighter)] outline-solid flex-1">
                           <div
                             {...getBindItemValue(item)}
-                            class="text-left px-8px py-11px font-700 color-[var(--el-text-color-regular)] border-b-1px border-b-[var(--el-border-color-lighter)] border-b-solid"
+                            class="border-b-1px border-b-[var(--el-border-color-lighter)] border-b-solid text-left px-8px py-11px font-700 color-[var(--el-text-color-regular)]"
                           >
                             {item.label}
                           </div>
                           <div class="flex-1 px-8px py-11px bg-[var(--el-bg-color)] color-[var(--el-text-color-primary)] text-size-14px">
-                            {item.slots?.default
-                              ? item.slots?.default(props.data)
-                              : get(props.data, item.field) ?? defaultData}
+                            {get(props.data, item.field) ?? defaultData}
                           </div>
                         </div>
                       )}

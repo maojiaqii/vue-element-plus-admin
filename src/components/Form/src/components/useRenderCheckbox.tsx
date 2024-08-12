@@ -1,4 +1,4 @@
-import { FormSchema, ComponentNameEnum, CheckboxGroupComponentProps } from '../types'
+import { FormSchema, CheckboxGroupComponentProps } from '../types'
 import { ElCheckbox, ElCheckboxButton } from 'element-plus'
 import { defineComponent } from 'vue'
 
@@ -10,7 +10,9 @@ export const useRenderCheckbox = () => {
     const labelAlias = componentProps?.props?.label || 'label'
     const disabledAlias = componentProps?.props?.disabled || 'disabled'
     const Com = (
-      item.component === ComponentNameEnum.CHECKBOX_GROUP ? ElCheckbox : ElCheckboxButton
+      item.componentProps.component.toUpperCase() === 'CHECKBOXGROUP'
+        ? ElCheckbox
+        : ElCheckboxButton
     ) as ReturnType<typeof defineComponent>
     return componentProps?.options?.map((option) => {
       const { value, ...other } = option

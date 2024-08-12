@@ -92,7 +92,6 @@ export const setComponentEvents = (
       })()
     }
   }
-  console.log(newOnEvents)
   return newOnEvents
 }
 
@@ -224,6 +223,16 @@ export const setFormLifecycle = (
         message: message,
         notification: notification
       })()
+    }
+  }
+  return values
+}
+
+export const setDividerCollapses = (formItems: any): Recordable => {
+  const values = {}
+  for (const col of formItems) {
+    if (col.componentProps.component === 'Divider') {
+      values[col.itemProps.prop] = col.componentProps.collapses !== void 0
     }
   }
   return values

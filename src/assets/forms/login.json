@@ -20,7 +20,7 @@
     {
       "itemProps": {
         "prop": "userCode",
-        "label": "用户名"
+        "label": "login.username"
       },
       "colProps": {
         "span": 24
@@ -49,7 +49,7 @@
     {
       "itemProps": {
         "prop": "password",
-        "label": "密码"
+        "label": "login.password"
       },
       "colProps": {
         "span": 24

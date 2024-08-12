@@ -11,7 +11,7 @@ defineProps({
   showSearch: propTypes.bool.def(true),
   showReset: propTypes.bool.def(true),
   showExpand: propTypes.bool.def(false),
-  visible: propTypes.bool.def(true),
+  expanded: propTypes.bool.def(false),
   searchLoading: propTypes.bool.def(false),
   resetLoading: propTypes.bool.def(false)
 })
@@ -50,10 +50,10 @@ const onExpand = () => {
   </BaseButton>
   <BaseButton
     v-if="showExpand"
-    :icon="useIcon({ icon: visible ? 'ep:arrow-up' : 'ep:arrow-down' })"
+    :icon="useIcon({ icon: expanded ? 'ep:arrow-up' : 'ep:arrow-down' })"
     text
     @click="onExpand"
   >
-    {{ t(visible ? 'common.shrink' : 'common.expand') }}
+    {{ t(expanded ? 'common.shrink' : 'common.expand') }}
   </BaseButton>
 </template>
