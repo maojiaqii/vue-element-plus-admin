@@ -6,9 +6,13 @@ import { propTypes } from '@/utils/propTypes'
 import { isNumber } from '@/utils/is'
 import { ElMessage } from 'element-plus'
 import { useLocaleStore } from '@/store/modules/locale'
+import { useAppStore } from '@/store/modules/app'
 
 const localeStore = useLocaleStore()
-
+const appStore = useAppStore()
+const darkClass = computed(() => {
+  return appStore.getIsDark ? 'wang-editor-container dark-mode' : ''
+})
 const currentLocale = computed(() => localeStore.getCurrentLocale)
 
 i18nChangeLanguage(unref(currentLocale).lang)
@@ -115,7 +119,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="border-1 border-solid border-[var(--el-border-color)] z-10">
+  <div class="border-1 border-solid border-[var(--el-border-color)] z-10" :class="darkClass">
     <!-- 工具栏 -->
     <Toolbar
       :editor="editorRef"
@@ -135,3 +139,4 @@ defineExpose({
 </template>
 
 <style src="@wangeditor/editor/dist/css/style.css"></style>
+<style src="../dark/dark.css"></style>

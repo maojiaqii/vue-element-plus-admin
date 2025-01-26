@@ -17,13 +17,15 @@ import {
   DatePickerProps,
   FormItemProps as ElFormItemProps,
   FormProps as ElFormProps,
-  ISelectProps
+  ISelectProps,
+  UploadProps,
+  ButtonProps
 } from 'element-plus'
 import { IEditorConfig } from '@wangeditor/editor'
-import { JsonEditorProps } from '@/components/JsonEditor'
 import { IAgreeProps } from '@/components/IAgree'
 import { CSSProperties } from 'vue'
 import { componentMap } from '../helper/componentMap'
+import {Dict} from "@/api/common/types";
 
 export interface PlaceholderModel {
   placeholder?: string
@@ -41,6 +43,13 @@ type CamelCaseComponentName = keyof typeof componentMap extends infer K
   : never
 
 export type ComponentName = CamelCaseComponentName
+
+export interface ButtonComponentProps extends Partial<ButtonProps> {
+  staticText?: string
+  on?: {
+    click?: (...args: any[]) => void
+  }
+}
 
 export interface InputPasswordComponentProps {
   strength?: boolean
@@ -75,6 +84,23 @@ export interface CaptchaProps {
     append?: (...args: any[]) => JSX.Element | null
   }
   style?: CSSProperties
+}
+
+export interface UploaderProps extends Partial<UploadProps> {
+  action?: string
+  chunkSize?: number
+  maxChunkRetries?: number
+  limit?: number
+  maxUpload?: number
+  showSelf?: boolean
+}
+
+export interface CodeEditorProps {
+  width?: string | number
+  height?: string | number
+  languageSelector?: boolean
+  language?: string
+  editorOption?: Object
 }
 
 export interface InputComponentProps extends Partial<InputProps> {
@@ -154,6 +180,7 @@ export interface SelectComponentProps extends Omit<Partial<ISelectProps>, 'optio
     empty?: (...args: any[]) => JSX.Element | null
   }
   options?: SelectOption[]
+  query?: Dict
   style?: CSSProperties
 }
 
@@ -198,6 +225,7 @@ export interface SelectV2ComponentProps {
   slots?: {
     default?: (option: SelectOption) => JSX.Element | null
   }
+  query?: Dict
   style?: CSSProperties
 }
 
@@ -300,6 +328,7 @@ export interface RadioGroupComponentProps extends Partial<RadioGroupProps> {
   slots?: {
     default?: (...args: any[]) => JSX.Element[] | null
   }
+  query?: Dict
   style?: CSSProperties
 }
 
@@ -319,6 +348,7 @@ export interface RadioButtonComponentProps extends Partial<RadioButtonProps> {
   slots?: {
     default?: (...args: any[]) => JSX.Element[] | null
   }
+  query?: Dict
   style?: CSSProperties
 }
 
@@ -356,6 +386,7 @@ export interface CheckboxGroupComponentProps extends Partial<CheckboxGroupProps>
   slots?: {
     default?: (...args: any[]) => JSX.Element[] | null
   }
+  query?: Dict
   style?: CSSProperties
 }
 
@@ -509,7 +540,7 @@ export interface FormItemProps extends Partial<ElFormItemProps> {
   style?: CSSProperties
   slots?: {
     default?: (...args: any[]) => JSX.Element | null
-    label?: (...args: any[]) => JSX.Element | null
+    label?: (...args: any[]) => JSX.Element | null | any
     error?: (...args: any[]) => JSX.Element | null
   }
 }
@@ -578,6 +609,17 @@ export interface TreeSelectComponentProps
   style?: CSSProperties
 }
 
+export interface ImageCroppingComponentProps {
+  imageUrl?: string
+  cropBoxWidth?: number
+  cropBoxHeight?: number
+  boxWidth?: number | string
+  boxHeight?: number | string
+  showResult?: boolean
+  showActions?: boolean
+  style?: CSSProperties
+}
+
 export interface FormSchema {
   /**
    * formItem组件属性
@@ -611,15 +653,23 @@ export interface FormSchema {
     | TimePickerComponentProps
     | InputPasswordComponentProps
     | TreeSelectComponentProps
-    | JsonEditorProps
+    | CodeEditorProps
     | IAgreeProps
     | CaptchaProps
+    | UploaderProps
+    | ButtonComponentProps
+    | ImageCroppingComponentProps
     | any
 
   /**
    * 是否隐藏，如果为false，会连同值一同删除，类似v-if
    */
   hidden?: boolean
+
+  /**
+   * 权限标志
+   */
+  permi: string
 
   /**
    * 样式隐藏，不会把值一同删掉，类似v-show
@@ -631,5 +681,15 @@ export interface FormProps extends Partial<ElFormProps> {
   formItems?: FormSchema[]
   formValidators?: Recordable
   autoSetPlaceholder?: boolean
+  // 表单模式
+  mode: 'demo' | 'edit' | 'view'
+  // 是否是查询条件表单
+  isSearch: boolean
+  // 伸缩的界限字段
+  expandIndex: number
+  // 是否描述列表表单
+  isDescription: boolean
+  // 列表标题显示位置
+  direction: 'horizontal' | 'vertical'
   [key: string]: any
 }

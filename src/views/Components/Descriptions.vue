@@ -4,7 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { reactive } from 'vue'
 import { Form } from '@/components/Form'
 import { DescriptionsSchema } from '@/components/Descriptions'
-import data2 from '@/assets/forms/search_demo.json'
+import data2 from '@/assets/json/descriptions_demo.json'
 
 const { t } = useI18n()
 
@@ -52,7 +52,7 @@ const schema = reactive<DescriptionsSchema[]>([
     :schema="schema"
   />
 
-  <Form :schema="data2" is-description direction="vertical" />
+  <Form :schema="data2" />
 </template>
 
 <style lang="less" scoped>

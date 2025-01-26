@@ -4,7 +4,7 @@ import { ImageCropping } from '@/components/ImageCropping'
 import { ref, unref } from 'vue'
 import { ElInput, ElDivider } from 'element-plus'
 
-const cropperExpose = ref<InstanceType<typeof ImageCropping>>()
+const cropperExpose = ref<ComponentRef<typeof ImageCropping>>()
 
 const base64 = ref('')
 
@@ -17,7 +17,7 @@ const cropperExpose2 = ref<InstanceType<typeof ImageCropping>>()
 const base642 = ref('')
 
 const getBase642 = () => {
-  base642.value = unref(cropperExpose)?.cropperExpose?.getCroppedCanvas()?.toDataURL() ?? ''
+  base642.value = unref(cropperExpose)?.getBase64Expose() ?? ''
 }
 </script>
 
@@ -36,7 +36,6 @@ const getBase642 = () => {
       ref="cropperExpose2"
       :show-actions="false"
       box-width="100%"
-      :show-result="false"
       image-url="https://hips.hearstapps.com/hmg-prod/images/%E5%AE%8B%E6%99%BA%E5%AD%9D-1597774015.jpg?crop=0.500xw:1.00xh;0.500xw,0&resize=640:*"
     />
   </ContentWrap>

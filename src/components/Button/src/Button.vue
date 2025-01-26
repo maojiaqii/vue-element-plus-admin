@@ -100,7 +100,7 @@ const color = computed(() => {
 const style = computed(() => {
   const { type } = props
   if (type === 'primary') {
-    return '--el-button-text-color: #fff; --el-button-hover-text-color: #fff'
+    return '--el-button-text-color: #fff; --el-button-hover-text-color: #fff;'
   }
   return ''
 })

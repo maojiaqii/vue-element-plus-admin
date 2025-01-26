@@ -1,16 +1,12 @@
-import { FormSchema } from '@/components/Form'
+import { FormProps } from '@/components/Form'
 
 export interface SearchProps {
-  schema?: FormSchema[]
-  isCol?: boolean
-  labelWidth?: string | number
-  layout?: 'inline' | 'bottom'
-  buttonPosition?: 'left' | 'right' | 'center'
-  showSearch?: boolean
-  showReset?: boolean
-  showExpand?: boolean
-  expandField?: string
-  inline?: boolean
-  removeNoValueItem?: boolean
+  schema?: FormProps
   model?: Recordable
+  on?: {
+    register?: (...args: any[]) => void
+    search?: (...args: any[]) => void
+    reset?: (...args: any[]) => void
+    expand?: (...args: any[]) => void
+  }
 }

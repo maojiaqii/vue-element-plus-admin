@@ -4,9 +4,11 @@ import antIcons from './data/icons.ant-design'
 import tIcons from './data/icons.tdesign'
 import { useDesign } from '@/hooks/web/useDesign'
 import { ElInput, ElPopover, ElScrollbar, ElTabs, ElTabPane, ElPagination } from 'element-plus'
+import { Icon } from '@/components/Icon'
 import { useAppStore } from '@/store/modules/app'
 import { computed, CSSProperties, ref, unref, watch } from 'vue'
 import { nextTick } from 'vue'
+import { propTypes } from '@/utils/propTypes'
 
 const init = async (icon?: string) => {
   if (!icon) return
@@ -21,6 +23,10 @@ const init = async (icon?: string) => {
 }
 
 const modelValue = defineModel<string>()
+const props = defineProps({
+  disabled: propTypes.bool.def(false)
+})
+const emit = defineEmits(['change'])
 
 const appStore = useAppStore()
 
@@ -76,9 +82,11 @@ const filterIcons = (icons: string[]) => {
 
 watch(
   () => modelValue.value,
-  async (val) => {
-    await nextTick()
-    val && init(val)
+  (val) => {
+    nextTick(() => {
+      val && init(val)
+      emit('change', val)
+    })
   },
   {
     immediate: true
@@ -101,7 +109,7 @@ const iconSelect = (icon: string) => {
 const search = ref('')
 
 const filterItemIcons = (icons: string[]) => {
-  return icons.filter((item) => item.includes(unref(search)))
+  return icons?.filter((item) => item.includes(unref(search)))
 }
 
 const inputClear = () => {
@@ -111,11 +119,12 @@ const inputClear = () => {
 
 <template>
   <div :class="prefixCls" class="flex justify-center items-center box">
-    <ElInput disabled v-model="modelValue" clearable />
+    <ElInput readonly v-model="modelValue" clearable />
     <ElPopover
       placement="bottom"
       trigger="click"
       :width="450"
+      :disabled="props.disabled"
       popper-style="box-shadow: rgb(14 18 22 / 35%) 0px 10px 38px -10px, rgb(14 18 22 / 20%) 0px 10px 20px -15px; height: 380px;"
       @show="popoverShow"
     >
@@ -174,7 +183,7 @@ const inputClear = () => {
           small
           :page-sizes="[100, 200, 300, 400]"
           layout="total, prev, pager, next, jumper"
-          :total="filterItemIcons(icons[currentIconNameIndex].icons).length"
+          :total="filterItemIcons(icons[currentIconNameIndex]?.icons)?.length"
         />
       </div>
     </ElPopover>

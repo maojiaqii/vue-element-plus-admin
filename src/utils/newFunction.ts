@@ -1,0 +1,100 @@
+import * as isUtil from '@/utils/is'
+import { getJsInfoApi } from '@/api/common'
+import createDialog from '@/hooks/web/useDialog'
+import createDrawer from '@/hooks/web/useDrawer'
+import request from '@/axios'
+import * as treeUtil from '@/utils/tree'
+import {
+  ElMessageBox,
+  ElMessage,
+  ElNotification,
+  MessageProps,
+  NotificationProps
+} from 'element-plus'
+import { useUserStore } from '@/store/modules/user'
+import { useI18n } from '@/hooks/web/useI18n'
+import { FuncTypes } from '../../types/global'
+
+const userStore = useUserStore()
+const { t } = useI18n()
+
+declare interface JsTypes {
+  js: string
+  params?: Recordable
+}
+
+const message = (msgProp: MessageProps) => {
+  ElMessage.closeAll()
+  setTimeout(() => {
+    ElMessage(msgProp)
+  }, 100)
+}
+
+const notification = (msgProp: NotificationProps) => {
+  ElNotification.closeAll()
+  setTimeout(() => {
+    ElNotification(msgProp)
+  }, 100)
+}
+
+export const newFunction = (click: any, binds?: Recordable): Promise<FuncTypes> => {
+  return new Promise((resolve) => {
+    if (isUtil.isObject(click)) {
+      const clickObj = click as JsTypes
+      getJsInfoApi({ code: clickObj.js }).then((res) => {
+        if (res.code === 200) {
+          resolve({
+            func: new Function('return ' + res.data?.js).bind({
+              ...binds,
+              createDialog: createDialog,
+              createDrawer: createDrawer,
+              message: message,
+              notification: notification,
+              messageBox: ElMessageBox,
+              userStore: userStore,
+              request: request,
+              isUtil: isUtil,
+              treeUtil: treeUtil,
+              t: t
+            })(),
+            params: clickObj.params || {}
+          })
+        } else {
+          ElMessage({ type: 'error', message: res.msg })
+          resolve({ func: new Function() })
+        }
+      })
+    } else if (isUtil.isString(click)) {
+      resolve({
+        func: new Function('return ' + click).bind({
+          ...binds,
+          createDialog: createDialog,
+          createDrawer: createDrawer,
+          message: message,
+          notification: notification,
+          userStore: userStore,
+          request: request,
+          isUtil: isUtil,
+          treeUtil: treeUtil,
+          t: t
+        })()
+      })
+    } else if (isUtil.isFunction(click)) {
+      const clickF = click as Function
+      resolve({
+        func: clickF.bind({
+          ...binds,
+          createDialog: createDialog,
+          createDrawer: createDrawer,
+          message: message,
+          notification: notification,
+          userStore: userStore,
+          request: request,
+          isUtil: isUtil,
+          treeUtil: treeUtil,
+          t: t
+        })
+      })
+    }
+  })
+}

@@ -57,7 +57,7 @@ export default defineComponent({
       return path
     })
 
-    const menuSelect = (index: string) => {
+    const menuSelect = (index: string, keyPath: string[]) => {
       if (props.menuSelect) {
         props.menuSelect(index)
       }

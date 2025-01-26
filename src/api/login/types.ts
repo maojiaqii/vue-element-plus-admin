@@ -8,6 +8,7 @@ export interface UserLoginType {
 
 export interface UserType {
   uuid?: string | undefined
+  userCode: string
   username: string
   password: string
   captchaCode?: string

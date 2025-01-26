@@ -311,7 +311,7 @@ export default [
         code: SUCCESS_CODE,
         data: {
           total: mockList.length,
-          list: pageList
+          list: pageIndex && pageSize ? pageList : mockList
         }
       }
     }

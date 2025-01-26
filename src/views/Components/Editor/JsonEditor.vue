@@ -1,36 +1,28 @@
 <script setup lang="ts">
 import { ContentWrap } from '@/components/ContentWrap'
-import { JsonEditor } from '@/components/JsonEditor'
+import { CodeEditor } from '@/components/CodeEditor'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 
 const { t } = useI18n()
 
-const defaultData = ref({
-  title: '标题',
-  content: '内容'
-})
-
-watch(
-  () => defaultData.value,
-  (val) => {
-    console.log(val)
-  },
-  {
-    deep: true
-  }
+const defaultData = ref(
+  '{\n' +
+    '      "itemProps": {\n' +
+    '        "prop": "divider16"\n' +
+    '      },\n' +
+    '      "componentProps": {\n' +
+    '        "component": "Divider",\n' +
+    '        "title": "编辑器",\n' +
+    '        "message": "第三方编辑器组件",\n' +
+    '        "collapses": true\n' +
+    '      }\n' +
+    '    }'
 )
-
-setTimeout(() => {
-  defaultData.value = {
-    title: '异步标题',
-    content: '异步内容'
-  }
-}, 4000)
 </script>
 
 <template>
   <ContentWrap :title="t('richText.jsonEditor')" :message="t('richText.jsonEditorDes')">
-    <JsonEditor v-model="defaultData" />
+    <CodeEditor v-model="defaultData" language="json" height="60vh" />
   </ContentWrap>
 </template>

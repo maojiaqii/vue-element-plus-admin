@@ -9,12 +9,13 @@ const prefixCls = getPrefixCls('content-wrap')
 
 defineProps({
   title: propTypes.string.def(''),
-  message: propTypes.string.def('')
+  message: propTypes.string.def(''),
+  style: propTypes.string.def('')
 })
 </script>
 
 <template>
-  <ElCard :class="[prefixCls]" shadow="never">
+  <ElCard :class="[prefixCls]" shadow="hover">
     <template v-if="title" #header>
       <div class="flex items-center">
         <span class="text-16px font-700">{{ title }}</span>
@@ -29,7 +30,7 @@ defineProps({
         </div>
       </div>
     </template>
-    <div>
+    <div :style="style">
       <slot></slot>
     </div>
   </ElCard>

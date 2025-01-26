@@ -14,8 +14,7 @@ const fileUrl = ref('')
 const CropperRef = ref<ComponentRef<typeof ImageCropping>>()
 
 const getBase64 = () => {
-  const base64 = unref(CropperRef)?.cropperExpose?.getCroppedCanvas()?.toDataURL() ?? ''
-  return base64
+  return unref(CropperRef)?.getBase64() ?? ''
 }
 
 defineExpose({

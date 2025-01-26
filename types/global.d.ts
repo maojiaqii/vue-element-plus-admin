@@ -68,3 +68,15 @@ declare global {
     topToolBorderColor?: string
   }
 }
+
+declare interface FuncTypes {
+  func: Function
+  params?: Recordable
+}
+
+declare interface Tenancy {
+  tenancy_id: string
+  tenancy_name: string
+  icon?: string
+  title: string
+}

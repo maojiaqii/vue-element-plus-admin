@@ -12,6 +12,8 @@ import { PropType, ref, watch, unref } from 'vue'
 import { cloneDeep } from 'lodash-es'
 import { DEFAULT_FILTER_COLUMN } from '@/constants'
 import { VueDraggable } from 'vue-draggable-plus'
+import { BaseButton } from '@/components/Button'
+import { Icon } from '@/components/Icon'
 
 const modelValue = defineModel<boolean>()
 

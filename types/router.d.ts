@@ -34,6 +34,7 @@ import { defineComponent } from 'vue'
 **/
 
 interface RouteMetaCustom extends Record<string | number | symbol, unknown> {
+  params?: Record<string, unknown>
   hidden?: boolean
   alwaysShow?: boolean
   title?: string

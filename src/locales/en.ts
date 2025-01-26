@@ -8,6 +8,7 @@ export default {
     required: 'This is required',
     loginOut: 'Login out',
     document: 'Document',
+    platform: 'Platform',
     reminder: 'Reminder',
     loginOutMessage: 'Exit the system?',
     back: 'Back',
@@ -49,18 +50,44 @@ export default {
     notSpace: 'Spaces are not allowed',
     notSpecialCharacters: 'Special characters are not allowed',
     isEqual: 'The two are not equal',
-    // 列设置
-    setting: 'Setting'
+    setting: 'Setting',
+    withoutFunction: 'The function is under development, please stay tuned',
+    selectAll: 'All',
+    selectOthers: 'Inverse',
+    addRow: 'Add Row',
+    deleteRow: 'Delete Row',
+    more: 'More'
   },
-  lock: {
-    lockScreen: 'Lock screen',
-    lock: 'Lock',
-    lockPassword: 'Lock screen password',
-    unlock: 'Click to unlock',
-    backToLogin: 'Back to login',
-    entrySystem: 'Entry the system',
-    placeholder: 'Please enter the lock screen password',
-    message: 'Lock screen password error'
+  upload: {
+    success: 'Success',
+    fail: 'Fail',
+    uploading: 'Uploading',
+    downloading: 'Downloading',
+    md5: 'MD5 checking',
+    merging: 'Merging',
+    start: 'Start',
+    pause: 'Pause',
+    retry: 'Retry',
+    waitingupload: 'Waiting for upload',
+    waitingdownload: 'Waiting for download',
+    pauseupload: 'Pause uploading',
+    pausedownload: 'Pause downloading',
+    unKnownFile: 'UnKnown file',
+    download: 'Download',
+    remove: 'Remove',
+    preview: 'Preview',
+    fileName: 'Name',
+    fileSize: 'Size',
+    fileStatus: 'Status',
+    uploadUser: 'Upload user',
+    uploadTime: 'Upload time',
+    operation: 'Operation',
+    readFileError: 'The file {fileName} failed to load. Please check the file',
+    limitError: 'You can upload a maximum of {limit} files',
+    fileExists: '{fileName} already exists',
+    uploadSuccess: '{fileName} uploaded successfully',
+    uploadFail: '{fileName} failed to upload',
+    downloadFail: '{fileName} failed to download'
   },
   error: {
     noPermission: `Sorry, you don't have permission to access this page.`,
@@ -189,7 +216,8 @@ export default {
     personalCenter: 'Personal center',
     personal: 'Personal',
     avatars: 'Avatars',
-    iAgree: 'I agree'
+    iAgree: 'I agree',
+    uploader: 'Uploader'
   },
   permission: {
     hasPermission: 'Please set the operation permission value'

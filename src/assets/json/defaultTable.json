@@ -1,0 +1,122 @@
+{
+  "mode": "view",
+  "columns": [
+    {
+      "type": "selection"
+    },
+    {
+      "type": "index",
+      "label": "序号"
+    },
+    {
+      "field": "dict_id",
+      "label": "字典id"
+    },
+    {
+      "field": "dict_code",
+      "label": "字典代码"
+    },
+    {
+      "field": "value",
+      "label": "实际值"
+    },
+    {
+      "field": "label",
+      "label": "显示值"
+    },
+    {
+      "field": "create_date",
+      "label": "创建时间"
+    },
+    {
+      "field": "is_default",
+      "label": "是否默认",
+      "sortable": true,
+      "slots": {
+        "default": [
+          {
+            "itemProps": {
+              "prop": "status_tag"
+            },
+            "colProps": {
+              "span": 6
+            },
+            "componentProps": {
+              "component": "Tag",
+              "type": "primary",
+              "staticText": "",
+              "lifecycle": {
+                "mounted": "() => {if(this.formData.is_default == 0){\n\tthis.formItems.status_tag.componentProps.type = 'danger'\n\tthis.formItems.status_tag.componentProps.staticText = '否'\n}else{\n\tthis.formItems.status_tag.componentProps.type = 'success'\n\tthis.formItems.status_tag.componentProps.staticText = '是'\n}}"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "operation",
+      "label": "操作",
+      "slots": {
+        "default": [
+          {
+            "itemProps": {
+              "prop": "button1"
+            },
+            "colProps": {
+              "span": 10
+            },
+            "componentProps": {
+              "component": "Button",
+              "type": "primary",
+              "on": {
+                "click": "() => { this.formData.label = '喂喂喂'\n this.formItems.button2.display = false\n console.log(this.formData)\n console.log(this.formItems)\n  console.log(this.userStore)\n }"
+              },
+              "slots": {
+                "default": {
+                  "html": "查看"
+                }
+              }
+            }
+          },
+          {
+            "itemProps": {
+              "prop": "button2"
+            },
+            "colProps": {
+              "span": 10,
+              "style": "margin-left: 8px"
+            },
+            "componentProps": {
+              "component": "Button",
+              "type": "danger",
+              "on": {
+                "click": "() => this.login()"
+              },
+              "slots": {
+                "default": {
+                  "html": "删除"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "query": {
+    "tableCode": "table-1",
+    "order": [
+      {
+        "col": "dict_id",
+        "order": "desc"
+      },
+      {
+        "col": "dict_code",
+        "order": "asc"
+      }
+    ]
+  },
+  "pagination": {
+    "pageSize": 1
+  }
+}

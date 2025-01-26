@@ -1,23 +1,42 @@
 import { useI18n } from '@/hooks/web/useI18n'
-import { ColProps, FormProps, FormSchema, PlaceholderModel } from '../types'
+import {
+  CheckboxOption,
+  ColProps,
+  FormProps,
+  FormSchema,
+  PlaceholderModel,
+  RadioOption,
+  SelectOption
+} from '../types'
 import { get, set } from 'lodash-es'
-import { ElMessage, MessageProps, ElNotification, NotificationProps, FormRules } from 'element-plus'
-import { useValidator } from '@/hooks/web/useValidator'
-import { useUserStore } from '@/store/modules/user'
+import { ElMessage, FormRules, FormItemRule } from 'element-plus'
+import * as isUtil from '@/utils/is'
+import { getDictDataApi } from '@/api/common'
+import { createVNode, reactive } from 'vue'
+import { Icon } from '@/components/Icon'
+import { isCustomFunction } from '@/utils/is'
+import { newFunction } from '@/utils/newFunction'
+import { hasPermi } from '@/components/Permission'
 
-const userStore = useUserStore()
 const { t } = useI18n()
-// @ts-ignore
-const { required, lengthRange, notSpace, notSpecialCharacters, phone, email, maxlength, check } =
-  useValidator()
 
-export const setFormRules = (formRules: Recordable = {}): FormRules => {
-  const values = {}
+export const setFormRules = async (
+  formRules: Recordable<string, FormItemRule[]> = {},
+  formData: Recordable = {}
+): Promise<FormRules> => {
+  const values: Recordable<string, FormItemRule[]> = {}
   for (const key in formRules) {
-    if (formRules[key] && Array.isArray(formRules[key])) {
+    if (formRules[key] && isUtil.isArray(formRules[key])) {
       values[key] = []
-      for (const rule of formRules[key]) {
-        values[key]!.push(eval(rule))
+      const theKeyFormRules = formRules[key] as FormItemRule[]
+      for (const rule of theKeyFormRules) {
+        isCustomFunction(rule.validator) &&
+          newFunction(rule.validator, {
+            formData: formData
+          }).then((res) => {
+            rule.validator = res.func
+          })
+        values[key].push(rule)
       }
     }
   }
@@ -26,9 +45,10 @@ export const setFormRules = (formRules: Recordable = {}): FormRules => {
 
 export const setComponentProps = (
   schema: FormSchema[] = [],
-  autoSetPlaceholder: boolean = true
+  autoSetPlaceholder: boolean = true,
+  mode: string = 'edit'
 ): Recordable => {
-  const values: Recordable = {}
+  const values: Recordable = reactive({})
   for (const col of schema) {
     values[col.itemProps.prop] = { hidden: true, display: true, componentProps: {}, colProps: {} }
     let placeholder: PlaceholderModel = {}
@@ -37,10 +57,37 @@ export const setComponentProps = (
     }
 
     values[col.itemProps.prop].componentProps = {
+      options: [],
       ...placeholder,
       ...col.componentProps,
       disabled: true
     }
+
+    if (
+      values[col.itemProps.prop].componentProps.component === 'Button' &&
+      isUtil.isString(values[col.itemProps.prop].componentProps.icon)
+    ) {
+      values[col.itemProps.prop].componentProps.icon = createVNode(Icon, {
+        icon: values[col.itemProps.prop].componentProps.icon
+      })
+    }
+
+    // slots属性值传递的是函数字符串,解析为函数
+    for (const key in values[col.itemProps.prop].componentProps.slots) {
+      const slot = values[col.itemProps.prop].componentProps.slots[key]
+      isCustomFunction(slot) &&
+        newFunction(slot).then((res) => {
+          values[col.itemProps.prop].componentProps.slots[key] = res.func
+        })
+    }
+
+    // 异步加载 options
+    setRemoteOptions(col).then((remoteOptions) => {
+      if (remoteOptions.options) {
+        // 动态更新异步加载的 options
+        set(values[col.itemProps.prop].componentProps, 'options', remoteOptions.options)
+      }
+    })
 
     values[col.itemProps.prop].colProps = {
       ...setGridProp(col.colProps)
@@ -50,17 +97,18 @@ export const setComponentProps = (
       delete values[col.itemProps.prop].componentProps.on
     }
 
-    if (values[col.itemProps.prop].componentProps.slots) {
-      delete values[col.itemProps.prop].componentProps.slots
-    }
-
     if (!values[col.itemProps.prop].componentProps.style) {
       values[col.itemProps.prop].componentProps.style = { width: '100%' }
     }
 
-    col.hidden === false && (values[col.itemProps.prop].hidden = false)
+    if (col.hidden === false) {
+      values[col.itemProps.prop].hidden = false
+    } else {
+      values[col.itemProps.prop].hidden = hasPermi(col.permi)
+    }
     col.display === false && (values[col.itemProps.prop].display = false)
     !col.componentProps.disabled && (values[col.itemProps.prop].componentProps.disabled = false)
+    mode !== 'edit' && (values[col.itemProps.prop].componentProps.disabled = true)
   }
   return values
 }
@@ -71,28 +119,61 @@ export const setComponentProps = (
  * @param item 传入的组件属性
  * @param formData 表单数据对象
  * @param formItems 所有表单数据项
+ * @param parentFormData 父级表单数据对象
+ * @param parentFormItems 父级表单数据项
+ * @param parentComponent 父级表单
  */
 export const setComponentEvents = (
-  formMethods: any,
   item: Recordable,
   formData: Recordable,
-  formItems: any
+  formItems: any,
+  formMethods?: any,
+  parentFormData?: Recordable,
+  parentFormItems?: Recordable,
+  parentComponent?: Recordable
 ): Recordable => {
   const onEvents = item?.on || {}
   const newOnEvents: Recordable = {}
   for (const key in onEvents) {
-    if (onEvents[key]) {
-      newOnEvents[`${key}`] = new Function('return ' + onEvents[key]).bind({
-        ...formMethods,
-        formData: formData,
-        formItems: formItems,
-        userStore: userStore,
-        message: message,
-        notification: notification
-      })()
-    }
+    const event = onEvents[key]
+    isCustomFunction(event) &&
+      (newOnEvents[`${key}`] = () => {
+        newFunction(event, {
+          formData: formData,
+          formItems: formItems,
+          ...formMethods,
+          parentFormData: parentFormData,
+          parentFormItems: parentFormItems,
+          parentComponent: parentComponent
+        }).then((res) => (res.params ? res.func(res.params) : res.func()))
+      })
   }
   return newOnEvents
+}
+
+export const setFormLifecycle = (
+  lifecycle: Recordable = {},
+  formData: Recordable = {},
+  formItems: any,
+  formMethods?: any,
+  parentFormData?: Recordable,
+  parentFormItems?: Recordable
+): Recordable => {
+  const values = {}
+  for (const key in lifecycle) {
+    const event = lifecycle[key]
+    isCustomFunction(event) &&
+      (values[`${key}`] = () => {
+        newFunction(event, {
+          formData: formData,
+          formItems: formItems,
+          ...formMethods,
+          parentFormData: parentFormData,
+          parentFormItems: parentFormItems
+        }).then((res) => (res.params ? res.func(res.params) : res.func()))
+      })
+  }
+  return values
 }
 
 /**
@@ -103,7 +184,7 @@ export const setComponentEvents = (
  */
 export const setTextPlaceholder = (item: FormSchema): PlaceholderModel => {
   const textMap = ['Input', 'Autocomplete', 'InputNumber', 'InputPassword', 'Captcha']
-  const selectMap = ['Select', 'TimePicker', 'DatePicker', 'TimeSelect', 'SelectV2']
+  const selectMap = ['Select', 'TimePicker', 'DatePicker', 'TimeSelect', 'SelectV2', 'TreeSelect']
   if (item?.componentProps?.component?.placeholder) {
     return {}
   }
@@ -134,6 +215,37 @@ export const setTextPlaceholder = (item: FormSchema): PlaceholderModel => {
 
 /**
  *
+ * @param item 对应组件数据
+ * @returns 返回数据集
+ * @description 用于从数据库获取控件options（数据集）
+ */
+export const setRemoteOptions = async (
+  item: FormSchema
+): Promise<{ options?: CheckboxOption[] | RadioOption[] | SelectOption[] }> => {
+  const optionsMap = [
+    'Select',
+    'SelectV2',
+    'CheckboxGroup',
+    'RadioGroup',
+    'RadioButton',
+    'CheckboxButton'
+  ]
+  if (optionsMap.includes(item?.componentProps?.component) && item?.componentProps?.query) {
+    item.componentProps.loading = true
+    const placeholder = { options: [] } // 占位默认值
+    const res = await getDictDataApi(item?.componentProps?.query)
+    if (res.code != 200) {
+      ElMessage.error(res.msg)
+    } else {
+      placeholder.options = res.data?.data
+    }
+    return placeholder
+  }
+  return {}
+}
+
+/**
+ *
  * @param col 内置栅格
  * @returns 返回栅格属性
  * @description 合并传入进来的栅格属性
@@ -153,14 +265,6 @@ export const setGridProp = (col: ColProps = {}): ColProps => {
     ...col
   }
   return colProps
-}
-
-const message = (msgProp: MessageProps) => {
-  ElMessage(msgProp)
-}
-
-const notification = (msgProp: NotificationProps) => {
-  ElNotification(msgProp)
 }
 
 /**
@@ -188,16 +292,17 @@ export const initModel = (schema: FormProps, formModel: Recordable) => {
           key,
           hasField !== void 0
             ? get(model, key)
-            : schema[key].componentProps.defaultValue !== void 0
-              ? schema[key].componentProps.defaultValue.startsWith('${') &&
-                schema[key].componentProps.defaultValue.endsWith('}')
+            : schema[key].componentProps.defValue !== void 0
+              ? isUtil.isString(schema[key].componentProps.defValue) &&
+                schema[key].componentProps.defValue.startsWith('${') &&
+                schema[key].componentProps.defValue.endsWith('}')
                 ? eval(
-                    schema[key].componentProps.defaultValue.substring(
+                    schema[key].componentProps.defValue.substring(
                       2,
-                      schema[key].componentProps.defaultValue.length - 1
+                      schema[key].componentProps.defValue.length - 1
                     )
                   )
-                : schema[key].componentProps.defaultValue
+                : schema[key].componentProps.defValue
               : undefined
         )
       }
@@ -206,33 +311,11 @@ export const initModel = (schema: FormProps, formModel: Recordable) => {
   return model
 }
 
-export const setFormLifecycle = (
-  lifecycle: Recordable = {},
-  formMethods: any,
-  formData: Recordable = {},
-  formItems: any
-): Recordable => {
-  const values = {}
-  for (const key in lifecycle) {
-    if (lifecycle[key] !== void 0) {
-      values[`${key}`] = new Function('return ' + lifecycle[key]).bind({
-        ...formMethods,
-        formData: formData,
-        formItems: formItems,
-        userStore: userStore,
-        message: message,
-        notification: notification
-      })()
-    }
-  }
-  return values
-}
-
 export const setDividerCollapses = (formItems: any): Recordable => {
   const values = {}
   for (const col of formItems) {
     if (col.componentProps.component === 'Divider') {
-      values[col.itemProps.prop] = col.componentProps.collapses !== void 0
+      values[col.itemProps.prop] = !!col.componentProps.collapses
     }
   }
   return values

@@ -11,29 +11,55 @@ import {
 } from 'element-plus'
 import { defineComponent, PropType, ref, computed, unref, watch, onMounted } from 'vue'
 import { propTypes } from '@/utils/propTypes'
-import { setIndex } from './helper'
+import { setData, setIndex } from './helper'
 import type { TableProps, TableColumn, Pagination, TableSetProps } from './types'
 import { set, get } from 'lodash-es'
 import { CSSProperties } from 'vue'
 import { getSlot } from '@/utils/tsxHelper'
 import TableActions from './components/TableActions.vue'
+import EditTableActions from './components/EditTableActions.vue'
+import TableButtons from './components/TableButtons.vue'
 import { createVideoViewer } from '@/components/VideoPlayer'
 import { Icon } from '@/components/Icon'
 import { BaseButton } from '@/components/Button'
+import { TableSearch } from '@/api/table/types'
+import { isEmpty, isFunction, isNullOrUnDef } from '@/utils/is'
+import { FormSchema } from '@/components/Form'
+import RenderTableItem from './components/RenderTableItem.vue'
+import { toAnyString } from '@/utils'
+import { ButtonComponentProps } from '@/components/Form/src/types'
+import { TreeHelperConfig, listToTree } from '@/utils/tree'
 
 export default defineComponent({
   name: 'Table',
   props: {
-    pageSize: propTypes.number.def(10),
-    currentPage: propTypes.number.def(1),
+    modelValue: {
+      type: Array as PropType<Recordable[]>,
+      default: () => []
+    },
+    mode: propTypes.string.validate((v: string) => ['view', 'edit'].includes(v)).def('view'),
     // 是否展示表格的工具栏
     showAction: propTypes.bool.def(false),
+    // 是否展示可编辑表格的工具栏
+    showEditAction: propTypes.bool.def(false),
     // 是否所有的超出隐藏，优先级低于schema中的showOverflowTooltip,
     showOverflowTooltip: propTypes.bool.def(true),
+    // 表格上方按钮
+    buttons: {
+      type: Array as PropType<ButtonComponentProps[]>,
+      default: () => []
+    },
     // 表头
     columns: {
       type: Array as PropType<TableColumn[]>,
       default: () => []
+    },
+    // 自动将数据转换成树形结构
+    autoParseTree: propTypes.bool.def(false),
+    // 树形结构
+    treeConfig: {
+      type: Object as PropType<TreeHelperConfig>,
+      default: (): TreeHelperConfig | undefined => undefined
     },
     // 是否展示分页
     pagination: {
@@ -45,7 +71,7 @@ export default defineComponent({
     // 加载状态
     loading: propTypes.bool.def(false),
     // 是否叠加索引
-    reserveIndex: propTypes.bool.def(false),
+    reserveIndex: propTypes.bool.def(true),
     // 对齐方式
     align: propTypes.string
       .validate((v: string) => ['left', 'center', 'right'].includes(v))
@@ -54,9 +80,16 @@ export default defineComponent({
     headerAlign: propTypes.string
       .validate((v: string) => ['left', 'center', 'right'].includes(v))
       .def('left'),
-    data: {
-      type: Array as PropType<Recordable[]>,
-      default: () => []
+    // 远程数据加载
+    query: {
+      type: Object as PropType<TableSearch>,
+      default: () => undefined
+    },
+    fetchDataApi: {
+      type: Function as PropType<
+        (pageSize?: number, currentPage?: number) => Promise<{ data: any[]; total: number }>
+      >,
+      default: undefined
     },
     // 图片自动预览字段数组
     imagePreview: {
@@ -78,7 +111,7 @@ export default defineComponent({
     },
     fit: propTypes.bool.def(true),
     showHeader: propTypes.bool.def(true),
-    highlightCurrentRow: propTypes.bool.def(false),
+    highlightCurrentRow: propTypes.bool.def(true),
     currentRowKey: propTypes.oneOfType([Number, String]),
     // row-class-name, 类型为 (row: Recordable, rowIndex: number) => string | string
     rowClassName: {
@@ -211,19 +244,63 @@ export default defineComponent({
       default: ''
     }
   },
-  emits: ['update:pageSize', 'update:currentPage', 'register', 'refresh'],
+  emits: ['register', 'refresh', 'update:modelValue', 'change'],
   setup(props, { attrs, emit, slots, expose }) {
     const elTableRef = ref<ComponentRef<typeof ElTable>>()
 
     // 注册
-    onMounted(() => {
+    onMounted(async () => {
+      // 编辑模式下，不允许分页，强制不分页
+      unref(getProps).mode == 'edit' && setProps({ pagination: undefined, showAction: false })
+      unref(getProps).mode == 'view' && setProps({ showEditAction: false })
       const tableRef = unref(elTableRef)
+      setProps({ loading: true })
+      let modelValues = unref(getProps).modelValue
+      let totals = unref(getProps).pagination?.total || 0
+      if (unref(getProps).query) {
+        const { total, data } = await setData(
+          unref(getProps).query,
+          unref(getProps).pagination
+            ? {
+                pageSize: unref(getProps).pagination?.pageSize || 10,
+                currentPage: unref(getProps).pagination?.currentPage || 1
+              }
+            : undefined
+        )
+        totals = total
+        modelValues = data
+      } else if (unref(getProps).fetchDataApi) {
+        const { data, total } = await unref(getProps).fetchDataApi!(
+          unref(getProps).pagination ? unref(getProps).pagination?.pageSize || 10 : undefined,
+          unref(getProps).pagination ? unref(getProps).pagination?.currentPage || 1 : undefined
+        )
+        totals = total
+        modelValues = data
+      }
+      if (modelValues) {
+        for (const row of modelValues) {
+          get(row, unref(getProps).rowKey) == void 0 &&
+            set(row, unref(getProps).rowKey, toAnyString())
+        }
+        if (unref(getProps).autoParseTree) {
+          modelValues = listToTree(modelValues, unref(getProps).treeConfig)
+        }
+      }
+      unref(getProps).pagination &&
+        setProps({ pagination: { ...unref(getProps).pagination, total: totals } })
+      setProps({ modelValue: modelValues, loading: false })
       emit('register', tableRef?.$parent, elTableRef)
     })
 
-    const pageSizeRef = ref(props.pageSize)
+    const pageSizeRef = ref(props.pagination?.pageSize)
 
-    const currentPageRef = ref(props.currentPage)
+    const currentPageRef = ref(props.pagination?.currentPage)
+
+    const getRowKey = (row: Recordable) => {
+      return row[unref(getProps).rowKey]
+    }
+
+    const tableItemProps = ref([])
 
     // useTable传入的props
     const outsideProps = ref<TableProps>({})
@@ -271,8 +348,70 @@ export default defineComponent({
       }
     }
 
-    const refresh = () => {
+    const refresh = async () => {
+      setProps({ loading: true })
+      let modelValues = unref(getProps).modelValue
+      let totals = unref(getProps).pagination?.total || 0
+      if (unref(getProps).query) {
+        const { total, data } = await setData(
+          unref(getProps).query,
+          unref(getProps).pagination
+            ? {
+                pageSize: unref(getProps).pagination?.pageSize || 10,
+                currentPage: unref(getProps).pagination?.currentPage || 1
+              }
+            : undefined
+        )
+        totals = total
+        modelValues = data
+      } else if (unref(getProps).fetchDataApi) {
+        const { data, total } = await unref(getProps).fetchDataApi!(
+          unref(getProps).pagination ? unref(getProps).pagination?.pageSize || 10 : undefined,
+          unref(getProps).pagination ? unref(getProps).pagination?.currentPage || 1 : undefined
+        )
+        modelValues = data
+        totals = total
+      }
+      for (const row of modelValues) {
+        get(row, unref(getProps).rowKey) == void 0 &&
+          set(row, unref(getProps).rowKey, toAnyString())
+      }
+      if (unref(getProps).autoParseTree) {
+        modelValues = listToTree(modelValues, unref(getProps).treeConfig)
+      }
+      unref(getProps).pagination &&
+        setProps({ pagination: { ...unref(getProps).pagination, total: totals } })
+      setProps({ modelValue: modelValues, loading: false })
       emit('refresh')
+    }
+
+    const addRow = () => {
+      const modelValues = unref(getProps).modelValue
+      modelValues.push({ [unref(getProps).rowKey]: toAnyString() })
+      emit('update:modelValue', modelValues)
+      emit('change', modelValues)
+    }
+
+    const deleteRow = () => {
+      const selectedRows = elTableRef.value?.getSelectionRows() || []
+
+      const modelValues = unref(getProps).modelValue
+
+      // 先获取所有选中的行并删除
+      selectedRows.forEach((row) => {
+        const index = modelValues.findIndex(
+          (item) => item[unref(getProps).rowKey] === row[unref(getProps).rowKey]
+        )
+        if (index !== -1) {
+          modelValues.splice(index!, 1) // 删除行
+        }
+      })
+
+      // 删除后清空选择
+      elTableRef.value?.clearSelection()
+
+      emit('update:modelValue', modelValues)
+      emit('change', modelValues)
     }
 
     const changSize = (size: ComponentSize) => {
@@ -283,11 +422,33 @@ export default defineComponent({
       setProps({ columns })
     }
 
+    const setQueryParams = (params: Recordable = {}) => {
+      unref(getProps).query?.tableCode &&
+        setProps({
+          query: {
+            ...unref(getProps).query!,
+            params: { ...unref(getProps).query?.params, ...params }
+          }
+        })
+    }
+
+    const getSelectRows = () => {
+      return elTableRef.value?.getSelectionRows() || []
+    }
+
+    const getData = () => {
+      return elTableRef.value?.data || []
+    }
+
     expose({
       setProps,
       setColumn,
       delColumn,
       addColumn,
+      refresh,
+      setQueryParams,
+      getSelectRows,
+      getData,
       elTableRef
     })
 
@@ -301,6 +462,8 @@ export default defineComponent({
           pageSizes: [10, 20, 30, 40, 50, 100],
           disabled: false,
           hideOnSinglePage: false,
+          pageSizeRef: 10,
+          currentPage: 1,
           total: 10
         },
         unref(getProps).pagination
@@ -308,37 +471,93 @@ export default defineComponent({
     })
 
     watch(
-      () => unref(getProps).pageSize,
-      (val: number) => {
-        pageSizeRef.value = val
-      }
-    )
-
-    watch(
-      () => unref(getProps).currentPage,
-      (val: number) => {
-        currentPageRef.value = val
-      }
-    )
-
-    watch(
       () => pageSizeRef.value,
-      (val: number) => {
-        emit('update:pageSize', val)
+      async (val: number) => {
+        setProps({ loading: true })
+        let modelValues = unref(getProps).modelValue
+        let totals = unref(getProps).pagination.total || 0
+        if (unref(getProps).query) {
+          const { total, data } = await setData(unref(getProps).query, {
+            pageSize: val,
+            currentPage: unref(getProps).pagination?.currentPage || 1
+          })
+          totals = total
+          modelValues = data
+        } else if (unref(getProps).fetchDataApi) {
+          const { data, total } = await unref(getProps).fetchDataApi!(
+            val,
+            unref(getProps).pagination?.currentPage || 1
+          )
+          totals = total
+          modelValues = data
+        }
+        for (const row of modelValues) {
+          get(row, unref(getProps).rowKey) == void 0 &&
+            set(row, unref(getProps).rowKey, toAnyString())
+        }
+        if (unref(getProps).autoParseTree) {
+          modelValues = listToTree(modelValues, unref(getProps).treeConfig)
+        }
+        setProps({
+          pagination: { ...unref(getProps).pagination, pageSize: val, total: totals },
+          modelValue: modelValues,
+          loading: false
+        })
       }
     )
 
     watch(
       () => currentPageRef.value,
-      (val: number) => {
-        emit('update:currentPage', val)
+      async (val: number) => {
+        setProps({ loading: true })
+        let modelValues = unref(getProps).modelValue
+        let totals = unref(getProps).pagination.total || 0
+        if (unref(getProps).query) {
+          const { total, data } = await setData(unref(getProps).query, {
+            pageSize: unref(getProps).pagination?.pageSize || 10,
+            currentPage: val
+          })
+          totals = total
+          modelValues = data
+        } else if (unref(getProps).fetchDataApi) {
+          const { data, total } = await unref(getProps).fetchDataApi!(
+            unref(getProps).pagination?.pageSize || 10,
+            val
+          )
+          totals = total
+          modelValues = data
+        }
+        for (const row of modelValues) {
+          get(row, unref(getProps).rowKey) == void 0 &&
+            set(row, unref(getProps).rowKey, toAnyString())
+        }
+        if (unref(getProps).autoParseTree) {
+          modelValues = listToTree(modelValues, unref(getProps).treeConfig)
+        }
+        setProps({
+          pagination: {
+            ...unref(getProps).pagination,
+            currentPage: val,
+            total: totals
+          },
+          modelValue: modelValues,
+          loading: false
+        })
       }
+    )
+
+    watch(
+      () => elTableRef.value?.data,
+      (val: []) => {
+        emit('update:modelValue', val)
+        emit('change', val)
+      },
+      { deep: true }
     )
 
     const getBindValue = computed(() => {
       const bindValue: Recordable = { ...attrs, ...unref(getProps) }
       delete bindValue.columns
-      delete bindValue.data
       delete bindValue.align
       return bindValue
     })
@@ -420,20 +639,43 @@ export default defineComponent({
       )
     }
 
+    const renderTableColumnComponent = (
+      data: any,
+      component: FormSchema[],
+      tableItemProps: Array<any>,
+      mode: string,
+      columnType: string
+    ) => {
+      if (
+        data.$index != -1 &&
+        (isNullOrUnDef(tableItemProps[data.$index]) || isEmpty(tableItemProps[data.$index]))
+      ) {
+        tableItemProps[data.$index] = {}
+      }
+      return (
+        <RenderTableItem
+          tableItems={component}
+          scope={data}
+          tableItemProps={tableItemProps}
+          mode={mode}
+          columnType={columnType}
+          tableRef={unref(elTableRef)?.$parent}
+        />
+      )
+    }
+
     const renderTableColumn = (columnsChildren?: TableColumn[]) => {
       const {
         columns,
         reserveIndex,
-        pageSize,
-        currentPage,
         align,
         headerAlign,
         showOverflowTooltip,
         reserveSelection,
         imagePreview,
-        videoPreview
+        videoPreview,
+        mode
       } = unref(getProps)
-
       return (columnsChildren || columns).map((v) => {
         if (v.hidden) return null
         if (v.type === 'index') {
@@ -441,7 +683,15 @@ export default defineComponent({
             <ElTableColumn
               type="index"
               index={
-                v.index ? v.index : (index) => setIndex(reserveIndex, index, pageSize, currentPage)
+                v.index
+                  ? v.index
+                  : (index) =>
+                      setIndex(
+                        reserveIndex,
+                        index,
+                        unref(pageSizeRef) || 10,
+                        unref(currentPageRef) || 1
+                      )
               }
               align={v.align || align}
               headerAlign={v.headerAlign || headerAlign}
@@ -470,7 +720,6 @@ export default defineComponent({
           const slots = {
             default: (...args: any[]) => {
               const data = args[0]
-
               let isPreview = false
               isPreview =
                 imagePreview.some((item) => (item as string) === v.field) ||
@@ -479,7 +728,15 @@ export default defineComponent({
               return children && children.length
                 ? renderTreeTableColumn(children)
                 : props?.slots?.default
-                  ? props.slots.default(...args)
+                  ? isFunction(props?.slots?.default)
+                    ? props.slots.default(...args)
+                    : renderTableColumnComponent(
+                        data,
+                        props.slots.default,
+                        tableItemProps.value,
+                        props.type === 'operation' ? 'edit' : mode,
+                        props.type
+                      )
                   : v?.formatter
                     ? v?.formatter?.(data.row, data.column, get(data.row, v.field), data.$index)
                     : isPreview
@@ -519,8 +776,8 @@ export default defineComponent({
         <div v-loading={unref(getProps).loading}>
           {unref(getProps).customContent ? (
             <div class="flex flex-wrap">
-              {unref(getProps)?.data?.length ? (
-                unref(getProps)?.data.map((item) => {
+              {unref(getProps).modelValue.length ? (
+                unref(getProps).modelValue.map((item) => {
                   const cardSlots = {
                     default: () => {
                       return getSlot(slots, 'content', item)
@@ -556,6 +813,13 @@ export default defineComponent({
             </div>
           ) : (
             <>
+              <TableButtons
+                tableRef={unref(elTableRef)?.$parent}
+                buttons={unref(getProps).buttons}
+              />
+              {unref(getProps).showEditAction ? (
+                <EditTableActions onAddRow={addRow} onDeleteRow={deleteRow} />
+              ) : null}
               {unref(getProps).showAction && !unref(getProps).customContent ? (
                 <TableActions
                   columns={unref(getProps).columns}
@@ -564,7 +828,12 @@ export default defineComponent({
                   onConfirm={confirmSetColumn}
                 />
               ) : null}
-              <ElTable ref={elTableRef} data={unref(getProps).data} {...unref(getBindValue)}>
+              <ElTable
+                ref={elTableRef}
+                data={unref(getProps).modelValue}
+                {...unref(getBindValue)}
+                rowKey={getRowKey}
+              >
                 {{
                   default: () => renderTableColumn(),
                   ...tableSlots

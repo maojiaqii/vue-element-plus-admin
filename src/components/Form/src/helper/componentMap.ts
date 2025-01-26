@@ -18,18 +18,22 @@ import {
   ElTransfer,
   ElAutocomplete,
   ElDivider,
-  ElTreeSelect
+  ElTreeSelect,
+  ElTag
 } from 'element-plus'
 import { InputPassword } from '@/components/InputPassword'
 import { Editor } from '@/components/Editor'
-import { JsonEditor } from '@/components/JsonEditor'
+import { CodeEditor } from '@/components/CodeEditor'
 import { IconPicker } from '@/components/IconPicker'
 import { IAgree } from '@/components/IAgree'
 import { Captcha } from '@/components/Captcha'
+import { Upload } from '@/components/Upload'
 import { BaseButton } from '@/components/Button'
 import { Icon } from '@/components/Icon'
+import { Table } from '@/components/Table'
+import { ImageCropping } from '@/components/ImageCropping'
 
-const componentMap: Recordable<Component, string> = {
+const componentMap: Recordable<string, Component> = {
   RadioGroup: ElRadioGroup,
   RadioButton: ElRadioGroup,
   Checkbox: ElCheckbox,
@@ -53,12 +57,16 @@ const componentMap: Recordable<Component, string> = {
   InputPassword: InputPassword,
   Editor: Editor,
   TreeSelect: ElTreeSelect,
-  JsonEditor: JsonEditor,
+  CodeEditor: CodeEditor,
   IconPicker: IconPicker,
   IAgree: IAgree,
   Captcha: Captcha,
+  Upload: Upload,
   Button: BaseButton,
-  Icon: Icon
+  Icon: Icon,
+  Tag: ElTag,
+  Table: Table,
+  ImageCropping: ImageCropping
 }
 
 export { componentMap }

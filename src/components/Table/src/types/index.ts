@@ -1,4 +1,7 @@
 import { TableProps as ElTableProps } from 'element-plus'
+import { TableSearch } from '@/api/table/types'
+import { ButtonComponentProps } from '@/components/Form/src/types'
+import { TreeHelperConfig } from '@/utils/tree'
 export interface TableColumn {
   field: string
   label?: string
@@ -72,9 +75,8 @@ export interface TableSetProps {
 }
 
 export interface TableProps extends Omit<Partial<ElTableProps<any[]>>, 'data'> {
-  pageSize?: number
-  currentPage?: number
   showAction?: boolean
+  showEditAction?: boolean
   // 是否所有的超出隐藏，优先级低于schema中的showOverflowTooltip,
   showOverflowTooltip?: boolean
   // 表头
@@ -87,12 +89,28 @@ export interface TableProps extends Omit<Partial<ElTableProps<any[]>>, 'data'> {
   loading?: boolean
   // 是否叠加索引
   reserveIndex?: boolean
+  // 自动将数据转换成树形结构
+  autoParseTree?: boolean
+  // 树形结构
+  treeConfig?: Partial<TreeHelperConfig>
   // 对齐方式
   align?: 'left' | 'center' | 'right'
   // 表头对齐方式
   headerAlign?: 'left' | 'center' | 'right'
   imagePreview?: string[]
   videoPreview?: string[]
+  mode?: 'view' | 'edit'
   sortable?: boolean
-  data?: Recordable
+  query?: TableSearch
+  buttons?: ButtonComponentProps[]
+  fetchDataApi?: (
+    pageSize?: number,
+    currentPage?: number
+  ) => Promise<{ data: any[]; total: number }>
+  modelValue?: Recordable
+  on?: {
+    register?: (...args: any[]) => void
+    refresh?: (...args: any[]) => void
+    change?: (...args: any[]) => void
+  }
 }

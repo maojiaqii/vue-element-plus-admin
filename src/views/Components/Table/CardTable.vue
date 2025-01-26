@@ -3,38 +3,17 @@ import { ContentWrap } from '@/components/ContentWrap'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Table } from '@/components/Table'
 import { getCardTableListApi } from '@/api/table'
-import { ref } from 'vue'
 import { ElLink, ElDivider } from 'element-plus'
-
-interface Params {
-  pageIndex?: number
-  pageSize?: number
-}
 
 const { t } = useI18n()
 
-const loading = ref(true)
-
-let tableDataList = ref<any[]>([])
-
-const getTableList = async (params?: Params) => {
-  const res = await getCardTableListApi(
-    params || {
-      pageIndex: 1,
-      pageSize: 10
-    }
-  )
-    .catch(() => {})
-    .finally(() => {
-      loading.value = false
-    })
-  if (res) {
-    tableDataList.value = res.data.list
-  }
+const fetchDataApi = async (pageSize: number, currentPage: number) => {
+  const res = await getCardTableListApi({
+    pageIndex: currentPage,
+    pageSize: pageSize
+  })
+  return { data: res.data.list, total: res.data.total }
 }
-
-getTableList()
-
 const actionClick = (row?: any) => {
   console.log(row)
 }
@@ -44,8 +23,7 @@ const actionClick = (row?: any) => {
   <ContentWrap :title="t('tableDemo.cardTable')">
     <Table
       :columns="[]"
-      :data="tableDataList"
-      :loading="loading"
+      :fetch-data-api="fetchDataApi"
       custom-content
       :card-wrap-style="{
         width: '200px',

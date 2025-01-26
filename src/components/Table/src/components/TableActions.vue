@@ -43,7 +43,7 @@ export default defineComponent({
 
     return () => (
       <>
-        <div class="text-right h-28px flex items-center justify-end">
+        <div class="text-right h-32px flex items-center justify-end mb-10px">
           <div title="刷新" class="w-30px h-20px flex items-center justify-end" onClick={refresh}>
             <Icon
               icon="ant-design:sync-outlined"

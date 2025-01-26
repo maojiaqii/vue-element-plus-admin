@@ -4,6 +4,7 @@ import { defaultRequestInterceptors, defaultResponseInterceptors } from './confi
 import { AxiosInstance, InternalAxiosRequestConfig, RequestConfig, AxiosResponse } from './types'
 import { ElMessage } from 'element-plus'
 import { REQUEST_TIMEOUT } from '@/constants'
+import { useUserStoreWithOut } from '@/store/modules/user'
 
 export const PATH_URL = import.meta.env.VITE_API_BASE_PATH
 
@@ -18,10 +19,8 @@ axiosInstance.interceptors.request.use((res: InternalAxiosRequestConfig) => {
   const controller = new AbortController()
   const url = res.url || ''
   res.signal = controller.signal
-  abortControllerMap.set(
-    import.meta.env.VITE_USE_MOCK === 'true' ? url.replace('/mock', '') : url,
-    controller
-  )
+  // 适配mock接口
+  import.meta.env.VITE_USE_MOCK === 'true' && url.startsWith('/mock') && (res.baseURL = '')
   return res
 })
 
@@ -33,8 +32,14 @@ axiosInstance.interceptors.response.use(
     return res
   },
   (error: AxiosError) => {
-    console.log('err： ' + error) // for debug
-    ElMessage.error(error.message)
+    ElMessage.error({
+      dangerouslyUseHTMLString: true,
+      message: `<p><b>${error.response?.status}</b></p><p style="margin-top: 0.2rem; color: black">${error.message}</p>`
+    })
+    if (error.response?.status === 401) {
+      const userStore = useUserStoreWithOut()
+      userStore.logout()
+    }
     return Promise.reject(error)
   }
 )

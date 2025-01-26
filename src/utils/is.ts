@@ -18,6 +18,21 @@ export const isObject = (val: any): val is Record<any, any> => {
   return val !== null && is(val, 'Object')
 }
 
+export const isCustomFunction = (val: any): boolean => {
+  if (isEmptyVal(val)) return false
+  if (isFunction(val)) return true
+  if (isObject(val) && val.hasOwnProperty('js')) return true
+  if (isString(val)) {
+    try {
+      new Function('return ' + val)()
+      return true
+    } catch (e) {
+      return false
+    }
+  }
+  return false
+}
+
 export const isEmpty = <T = unknown>(val: T): val is T => {
   if (isArray(val) || isString(val)) {
     return val.length === 0

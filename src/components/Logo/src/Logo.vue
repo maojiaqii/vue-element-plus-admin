@@ -2,16 +2,18 @@
 import { ref, watch, computed, onMounted, unref } from 'vue'
 import { useAppStore } from '@/store/modules/app'
 import { useDesign } from '@/hooks/web/useDesign'
+import { usePermissionStore } from '@/store/modules/permission'
 
 const { getPrefixCls } = useDesign()
 
 const prefixCls = getPrefixCls('logo')
 
 const appStore = useAppStore()
+const permissionStore = usePermissionStore()
 
 const show = ref(true)
 
-const title = computed(() => appStore.getTitle)
+const title = computed(() => permissionStore.getCurrentTenancy?.title)
 
 const layout = computed(() => appStore.getLayout)
 

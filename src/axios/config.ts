@@ -3,7 +3,7 @@ import { ElMessage } from 'element-plus'
 import qs from 'qs'
 import bcrypt from 'bcryptjs'
 import { SUCCESS_CODE, TRANSFORM_REQUEST_DATA } from '@/constants'
-import { useUserStore, useUserStoreWithOut } from '@/store/modules/user'
+import { useUserStore } from '@/store/modules/user'
 import { enCodePwd, objToFormData } from '@/utils'
 
 const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
@@ -53,10 +53,6 @@ const defaultResponseInterceptors = (response: AxiosResponse) => {
       dangerouslyUseHTMLString: true,
       message: `<p><b>${response?.data?.code}</b></p><p style="margin-top: 0.2rem; color: black">${response?.data?.msg}</p>`
     })
-    if (response?.data?.code === 401) {
-      const userStore = useUserStoreWithOut()
-      userStore.logout()
-    }
     return response.data
   }
 }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Form } from '@/components/Form'
-import data from '@/assets/forms/login.json'
+import data from '@/assets/json/login.json'
 import { ThemeSwitch } from '@/components/ThemeSwitch'
 import { LocaleDropdown } from '@/components/LocaleDropdown'
 import { useI18n } from '@/hooks/web/useI18n'

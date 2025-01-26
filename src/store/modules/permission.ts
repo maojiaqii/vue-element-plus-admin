@@ -7,12 +7,15 @@ import {
 } from '@/utils/routerHelper'
 import { store } from '@/store'
 import { cloneDeep } from 'lodash-es'
+import { Tenancy } from '@/../types/global'
 
 export interface PermissionState {
   routers: AppRouteRecordRaw[]
   addRouters: AppRouteRecordRaw[]
   isAddRouters: boolean
   menuTabRouters: AppRouteRecordRaw[]
+  tenancys: Tenancy[]
+  currentTenancy: Tenancy | undefined
 }
 
 export const usePermissionStore = defineStore('permission', {
@@ -20,7 +23,9 @@ export const usePermissionStore = defineStore('permission', {
     routers: [],
     addRouters: [],
     isAddRouters: false,
-    menuTabRouters: []
+    menuTabRouters: [],
+    tenancys: [],
+    currentTenancy: undefined
   }),
   getters: {
     getRouters(): AppRouteRecordRaw[] {
@@ -34,6 +39,12 @@ export const usePermissionStore = defineStore('permission', {
     },
     getMenuTabRouters(): AppRouteRecordRaw[] {
       return this.menuTabRouters
+    },
+    getTenancys(): Tenancy[] {
+      return this.tenancys
+    },
+    getCurrentTenancy(): Tenancy | undefined {
+      return this.currentTenancy
     }
   },
   actions: {
@@ -75,10 +86,16 @@ export const usePermissionStore = defineStore('permission', {
     },
     setMenuTabRouters(routers: AppRouteRecordRaw[]): void {
       this.menuTabRouters = routers
+    },
+    setTenancys(tenancys: Tenancy[]): void {
+      this.tenancys = tenancys
+    },
+    setCurrentTenancy(tenancy: Tenancy): void {
+      this.currentTenancy = tenancy
     }
   },
   persist: {
-    paths: ['routers', 'addRouters', 'menuTabRouters']
+    paths: ['routers', 'addRouters', 'menuTabRouters', 'tenancys', 'tenancy']
   }
 })
 

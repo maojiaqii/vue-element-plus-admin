@@ -8,6 +8,7 @@ export default {
     required: '该项为必填项',
     loginOut: '退出系统',
     document: '项目文档',
+    platform: '工作环境',
     reminder: '温馨提示',
     loginOutMessage: '是否退出本系统？',
     back: '返回',
@@ -49,17 +50,44 @@ export default {
     notSpace: '不能包含空格',
     notSpecialCharacters: '不能包含特殊字符',
     isEqual: '两次输入不一致',
-    setting: '设置'
+    setting: '设置',
+    withoutFunction: '功能正在开发中,敬请期待...',
+    selectAll: '全选',
+    selectOthers: '反选',
+    addRow: '新增行',
+    deleteRow: '删除行',
+    more: '更多'
   },
-  lock: {
-    lockScreen: '锁定屏幕',
-    lock: '锁定',
-    lockPassword: '锁屏密码',
-    unlock: '点击解锁',
-    backToLogin: '返回登录',
-    entrySystem: '进入系统',
-    placeholder: '请输入锁屏密码',
-    message: '锁屏密码错误'
+  upload: {
+    success: '上传成功',
+    fail: '上传失败',
+    uploading: '上传中',
+    downloading: '下载中',
+    md5: '校验MD5',
+    merging: '合并中',
+    start: '开始',
+    pause: '暂停',
+    retry: '重试',
+    waitingupload: '等待上传',
+    waitingdownload: '等待下载',
+    pauseupload: '暂停上传',
+    pausedownload: '暂停下载',
+    unKnownFile: '不存在的文件',
+    download: '下载',
+    remove: '移除',
+    preview: '预览',
+    fileName: '文件名称',
+    fileSize: '大小',
+    fileStatus: '状态',
+    uploadUser: '上传人',
+    uploadTime: '上传时间',
+    operation: '操作',
+    readFileError: '文件 {fileName} 读取出错，请检查该文件',
+    limitError: '最多只能上传 {limit} 个文件',
+    fileExists: '{fileName} 已存在',
+    uploadSuccess: '{fileName} 上传成功',
+    uploadFail: '{fileName} 上传失败',
+    downloadFail: '{fileName} 下载失败'
   },
   error: {
     noPermission: `抱歉，您无权访问此页面。`,
@@ -185,7 +213,8 @@ export default {
     personalCenter: '个人中心',
     personal: '个人',
     avatars: '头像列表',
-    iAgree: '我同意'
+    iAgree: '我同意',
+    uploader: '附件上传'
   },
   permission: {
     hasPermission: '请设置操作权限值'

@@ -7,6 +7,7 @@ import UploadAvatar from './components/UploadAvatar.vue'
 import { Dialog } from '@/components/Dialog'
 import EditInfo from './components/EditInfo.vue'
 import EditPassword from './components/EditPassword.vue'
+import { ImageCropping } from '@/components/ImageCropping'
 
 const userInfo = ref()
 const fetchDetailUserApi = async () => {
@@ -28,12 +29,12 @@ const activeName = ref('first')
 
 const dialogVisible = ref(false)
 
-const uploadAvatarRef = ref<ComponentRef<typeof UploadAvatar>>()
+const CropperRef = ref<ComponentRef<typeof ImageCropping>>()
 const avatarLoading = ref(false)
 const saveAvatar = async () => {
   try {
     avatarLoading.value = true
-    const base64 = unref(uploadAvatarRef)?.getBase64()
+    const base64 = unref(CropperRef)?.getBase64Expose()
     console.log(base64)
     // 这里可以调用修改头像接口
     fetchDetailUserApi()
@@ -99,17 +100,17 @@ const saveAvatar = async () => {
     <ContentWrap title="基本资料" class="flex-[3] ml-20px">
       <ElTabs v-model="activeName">
         <ElTabPane label="基本信息" name="first">
-          <EditInfo :user-info="userInfo" />
+          <!--          <EditInfo :user-info="userInfo" />-->
         </ElTabPane>
         <ElTabPane label="修改密码" name="second">
-          <EditPassword />
+          <!--          <EditPassword />-->
         </ElTabPane>
       </ElTabs>
     </ContentWrap>
   </div>
 
   <Dialog v-model="dialogVisible" title="修改头像" width="800px">
-    <UploadAvatar ref="uploadAvatarRef" :url="userInfo?.avatarUrl || defaultAvatar" />
+    <ImageCropping ref="CropperRef" :image-url="userInfo?.avatarUrl || defaultAvatar" />
 
     <template #footer>
       <ElButton type="primary" :loading="avatarLoading" @click="saveAvatar"> 保存 </ElButton>

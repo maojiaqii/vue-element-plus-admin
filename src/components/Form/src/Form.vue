@@ -1,41 +1,37 @@
 <script setup lang="ts">
-import { ElCollapseTransition, ElTooltip, ElForm, ElFormItem, ElRow, ElCol } from 'element-plus'
 import {
-  onMounted,
-  ref,
-  unref,
-  PropType,
-  reactive,
-  watch,
-  onUpdated,
-  onUnmounted,
-  nextTick
-} from 'vue'
+  ElCollapseTransition,
+  ElPopover,
+  ElForm,
+  ElFormItem,
+  ElRow,
+  ElCol,
+  ElTooltip,
+  ElScrollbar
+} from 'element-plus'
+import VueJsonPretty from 'vue-json-pretty'
+import 'vue-json-pretty/lib/styles.css'
+import { onMounted, ref, unref, PropType, onUpdated, onUnmounted, nextTick } from 'vue'
 import { useForm } from '@/hooks/web/useForm'
 import { useDesign } from '@/hooks/web/useDesign'
 import {
   setComponentProps,
-  setComponentEvents,
   setFormRules,
   setFormLifecycle,
   setDividerCollapses,
   initModel
 } from '@/components/Form/src/helper'
-import { componentMap } from './helper/componentMap'
-import { useRenderSelect } from './components/useRenderSelect'
-import { useRenderRadio } from './components/useRenderRadio'
-import { useRenderCheckbox } from './components/useRenderCheckbox'
 import { FormProps } from '@/components/Form'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter } from 'vue-router'
 import ActionButton from '@/components/Search/src/components/ActionButton.vue'
-import { propTypes } from '@/utils/propTypes'
+import RenderFormItem from '@/components/Form/src/components/RenderFormItem.vue'
+import { isArray, isFunction } from '@/utils/is'
+import RenderSlotItem from '@/components/Form/src/components/RenderSlotItem.vue'
 const { formRegister, formMethods } = useForm()
+import { Icon } from '@/components/Icon'
 const { getPrefixCls } = useDesign()
 const { t } = useI18n()
-const { renderSelectOptions } = useRenderSelect()
-const { renderRadioOptions } = useRenderRadio()
-const { renderCheckboxOptions } = useRenderCheckbox()
 
 const prefixCls = getPrefixCls('form')
 
@@ -45,43 +41,56 @@ const elFormRef = ref<ComponentRef<typeof ElForm>>()
 const props = defineProps({
   schema: {
     type: Object as PropType<FormProps>,
-    default: undefined
+    default: () => ({
+      autoSetPlaceholder: true,
+      mode: 'edit', // 表单模式
+      isSearch: false, // 是否是查询条件表单
+      expandIndex: 3, // 伸缩的界限字段
+      isDescription: false, // 是否描述列表表单
+      direction: 'horizontal' // 列表标题显示位置
+    })
   },
   model: {
     type: Object as PropType<any>,
     default: () => ({})
   },
-  // 是否描述列表表单
-  isDescription: propTypes.bool.def(false),
-  // 列表标题显示位置
-  direction: propTypes.oneOf(['horizontal', 'vertical']).def('horizontal'),
-  // 是否是查询条件表单
-  isSearch: propTypes.bool.def(false),
-  // 伸缩的界限字段
-  expandIndex: propTypes.number.def(-1)
+  constant: {
+    type: Object as PropType<any>,
+    default: () => ({})
+  }
 })
 
 const emit = defineEmits(['register', 'search', 'reset', 'expand'])
 
-const formModel = ref<Recordable>(props.model)
-const formItemProps = reactive(
-  setComponentProps(props.schema?.formItems, props.schema?.autoSetPlaceholder)
+const formItemProps = ref(
+  setComponentProps(unref(props.schema.formItems), unref(props.schema.autoSetPlaceholder))
 )
-const dividerCollapses = ref(setDividerCollapses(props.schema?.formItems))
-const formRules = ref(setFormRules(props.schema?.formValidators))
+const formModel = ref<Recordable>(initModel(unref(formItemProps) as FormProps, unref(props.model)))
+const formConstant = ref(props.constant || {})
+const dividerCollapses = ref(setDividerCollapses(unref(props.schema.formItems)))
+const formRules = ref()
 const lifecycle = ref(
-  setFormLifecycle(props.schema?.lifecycle, formMethods, formModel, formItemProps)
+  setFormLifecycle(
+    unref(props.schema.lifecycle),
+    unref(formModel),
+    unref(formItemProps),
+    unref(formMethods),
+    {},
+    {}
+  )
 )
 // 存储表单实例
 const formComponents = ref({})
 // 存储form-item实例
 const formItemComponents = ref({})
+const formMode = ref(props.schema.mode || 'edit')
 const expanded = ref(true)
+const expandIndex = ref(props.schema.expandIndex || 3)
 
 const getGroupIndex = (index: string) => {
   let groupIndex = ''
-  for (let key in formItemProps) {
-    if (formItemProps[key].componentProps.component === 'Divider') {
+  for (let key in formItemProps.value) {
+    if (formItemProps.value[key].componentProps.component === 'Divider') {
       groupIndex = key
     }
     if (key === index) {
@@ -97,30 +106,30 @@ const toggleGroupVisibility = (groupIndex: string) => {
 
 const onExpand = () => {
   expanded.value = !unref(expanded)
-  if (props.expandIndex > 0 && !unref(expanded)) {
-    Object.keys(formItemProps).map((v, i) => {
-      formItemProps[v].display = i < props.expandIndex
+  if (unref(expandIndex) > 0 && !unref(expanded)) {
+    Object.keys(formItemProps.value).map((v, i) => {
+      formItemProps.value[v].display = i < unref(expandIndex)
     })
   } else {
-    for (let key in formItemProps) {
-      if (formItemProps.hasOwnProperty(key)) {
-        formItemProps[key].display = true
+    for (let key in formItemProps.value) {
+      if (formItemProps.value.hasOwnProperty(key)) {
+        formItemProps.value[key].display = true
       }
     }
   }
-  emit('expand', expanded)
+  emit('expand', unref(expanded))
 }
 
 const reset = () => {
   unref(elFormRef)?.resetFields()
-  formModel.value = initModel(formItemProps, unref(props.model))
-  emit('reset')
+  formModel.value = initModel(unref(formItemProps) as FormProps, unref(props.model))
+  emit('reset', unref(formModel))
 }
 
 const search = async () => {
   await unref(elFormRef)?.validate(async (isValid) => {
     if (isValid) {
-      emit('search')
+      emit('search', unref(formModel))
     }
   })
 }
@@ -141,55 +150,48 @@ const getFormItemExpose = (filed: string) => {
   return unref(formItemComponents)[filed]
 }
 
-const setComponentRefMap = (ref: any, filed: string) => {
-  formComponents.value[filed] = ref
-}
-
 const setFormItemRefMap = (ref: any, filed: string) => {
   formItemComponents.value[filed] = ref
+}
+
+const setFormConstant = (filed: string, val: any) => {
+  formConstant.value[filed] = val
 }
 
 defineExpose({
   getComponentExpose,
   getFormItemExpose,
-  formModel
+  setFormConstant,
+  formModel,
+  formConstant
 })
 
-// 监听表单结构化数组，重新生成formModel
-watch(
-  () => formItemProps,
-  (schema = {}) => {
-    formModel.value = initModel(schema, unref(formModel))
-  },
-  {
-    immediate: true,
-    deep: true
-  }
-)
-
 onMounted(() => {
+  setFormRules(unref(props.schema.formValidators), unref(formModel)).then((res) => {
+    formRules.value = res
+  })
   formRegister(unref(elFormRef)?.$parent, unref(elFormRef), useRouter())
   emit('register', formMethods)
-  // onExpand()
+  unref(props.schema.isSearch) && onExpand()
   nextTick(() => {
-    if (unref(lifecycle)?.onMounted !== void 0) {
-      unref(lifecycle).onMounted()
+    if (unref(lifecycle)?.mounted !== void 0 && isFunction(unref(lifecycle)?.mounted)) {
+      unref(lifecycle).mounted()
     }
   })
 })
 
 onUpdated(() => {
   nextTick(() => {
-    if (unref(lifecycle)?.onUpdated !== void 0) {
-      unref(lifecycle).onUpdated()
+    if (unref(lifecycle)?.updated !== void 0 && isFunction(unref(lifecycle)?.updated)) {
+      unref(lifecycle).updated()
     }
   })
 })
 
 onUnmounted(() => {
   nextTick(() => {
-    if (unref(lifecycle)?.onUnmounted !== void 0) {
-      unref(lifecycle).onUnmounted()
+    if (unref(lifecycle)?.unmounted !== void 0 && isFunction(unref(lifecycle)?.unmounted)) {
+      unref(lifecycle).unmounted()
     }
   })
 })
@@ -200,11 +202,11 @@ onUnmounted(() => {
     <div
       :class="[
         prefixCls,
-        'px-20px p-b-20px bg-[var(--el-color-white)] dark:bg-[var(--el-bg-color)] dark:border-[var(--el-border-color)] dark:border-1px'
+        'p-t-10px bg-[var(--el-color-white)] dark:bg-[var(--el-bg-color)] dark:border-[var(--el-border-color)] dark:border-1px'
       ]"
     >
       <ElRow>
-        <template v-for="formItem in schema?.formItems" :key="formItem.itemProps.prop">
+        <template v-for="(formItem, key) in schema.formItems" :key="formItem.itemProps.prop">
           <div
             v-if="formItem.componentProps.component === 'Divider'"
             :class="`${prefixCls}-header`"
@@ -239,7 +241,7 @@ onUnmounted(() => {
               "
               v-show="
                 (Object.keys(dividerCollapses).length !== 0 &&
-                  dividerCollapses[getGroupIndex(formItem.itemProps.prop)] &&
+                  !dividerCollapses[getGroupIndex(formItem.itemProps.prop)] &&
                   formItemProps[formItem.itemProps.prop].display) ||
                 (Object.keys(dividerCollapses).length === 0 &&
                   formItemProps[formItem.itemProps.prop].display)
@@ -247,23 +249,23 @@ onUnmounted(() => {
               v-bind="formItemProps[formItem.itemProps.prop].colProps"
             >
               <div
-                v-if="isDescription"
+                v-if="schema.isDescription"
                 class="bg-[var(--el-fill-color-light)] outline-1px outline-[var(--el-border-color-lighter)] outline-solid flex-1"
-                :class="direction === 'horizontal' ? 'flex items-stretch' : ''"
+                :class="schema.direction === 'vertical' ? '' : 'flex items-stretch'"
               >
                 <div
                   class="text-left px-8px py-11px font-700 color-[var(--el-text-color-regular)]"
                   :class="
-                    direction === 'horizontal'
-                      ? 'w-120px border-r-1px border-r-[var(--el-border-color-lighter)] border-r-solid'
-                      : 'border-b-1px border-b-[var(--el-border-color-lighter)] border-b-solid'
+                    schema.direction === 'vertical'
+                      ? 'border-b-1px border-b-[var(--el-border-color-lighter)] border-b-solid'
+                      : 'w-120px border-r-1px border-r-[var(--el-border-color-lighter)] border-r-solid'
                   "
                 >
                   {{ t(formItem.itemProps.label as string) }}
                 </div>
                 <div
                   class="flex-1 px-8px p-t-11px bg-[var(--el-bg-color)] color-[var(--el-text-color-primary)] text-size-14px"
-                  :class="direction === 'horizontal' ? '' : 'p-b-1px'"
+                  :class="schema.direction === 'vertical' ? 'p-b-1px' : ''"
                 >
                   <ElFormItem
                     v-if="formItem.componentProps.component"
@@ -271,69 +273,13 @@ onUnmounted(() => {
                     v-bind="formItem.itemProps"
                     label=""
                   >
-                    <component
-                      :is="componentMap[formItem.componentProps.component]"
-                      :ref="(el: any) => setComponentRefMap(el, formItem.itemProps.prop)"
-                      v-model="formModel[formItem.itemProps.prop]"
-                      v-bind="formItemProps[formItem.itemProps.prop].componentProps"
-                      v-on="
-                        setComponentEvents(
-                          formMethods,
-                          formItem.componentProps,
-                          formModel,
-                          formItemProps
-                        )
-                      "
-                    >
-                      <!-- 如果是select组件，自动渲染options-->
-                      <template
-                        v-if="
-                          'SELECT' === formItem.componentProps.component.toUpperCase() &&
-                          formItem.componentProps.options
-                        "
-                      >
-                        <template v-for="option in renderSelectOptions(formItem)" :key="option.key">
-                          <component :is="option" />
-                        </template>
-                      </template>
-                      <!-- 如果是RADIO组件，自动渲染options-->
-                      <template
-                        v-if="
-                          formItem.componentProps.component.toUpperCase().startsWith('RADIO') &&
-                          formItem.componentProps.options
-                        "
-                      >
-                        <template v-for="option in renderRadioOptions(formItem)" :key="option.key">
-                          <component :is="option" />
-                        </template>
-                      </template>
-                      <!-- 如果是CHECKBOX组件，自动渲染options-->
-                      <template
-                        v-if="
-                          formItem.componentProps.component.toUpperCase().startsWith('CHECKBOX') &&
-                          formItem.componentProps.options
-                        "
-                      >
-                        <template
-                          v-for="option in renderCheckboxOptions(formItem)"
-                          :key="option.key"
-                        >
-                          <component :is="option" />
-                        </template>
-                      </template>
-                      <template
-                        v-for="(value, key) in formItem.componentProps.slots"
-                        :key="key"
-                        #[key]
-                      >
-                        <component
-                          v-if="value.component"
-                          :is="componentMap[value.component]"
-                          v-bind="value"
-                        />
-                        <div v-else-if="value.html" v-html="value.html"></div>
-                      </template>
-                    </component>
+                    <RenderFormItem
+                      v-model="formModel"
+                      :formItem="formItem"
+                      :formItemProps="formItemProps"
+                      :form-methods="formMethods"
+                      :form-components="formComponents"
+                    />
                   </ElFormItem>
                 </div>
               </div>
@@ -342,64 +288,40 @@ onUnmounted(() => {
                 v-else-if="formItem.componentProps.component"
                 :ref="(el: any) => setFormItemRefMap(el, formItem.itemProps.prop)"
                 v-bind="formItem.itemProps"
-                :label="t(formItem.itemProps.label as string)"
               >
-                <component
-                  :is="componentMap[formItem.componentProps.component]"
-                  :ref="(el: any) => setComponentRefMap(el, formItem.itemProps.prop)"
-                  v-model="formModel[formItem.itemProps.prop]"
-                  v-bind="formItemProps[formItem.itemProps.prop].componentProps"
-                  v-on="
-                    setComponentEvents(
-                      formMethods,
-                      formItem.componentProps,
-                      formModel,
-                      formItemProps
-                    )
-                  "
-                >
-                  <!-- 如果是select组件，自动渲染options-->
-                  <template
-                    v-if="
-                      'SELECT' === formItem.componentProps.component.toUpperCase() &&
-                      formItem.componentProps.options
-                    "
-                  >
-                    <template v-for="option in renderSelectOptions(formItem)" :key="option.key">
-                      <component :is="option" />
-                    </template>
-                  </template>
-                  <!-- 如果是RADIO组件，自动渲染options-->
-                  <template
-                    v-if="
-                      formItem.componentProps.component.toUpperCase().startsWith('RADIO') &&
-                      formItem.componentProps.options
-                    "
-                  >
-                    <template v-for="option in renderRadioOptions(formItem)" :key="option.key">
-                      <component :is="option" />
-                    </template>
-                  </template>
-                  <!-- 如果是CHECKBOX组件，自动渲染options-->
-                  <template
-                    v-if="
-                      formItem.componentProps.component.toUpperCase().startsWith('CHECKBOX') &&
-                      formItem.componentProps.options
-                    "
-                  >
-                    <template v-for="option in renderCheckboxOptions(formItem)" :key="option.key">
-                      <component :is="option" />
-                    </template>
-                  </template>
-                  <template v-for="(value, key) in formItem.componentProps.slots" :key="key" #[key]>
-                    <component
-                      v-if="value.component"
-                      :is="componentMap[value.component]"
-                      v-bind="value"
+                <template #label="{ label }">
+                  <template v-if="formItem.itemProps.slots?.label">
+                    <RenderSlotItem
+                      v-if="isArray(formItem.itemProps.slots?.label)"
+                      :slotItems="formItem.itemProps.slots?.label"
+                      :parent-form-model="formModel"
+                      :parent-form-item-props="formItemProps"
                     />
-                    <div v-else-if="value.html" v-html="value.html"></div>
+                    <span
+                      v-else-if="formItem.itemProps.slots?.label.html"
+                      v-html="formItem.itemProps.slots?.label.html"
+                    ></span>
                   </template>
-                </component>
+                  <span v-else>{{ t(label as string) }}</span>
+                  <ElPopover v-if="formMode == 'demo'" placement="right" width="50vh">
+                    <template #reference>
+                      <Icon class="ml-5px mt-10px" icon="bi:question-circle-fill" :size="14" />
+                    </template>
+                    <ElScrollbar height="40vh">
+                      <VueJsonPretty
+                        :highlightMouseoverNode="true"
+                        :data="schema.formItems![key]"
+                      />
+                    </ElScrollbar>
+                  </ElPopover>
+                </template>
+                <RenderFormItem
+                  v-model="formModel"
+                  :formItem="formItem"
+                  :formItemProps="formItemProps"
+                  :form-methods="formMethods"
+                  :form-components="formComponents"
+                />
               </ElFormItem>
               <div v-else v-html="formItem.componentProps.slots.default.html"></div>
             </ElCol>
@@ -407,8 +329,8 @@ onUnmounted(() => {
         </template>
         <ElCol
           class="px-10px"
-          :class="isDescription ? 'py-10px' : ''"
-          v-if="isSearch"
+          :class="schema.isDescription ? 'py-10px' : ''"
+          v-if="schema.isSearch"
           :xl="6"
           :lg="6"
           :md="12"
@@ -416,7 +338,11 @@ onUnmounted(() => {
           :xs="24"
         >
           <ActionButton
-            :show-expand="expandIndex > 0"
+            :show-expand="
+              unref(expandIndex) > 0 &&
+              schema.formItems?.length !== undefined &&
+              schema.formItems?.length > unref(expandIndex)
+            "
             :expanded="expanded"
             @expand="onExpand"
             @reset="reset"

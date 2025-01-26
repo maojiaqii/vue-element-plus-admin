@@ -1,5 +1,6 @@
 import request from '@/axios'
 import type { UserType, UserLoginType } from './types'
+import { Tenancy } from '@/../types/global'
 
 interface RoleParams {
   roleName: string
@@ -9,12 +10,18 @@ export const loginApi = (data: UserLoginType): Promise<IResponse<UserType>> => {
   return request.post({ url: '/ua/login/userLogin', data })
 }
 
-export const routersApi = (): Promise<IResponse<AppCustomRouteRecordRaw[]>> => {
-  return request.get({ url: '/perms/myPermissions' })
+export const tenancysApi = (): Promise<IResponse<Tenancy[]>> => {
+  return request.get({ url: '/perms/myTenancys' })
+}
+
+export const routersApi = (
+  currentTenancy: string
+): Promise<IResponse<AppCustomRouteRecordRaw[]>> => {
+  return request.get({ url: '/perms/myPermissions', params: { currentTenancy: currentTenancy } })
 }
 
 export const loginOutApi = (): Promise<IResponse> => {
-  return request.get({ url: '/mock/user/loginOut' })
+  return request.get({ url: '/logout' })
 }
 
 export const getUserListApi = ({ params }: AxiosConfig) => {

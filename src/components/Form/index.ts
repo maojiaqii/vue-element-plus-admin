@@ -1,5 +1,4 @@
 import Form from './src/Form.vue'
-import type { FormSchema, FormSetProps } from './src/types'
 export type {
   ComponentName,
   InputComponentProps,
@@ -34,13 +33,11 @@ export type {
 } from './src/types'
 
 export interface FormExpose {
-  setValues: (data: Recordable) => void
-  delSchema: (field: string) => void
-  addSchema: (formSchema: FormSchema, index?: number) => void
-  setSchema: (schemaProps: FormSetProps[]) => void
   formModel: Recordable
   getComponentExpose: (field: string) => any
   getFormItemExpose: (field: string) => any
+  formConstant: Recordable
+  setFormConstant: (field: string, val: any) => any
 }
 
 export { Form }

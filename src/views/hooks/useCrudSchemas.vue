@@ -2,7 +2,7 @@
 import { CrudSchema, useCrudSchemas } from '@/hooks/web/useCrudSchemas'
 import { useI18n } from '@/hooks/web/useI18n'
 import { reactive } from 'vue'
-import { JsonEditor } from '@/components/JsonEditor'
+import { CodeEditor } from '@/components/CodeEditor'
 import { ContentWrap } from '@/components/ContentWrap'
 import { ElRow, ElCol } from 'element-plus'
 
@@ -158,27 +158,27 @@ const { allSchemas } = useCrudSchemas(crudSchemas)
     <ElRow :gutter="20">
       <ElCol :span="24">
         <ContentWrap title="原始数据数据" class="mt-20px">
-          <JsonEditor v-model="crudSchemas" />
+          <CodeEditor v-model="crudSchemas" />
         </ContentWrap>
       </ElCol>
       <ElCol :span="24">
         <ContentWrap title="查询组件数据结构" class="mt-20px">
-          <JsonEditor v-model="allSchemas.searchSchema" />
+          <CodeEditor v-model="allSchemas.searchSchema" />
         </ContentWrap>
       </ElCol>
       <ElCol :span="24">
         <ContentWrap title="表单组件数据结构" class="mt-20px">
-          <JsonEditor v-model="allSchemas.formSchema" />
+          <CodeEditor v-model="allSchemas.formSchema" />
         </ContentWrap>
       </ElCol>
       <ElCol :span="24">
         <ContentWrap title="表格组件数据结构" class="mt-20px">
-          <JsonEditor v-model="allSchemas.tableColumns" />
+          <CodeEditor v-model="allSchemas.tableColumns" />
         </ContentWrap>
       </ElCol>
       <ElCol :span="24">
         <ContentWrap title="详情组件数据结构" class="mt-20px">
-          <JsonEditor v-model="allSchemas.detailSchema" />
+          <CodeEditor v-model="allSchemas.detailSchema" />
         </ContentWrap>
       </ElCol>
     </ElRow>

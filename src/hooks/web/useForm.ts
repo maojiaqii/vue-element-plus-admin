@@ -1,6 +1,6 @@
 import type { Form, FormExpose } from '@/components/Form'
 import type { ElForm, ElFormItem } from 'element-plus'
-import { ref, unref, nextTick } from 'vue'
+import { ref, unref } from 'vue'
 import router from '@/router/index'
 import type { RouteRecordRaw, Router } from 'vue-router'
 import { isEmptyVal, isObject } from '@/utils/is'
@@ -8,7 +8,7 @@ import { useUserStore } from '@/store/modules/user'
 import { useAppStore } from '@/store/modules/app'
 import { usePermissionStore } from '@/store/modules/permission'
 import { useCaptchaStore } from '@/store/modules/captcha'
-import { loginApi, routersApi } from '@/api/login'
+import { loginApi, routersApi, tenancysApi } from '@/api/login'
 import { UserLoginType } from '@/api/login/types'
 
 const appStore = useAppStore()
@@ -40,8 +40,7 @@ export const useForm = () => {
     useRouterRef.value = useRouter
   }
 
-  const getForm = async () => {
-    await nextTick()
+  const getForm = () => {
     const form = unref(formRef)
     if (!form) {
       console.error('The form is not registered. Please use the register method to register')
@@ -56,8 +55,8 @@ export const useForm = () => {
      * @param field 表单项唯一标识
      * @returns component instance
      */
-    getComponentExpose: async (field: string) => {
-      const form = await getForm()
+    getComponentExpose: (field: string) => {
+      const form = getForm()
       return form?.getComponentExpose(field)
     },
 
@@ -66,8 +65,8 @@ export const useForm = () => {
      * @param field 表单项唯一标识
      * @returns formItem instance
      */
-    getFormItemExpose: async (field: string) => {
-      const form = await getForm()
+    getFormItemExpose: (field: string) => {
+      const form = getForm()
       return form?.getFormItemExpose(field) as ComponentRef<typeof ElFormItem>
     },
 
@@ -75,22 +74,40 @@ export const useForm = () => {
      * @description 获取ElForm组件的实例
      * @returns ElForm instance
      */
-    getElFormExpose: async () => {
-      await getForm()
+    getElFormExpose: () => {
+      getForm()
       return unref(elFormRef)
     },
 
     getFormExpose: async () => {
-      await getForm()
+      getForm()
       return unref(formRef)
+    },
+
+    setFormConstantExpose: (filed: string, val: any) => {
+      const form = getForm()
+      form?.setFormConstant(filed, val)
+    },
+
+    getFormConstantExpose: () => {
+      const form = getForm()
+      return form?.formConstant
+    },
+
+    /**
+     * @description 校验表单
+     */
+    formValidate: () => {
+      const elFormReff = unref(elFormRef)
+      return elFormReff?.validate()
     },
 
     /**
      * @description 获取表单数据
      * @returns form data
      */
-    getFormData: async <T = Recordable>(filterEmptyVal = true): Promise<T> => {
-      const form = await getForm()
+    getFormData: <T = Recordable>(filterEmptyVal = true): T => {
+      const form = getForm()
       const model = form?.formModel as any
       if (filterEmptyVal) {
         // 使用reduce过滤空值，并返回一个新对象
@@ -136,10 +153,24 @@ export const useForm = () => {
           userStore.setRememberMe(unref(formData.remember))
           // 是否使用动态路由
           if (appStore.getDynamicRouter) {
-            const resRouter = await routersApi()
-            const routers = resRouter.data || []
-            userStore.setRoleRouters(routers)
-            await permissionStore.generateRoutes('server', routers).catch(() => {})
+            const resTenancys = await tenancysApi()
+            const tenancys = resTenancys.data || []
+            permissionStore.setTenancys(tenancys)
+            if (tenancys.length > 0) {
+              const currentTenancy = permissionStore.getCurrentTenancy
+              const tenancy =
+                currentTenancy &&
+                tenancys.findIndex((e) => e.tenancy_id == currentTenancy.tenancy_id) !== -1
+                  ? currentTenancy
+                  : tenancys[0]
+              const resRouter = await routersApi(tenancy.tenancy_id)
+              if (resRouter.code == 200) {
+                const routers = resRouter.data || []
+                permissionStore.setCurrentTenancy(tenancy)
+                userStore.setRoleRouters(routers)
+                await permissionStore.generateRoutes('server', routers).catch(() => {})
+              }
+            }
           } else {
             await permissionStore.generateRoutes('static').catch(() => {})
           }
