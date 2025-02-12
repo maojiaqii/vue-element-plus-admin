@@ -84,7 +84,7 @@
         "type": "primary",
         "staticText": "登录",
         "on": {
-          "click": "() => {\n        this.formItems.button1.componentProps.loading = true\n        this.login()\n        }"
+          "click": "() => {\n  this.login()\n        }"
         }
       }
     }

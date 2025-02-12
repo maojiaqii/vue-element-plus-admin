@@ -18,7 +18,7 @@ export const useRenderRadio = () => {
         <Com
           {...other}
           disabled={option[disabledAlias || 'disabled']}
-          label={option[valueAlias || 'value']}
+          value={option[valueAlias || 'value']}
         >
           {option[labelAlias || 'label']}
         </Com>

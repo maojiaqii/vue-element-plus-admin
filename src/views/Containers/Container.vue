@@ -2,16 +2,18 @@
 import { Container } from '@/components/Container'
 import { onMounted, ref, unref } from 'vue'
 import { useRouter } from 'vue-router'
-import { getTableInfoApi, getFormInfoApi } from '@/api/common'
+import { getTableInfoApi, getFormInfoApi, getDictDataApi } from '@/api/common'
 import { ElMessage } from 'element-plus'
 import { SearchProps } from '@/components/Search'
 import { TableProps } from '@/components/Table'
+import { SideTreeProps } from '@/components/Container/types'
+import { listToTree } from '@/utils/tree'
 
 const { currentRoute } = useRouter()
 
 const search = ref<SearchProps>()
 const table = ref<TableProps>()
-const side = ref()
+const side = ref<SideTreeProps>()
 const params = unref(currentRoute).meta.params
 
 const renderSearch = async (searchCode: string) => {
@@ -32,9 +34,31 @@ const renderTable = async (tableCode: string) => {
   }
 }
 
+const renderSide = async (dictCode: string) => {
+  const res = await getDictDataApi({ dictCode })
+  if (res.code != 200) {
+    ElMessage.error(res.msg)
+  } else {
+    side.value = {
+      alias: res.data.dictCode,
+      data: listToTree(res.data.data, {
+        id: res.data.dictValue,
+        children: 'children',
+        pid: res.data.dictPid
+      }),
+      nodeKey: res.data.dictValue,
+      props: {
+        children: 'children',
+        label: res.data.dictLabel
+      }
+    }
+  }
+}
+
 onMounted(() => {
   params?.search && renderSearch(params.search as string)
   params?.table && renderTable(params.table as string)
+  params?.side && renderSide(params.side as string)
 })
 </script>
 

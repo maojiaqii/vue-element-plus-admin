@@ -233,12 +233,9 @@ onUnmounted(() => {
               "
             />
           </div>
-          <ElCollapseTransition>
+          <ElCollapseTransition v-else>
             <ElCol
-              v-if="
-                formItem.componentProps.component !== 'Divider' &&
-                formItemProps[formItem.itemProps.prop].hidden
-              "
+              v-if="formItemProps[formItem.itemProps.prop].hidden"
               v-show="
                 (Object.keys(dividerCollapses).length !== 0 &&
                   !dividerCollapses[getGroupIndex(formItem.itemProps.prop)] &&

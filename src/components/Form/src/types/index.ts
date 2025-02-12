@@ -25,7 +25,7 @@ import { IEditorConfig } from '@wangeditor/editor'
 import { IAgreeProps } from '@/components/IAgree'
 import { CSSProperties } from 'vue'
 import { componentMap } from '../helper/componentMap'
-import {Dict} from "@/api/common/types";
+import { Dict } from '@/api/common/types'
 
 export interface PlaceholderModel {
   placeholder?: string

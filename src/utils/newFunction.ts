@@ -3,6 +3,7 @@ import { getJsInfoApi } from '@/api/common'
 import createDialog from '@/hooks/web/useDialog'
 import createDrawer from '@/hooks/web/useDrawer'
 import request from '@/axios'
+import SparkMD5 from 'spark-md5'
 import * as treeUtil from '@/utils/tree'
 import {
   ElMessageBox,
@@ -55,7 +56,8 @@ export const newFunction = (click: any, binds?: Recordable): Promise<FuncTypes> 
               request: request,
               isUtil: isUtil,
               treeUtil: treeUtil,
-              t: t
+              t: t,
+              sparkMD5: new SparkMD5()
             })(),
             params: clickObj.params || {}
           })
@@ -76,7 +78,8 @@ export const newFunction = (click: any, binds?: Recordable): Promise<FuncTypes> 
           request: request,
           isUtil: isUtil,
           treeUtil: treeUtil,
-          t: t
+          t: t,
+          sparkMD5: new SparkMD5()
         })()
       })
     } else if (isUtil.isFunction(click)) {
@@ -92,7 +95,8 @@ export const newFunction = (click: any, binds?: Recordable): Promise<FuncTypes> 
           request: request,
           isUtil: isUtil,
           treeUtil: treeUtil,
-          t: t
+          t: t,
+          sparkMD5: new SparkMD5()
         })
       })
     }

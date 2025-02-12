@@ -18,7 +18,7 @@ function createDialog(options: Recordable) {
 
     const state = reactive({
       ...options,
-      maxHeight: options.maxHeight || '400px',
+      maxHeight: options.height || '400px',
       width: options.width || '50%',
       fullscreen: false,
       destroyOnClose: true,

@@ -103,7 +103,7 @@ export default defineComponent({
     },
     height: propTypes.oneOfType([Number, String]),
     maxHeight: propTypes.oneOfType([Number, String]),
-    stripe: propTypes.bool.def(false),
+    stripe: propTypes.bool.def(true),
     border: propTypes.bool.def(true),
     size: {
       type: String as PropType<ComponentSize>,
@@ -422,7 +422,7 @@ export default defineComponent({
       setProps({ columns })
     }
 
-    const setQueryParams = (params: Recordable = {}) => {
+    const setQueryParams = (params: Recordable<string, any> = {}) => {
       unref(getProps).query?.tableCode &&
         setProps({
           query: {
@@ -455,7 +455,7 @@ export default defineComponent({
     const pagination = computed(() => {
       return Object.assign(
         {
-          small: false,
+          size: 'default',
           background: false,
           pagerCount: 7,
           layout: 'sizes, prev, pager, next, jumper, ->, total',
