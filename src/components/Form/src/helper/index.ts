@@ -137,7 +137,7 @@ export const setComponentEvents = (
   for (const key in onEvents) {
     const event = onEvents[key]
     isCustomFunction(event) &&
-      (newOnEvents[`${key}`] = () => {
+      (newOnEvents[`${key}`] = (s_params) => {
         newFunction(event, {
           formData: formData,
           formItems: formItems,
@@ -145,7 +145,7 @@ export const setComponentEvents = (
           parentFormData: parentFormData,
           parentFormItems: parentFormItems,
           parentComponent: parentComponent
-        }).then((res) => (res.params ? res.func(res.params) : res.func()))
+        }).then((res) => (res.params ? res.func({ ...res.params, s_params }) : res.func(s_params)))
       })
   }
   return newOnEvents
