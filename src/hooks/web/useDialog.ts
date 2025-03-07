@@ -187,7 +187,7 @@ function createDialog(options: Recordable) {
 
     // 使用 nextTick 在渲染后操作 DOM
     nextTick(() => {
-      const footer = document.querySelector(`.${dialogClass} .el-dialog__footer`)
+      const footer = document.querySelector(`.${dialogClass} > .el-dialog__footer`)
       if (footer && footerVNodes.length === 0) {
         footer.style.display = 'none' // 隐藏 footer
       }
