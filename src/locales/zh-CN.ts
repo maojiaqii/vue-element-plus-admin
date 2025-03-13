@@ -24,6 +24,8 @@ export default {
     nextLabel: '下一步',
     skipLabel: '跳过',
     doneLabel: '结束',
+    copySuccess: '复制成功',
+    copyFailed: '复制失败',
     menu: '菜单',
     menuDes: '以路由的结构渲染的菜单栏',
     collapse: '展开缩收',
@@ -117,8 +119,6 @@ export default {
     cutMenu: '切割菜单',
     copy: '拷贝',
     clearAndReset: '清除缓存并且重置',
-    copySuccess: '拷贝成功',
-    copyFailed: '拷贝失败',
     footer: '页脚',
     uniqueOpened: '菜单手风琴',
     tagsViewIcon: '标签页图标',
@@ -588,5 +588,11 @@ export default {
   },
   avatarsDemo: {
     title: '头像列表组件，基于element-plus的Avatar组件二次封装'
+  },
+  ai: {
+    title: 'AI 助手',
+    hello: '你好',
+    welcome: '有什么可以帮助你的吗？',
+    inputPlaceholder: '输入消息...'
   }
 }

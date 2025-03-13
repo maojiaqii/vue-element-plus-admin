@@ -3,7 +3,8 @@ import { computed } from 'vue'
 import { useAppStore } from '@/store/modules/app'
 import { ConfigGlobal } from '@/components/ConfigGlobal'
 import { useDesign } from '@/hooks/web/useDesign'
-import { ElNotification } from 'element-plus'
+
+import AiChat from '@/components/AiChat'
 
 const { getPrefixCls } = useDesign()
 

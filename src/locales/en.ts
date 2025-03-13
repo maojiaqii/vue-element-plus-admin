@@ -24,6 +24,8 @@ export default {
     nextLabel: 'Next',
     skipLabel: 'Jump',
     doneLabel: 'End',
+    copySuccess: 'Copy success',
+    copyFailed: 'Copy failed',
     menu: 'Menu',
     menuDes: 'Menu bar rendered in routed structure',
     collapse: 'Collapse',
@@ -117,8 +119,6 @@ export default {
     cutMenu: 'Cut Menu',
     copy: 'Copy',
     clearAndReset: 'Clear cache and reset',
-    copySuccess: 'Copy success',
-    copyFailed: 'Copy failed',
     footer: 'Footer',
     uniqueOpened: 'Unique opened',
     tagsViewIcon: 'Tags view icon',
@@ -598,5 +598,11 @@ export default {
   avatarsDemo: {
     title:
       'Avatar component for avatar list, secondary packaging based on element plus Avatar component'
+  },
+  ai: {
+    title: 'AI Assistant',
+    hello: 'Hello',
+    welcome: 'How can I help you?',
+    inputPlaceholder: 'Type a message...'
   }
 }

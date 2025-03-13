@@ -36,3 +36,8 @@ VITE_USE_CSS_SPLIT=true
 
 # 是否使用在线图标
 VITE_USE_ONLINE_ICON=false
+
+# ai配置
+VITE_USE_AI=true
+VITE_AI_URL=http://localhost:11434/api/generate
+VITE_AI_MODEL=deepseek-r1:14b

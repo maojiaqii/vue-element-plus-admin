@@ -20,11 +20,13 @@ const toggleFullscreen = () => {
 </script>
 
 <template>
-  <div :class="prefixCls" @click="toggleFullscreen">
+  <div :class="prefixCls">
     <Icon
       :size="18"
       :icon="isFullscreen ? 'zmdi:fullscreen-exit' : 'zmdi:fullscreen'"
       :color="color"
+      class="cursor-pointer"
+      @click="toggleFullscreen"
     />
   </div>
 </template>

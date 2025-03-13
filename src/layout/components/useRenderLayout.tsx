@@ -110,7 +110,6 @@ export const useRenderLayout = () => {
                 <TagsView class="layout-border__bottom layout-border__top"></TagsView>
               ) : undefined}
             </div>
-
             <AppView></AppView>
           </ElScrollbar>
         </div>
