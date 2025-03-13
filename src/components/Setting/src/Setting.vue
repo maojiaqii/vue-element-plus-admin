@@ -158,7 +158,7 @@ const themeChange = () => {
 <template>
   <div
     :class="prefixCls"
-    class="fixed top-[45%] right-0 w-40px h-40px flex items-center justify-center bg-[var(--el-color-primary)] cursor-pointer z-10"
+    class="fixed top-[45%] right-0 w-40px h-40px flex items-center justify-center bg-[var(--el-color-primary)] cursor-pointer z-3000"
     @click="drawer = true"
   >
     <Icon icon="ant-design:setting-outlined" color="#fff" />

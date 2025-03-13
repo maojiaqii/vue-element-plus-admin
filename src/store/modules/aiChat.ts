@@ -64,7 +64,7 @@ export const useAiChatStore = defineStore('aiChat', {
       }
     },
     deleteMessage(index: number) {
-      this.messages.splice(index, 1);
+      this.messages.splice(index, 1)
     },
     clearMessages() {
       this.messages = []

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, unref } from 'vue'
-import { ElButton, ElInput, ElScrollbar, ElAvatar, ElMessage } from 'element-plus'
+import { ElButton, ElInput, ElScrollbar, ElAvatar, ElMessage, ElPopconfirm } from 'element-plus'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Icon } from '@/components/Icon'
 import { useAiChatStore } from '@/store/modules/aiChat'
@@ -321,14 +321,17 @@ const toggleThinking = (messageId: string) => {
                 title="复制"
                 class="cursor-pointer"
               />
-              <Icon
-                icon="ri:delete-bin-line"
-                color="var(--top-header-text-color)"
-                :size="16"
-                @click="deleteMessage(index)"
-                title="删除"
-                class="cursor-pointer"
-              />
+              <ElPopconfirm title="确定删除?" @confirm="deleteMessage(index)">
+                <template #reference>
+                  <Icon
+                    icon="ri:delete-bin-line"
+                    color="var(--top-header-text-color)"
+                    :size="16"
+                    title="删除"
+                    class="cursor-pointer"
+                  />
+                </template>
+              </ElPopconfirm>
             </div>
           </div>
         </div>
@@ -352,9 +355,13 @@ const toggleThinking = (messageId: string) => {
           >
             <Icon :icon="isGenerating ? 'tdesign:stop-circle' : 'ri:send-plane-fill'" />
           </ElButton>
-          <ElButton type="danger" @click="clearChat">
-            <Icon icon="ri:delete-bin-line" />
-          </ElButton>
+          <ElPopconfirm title="确定清空聊天内容?" @confirm="clearChat">
+            <template #reference>
+              <ElButton type="danger">
+                <Icon icon="ri:delete-bin-line" />
+              </ElButton>
+            </template>
+          </ElPopconfirm>
         </div>
       </div>
     </div>
@@ -366,7 +373,7 @@ const toggleThinking = (messageId: string) => {
   position: fixed;
   bottom: 20px;
   right: 20px;
-  z-index: 9999;
+  z-index: 2006;
 }
 
 .ai-chat-dialog {
