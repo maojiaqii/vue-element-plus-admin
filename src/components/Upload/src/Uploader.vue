@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, PropType, reactive, nextTick, computed, unref } from 'vue'
-import { ElUpload, ElTable, ElTableColumn, ElMessage, ElTag } from 'element-plus'
+import { ElUpload, ElTable, ElTableColumn, ElMessage, ElTag, ElPopconfirm } from 'element-plus'
 import { propTypes } from '@/utils/propTypes'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useConfigGlobal } from '@/hooks/web/useConfigGlobal'
@@ -11,6 +11,7 @@ import { mergeApi, uploadCheckApi, uploadApi, downLoadCountApi, downLoadFileApi 
 import { isArray } from '@/utils/is'
 import { formatToDateTime } from '@/utils/dateUtil'
 import { FileInfo, UserFileInfo } from '@/components/Upload/help/types'
+import { Icon } from '@/components/Icon'
 
 const { getPrefixCls } = useDesign()
 
@@ -505,12 +506,13 @@ onMounted(() => {})
         @click="pauseAct"
         >暂停</base-button
       >
-      <base-button
-        v-if="hoverRow.status != 'md5' && !props.disabled"
-        type="primary"
-        @click="deleteAct"
-        >删除</base-button
-      >
+      <ElPopconfirm title="确定删除?" @confirm="deleteAct">
+        <template #reference>
+          <base-button v-if="hoverRow.status != 'md5' && !props.disabled" type="primary"
+            >删除</base-button
+          >
+        </template>
+      </ElPopconfirm>
       <base-button
         v-if="hoverRow.status == 'success' || hoverRow.status == 'downloadFail'"
         type="primary"

@@ -150,7 +150,7 @@ function createDialog(options: Recordable) {
           }
           return createVNode(
             ElScrollbar,
-            { style: { height: dialogHeight.value } },
+            { style: { height: dialogHeight.value }, class: 'useDialog-scrollbar' },
             {
               default: () => {
                 return createVNode('div', {}, vNodes)

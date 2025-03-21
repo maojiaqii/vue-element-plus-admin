@@ -86,7 +86,7 @@ export default defineComponent({
             unref(layout) === 'top' || unref(layout) === 'cutMenu' ? false : unref(collapse)
           }
           uniqueOpened={unref(layout) === 'top' ? false : unref(uniqueOpened)}
-          backgroundColor="var(--left-menu-bg-color)"
+          backgroundColor="var(--el-bg-color-overlay)"
           textColor="var(--left-menu-text-color)"
           activeTextColor="var(--left-menu-text-active-color)"
           popperClass={
@@ -111,7 +111,7 @@ export default defineComponent({
         id={prefixCls}
         class={[
           `${prefixCls} ${prefixCls}__${unref(menuMode)}`,
-          'h-[100%] overflow-hidden flex-col bg-[var(--left-menu-bg-color)]',
+          'h-[100%] overflow-hidden flex-col bg-[var(--el-bg-color-overlay)]',
           {
             'w-[var(--left-menu-min-width)]': unref(collapse) && unref(layout) !== 'cutMenu',
             'w-[var(--left-menu-max-width)]': !unref(collapse) && unref(layout) !== 'cutMenu'
@@ -181,6 +181,7 @@ export default defineComponent({
 
     & > .is-active,
     & > .is-active > .@{elNamespace}-sub-menu__title {
+      border-radius: 8px !important;
       position: relative;
       background-color: var(--left-menu-collapse-bg-active-color) !important;
     }

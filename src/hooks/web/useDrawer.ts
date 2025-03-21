@@ -124,7 +124,7 @@ function createDrawer(options: Recordable) {
           }
           return createVNode(
             ElScrollbar,
-            { style: { height: '100%' } },
+            { style: { height: '100%' }, class: 'useDrawer-scrollbar' },
             {
               default: () => {
                 return createVNode('div', {}, vNodes)

@@ -399,71 +399,6 @@ watch(
         :hover-color="isDark ? '#fff' : 'var(--el-color-black)'"
       />
     </span>
-    <ContextMenu
-      trigger="click"
-      :schema="[
-        {
-          icon: 'ant-design:sync-outlined',
-          label: t('common.reload'),
-          command: () => {
-            refreshSelectedTag(selectedTag)
-          }
-        },
-        {
-          icon: 'ant-design:close-outlined',
-          label: t('common.closeTab'),
-          disabled: !!visitedViews?.length && selectedTag?.meta.affix,
-          command: () => {
-            closeSelectedTag(selectedTag!)
-          }
-        },
-        {
-          divided: true,
-          icon: 'ant-design:vertical-right-outlined',
-          label: t('common.closeTheLeftTab'),
-          disabled: !!visitedViews?.length && selectedTag?.fullPath === visitedViews[0].fullPath,
-          command: () => {
-            closeLeftTags()
-          }
-        },
-        {
-          icon: 'ant-design:vertical-left-outlined',
-          label: t('common.closeTheRightTab'),
-          disabled:
-            !!visitedViews?.length &&
-            selectedTag?.fullPath === visitedViews[visitedViews.length - 1].fullPath,
-          command: () => {
-            closeRightTags()
-          }
-        },
-        {
-          divided: true,
-          icon: 'ant-design:tag-outlined',
-          label: t('common.closeOther'),
-          command: () => {
-            closeOthersTags()
-          }
-        },
-        {
-          icon: 'ant-design:line-outlined',
-          label: t('common.closeAll'),
-          command: () => {
-            closeAllTags()
-          }
-        }
-      ]"
-    >
-      <span
-        :class="`${prefixCls}__tool`"
-        class="w-[var(--tags-view-height)] h-[var(--tags-view-height)] flex items-center justify-center cursor-pointer block"
-      >
-        <Icon
-          icon="ant-design:setting-outlined"
-          color="var(--el-text-color-placeholder)"
-          :hover-color="isDark ? '#fff' : 'var(--el-color-black)'"
-        />
-      </span>
-    </ContextMenu>
   </div>
 </template>
 
@@ -471,6 +406,8 @@ watch(
 @prefix-cls: ~'@{namespace}-tags-view';
 
 .@{prefix-cls} {
+  background: var(--el-bg-color-overlay);
+
   :deep(.@{elNamespace}-scrollbar__view) {
     height: 100%;
   }
@@ -510,8 +447,16 @@ watch(
     margin-left: 4px;
     font-size: 12px;
     cursor: pointer;
-    border: 1px solid #d9d9d9;
-    border-radius: 2px;
+    border: 1px solid var(--el-border-color);
+    border-radius: 8px;
+    background: var(--el-fill-color-light);
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 2px 6px -2px rgba(0, 0, 0, 0.08);
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.12);
+    }
 
     &--close {
       position: absolute;

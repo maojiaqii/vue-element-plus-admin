@@ -150,7 +150,11 @@ export default defineComponent({
         v-click-outside={clickOut}
         class={[
           prefixCls,
-          'relative bg-[var(--left-menu-bg-color)] top-1px layout-border__right',
+          'relative bg-[var(--el-bg-color-overlay)]',
+          'rounded-[16px] mt-0.5 mr-0.5',
+          'shadow-[4px_0_16px_-2px_rgba(64,158,255,0.15)]',
+          'hover:shadow-[8px_0_24px_-4px_rgba(64,158,255,0.15)]',
+          'transition-shadow duration-300 ease-in-out',
           {
             'w-[var(--tab-menu-max-width)]': !unref(collapse),
             'w-[var(--tab-menu-min-width)]': unref(collapse)
@@ -174,6 +178,7 @@ export default defineComponent({
                     class={[
                       `${prefixCls}__item`,
                       'text-center text-12px relative py-12px cursor-pointer',
+                      'transition-all duration-300 ease-in-out hover:translate-x-1',
                       {
                         'is-active': isActive(v.path)
                       }
@@ -197,7 +202,8 @@ export default defineComponent({
         <div
           class={[
             `${prefixCls}--collapse`,
-            'text-center h-[var(--tab-menu-collapse-height)] leading-[var(--tab-menu-collapse-height)] cursor-pointer'
+            'transition-all duration-300 ease-in-out hover:translate-y--1',
+            'rounded-[16px] text-center h-[var(--tab-menu-collapse-height)] leading-[var(--tab-menu-collapse-height)] cursor-pointer'
           ]}
           onClick={setCollapse}
         >
@@ -206,10 +212,14 @@ export default defineComponent({
         <Menu
           class={[
             '!absolute top-0 z-3000',
+            'rounded-[16px] overflow-hidden',
+            'shadow-[0_4px_12px_-2px_rgba(0,0,0,0.08)]',
+            'hover:shadow-[0_8px_24px_-4px_rgba(0,0,0,0.12)]',
+            'transform transition-all duration-300 ease-in-out',
             {
               '!left-[var(--tab-menu-min-width)]': unref(collapse),
               '!left-[var(--tab-menu-max-width)]': !unref(collapse),
-              '!w-[var(--left-menu-max-width)] border-r-1 border-r-solid border-[var(--el-border-color)]':
+              '!w-[var(--left-menu-max-width)] border-r-1 border-r-solid border-[var(--el-border-color)] bg-[var(--left-menu-bg-color)]':
                 unref(showMenu) || unref(fixedMenu),
               '!w-0': !unref(showMenu) && !unref(fixedMenu)
             }

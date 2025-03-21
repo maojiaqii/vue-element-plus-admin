@@ -76,7 +76,7 @@ const toPage = (path: string) => {
           </div>
         </ElDropdownItem>
         <ElDropdownItem>
-          <ElDropdown :class="prefixCls" placement="left">
+          <ElDropdown placement="left">
             <div>{{ t('common.platform') }}</div>
             <template #dropdown>
               <ElDropdownMenu v-for="tenancy in tenancys" :key="tenancy.tenancy_id">

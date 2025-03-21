@@ -199,12 +199,7 @@ onUnmounted(() => {
 
 <template>
   <ElForm ref="elFormRef" v-bind="schema" :model="formModel" :rules="formRules" :class="prefixCls">
-    <div
-      :class="[
-        prefixCls,
-        'p-t-10px bg-[var(--el-color-white)] dark:bg-[var(--el-bg-color)] dark:border-[var(--el-border-color)] dark:border-1px'
-      ]"
-    >
+    <div :class="[prefixCls, 'p-t-10px bg-[var(--el-bg-color-overlay)]']">
       <ElRow>
         <template v-for="(formItem, key) in schema.formItems" :key="formItem.itemProps.prop">
           <div

@@ -156,17 +156,22 @@ const themeChange = () => {
 </script>
 
 <template>
+  <!-- 设置按钮添加悬浮动画 -->
   <div
-    :class="prefixCls"
+    :class="[prefixCls, 'setting-btn']"
     class="fixed top-[45%] right-0 w-40px h-40px flex items-center justify-center bg-[var(--el-color-primary)] cursor-pointer z-3000"
     @click="drawer = true"
   >
-    <Icon icon="ant-design:setting-outlined" color="#fff" />
+    <Icon icon="ant-design:setting-outlined" class="setting-icon" color="#fff" />
   </div>
 
-  <ElDrawer v-model="drawer" direction="rtl" size="350px" :z-index="4000">
+  <!-- Drawer添加过渡效果 -->
+  <ElDrawer v-model="drawer" direction="rtl" size="350px" :z-index="4000" class="setting-drawer">
     <template #header>
-      <span class="text-16px font-700">{{ t('setting.projectSetting') }}</span>
+      <span class="text-16px font-700 flex items-center">
+        <Icon icon="ant-design:setting-outlined" class="mr-2" />
+        {{ t('setting.projectSetting') }}
+      </span>
     </template>
 
     <div class="text-center">
@@ -245,6 +250,19 @@ const themeChange = () => {
         {{ t('setting.clearAndReset') }}
       </BaseButton>
     </div>
+    <!-- 按钮组样式优化 -->
+    <div class="setting-footer">
+      <BaseButton type="primary" class="w-full setting-btn-copy" @click="copyConfig">
+        <Icon icon="ep:document-copy" class="mr-1" />
+        {{ t('setting.copy') }}
+      </BaseButton>
+      <div class="mt-8px">
+        <BaseButton type="danger" class="w-full setting-btn-reset" @click="clear">
+          <Icon icon="ep:refresh" class="mr-1" />
+          {{ t('setting.clearAndReset') }}
+        </BaseButton>
+      </div>
+    </div>
   </ElDrawer>
 </template>
 
@@ -253,5 +271,82 @@ const themeChange = () => {
 
 .@{prefix-cls} {
   border-radius: 6px 0 0 6px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateX(-5px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+
+    .setting-icon {
+      animation: rotate 2s linear infinite;
+    }
+  }
+}
+
+.setting-drawer {
+  :deep(.el-drawer__header) {
+    margin-bottom: 0;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--el-border-color-light);
+  }
+
+  :deep(.el-drawer__body) {
+    padding: 20px;
+  }
+
+  :deep(.el-divider) {
+    margin: 24px 0 16px;
+
+    .el-divider__text {
+      font-size: 15px;
+      font-weight: 500;
+    }
+  }
+}
+
+.setting-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: var(--el-bg-color);
+  border-top: 1px solid var(--el-border-color-light);
+
+  .setting-btn-copy,
+  .setting-btn-reset {
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// 主题切换器样式优化
+:deep(.el-radio-button__inner) {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+  }
+}
+
+// 颜色选择器样式优化
+:deep(.color-picker) {
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.1);
+  }
 }
 </style>

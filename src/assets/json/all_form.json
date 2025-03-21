@@ -2108,7 +2108,7 @@
           }
         ],
         "mode": "edit",
-        "border": false,
+        "border": true,
         "showEditAction": true,
         "maxHeight": 300,
         "columns": [

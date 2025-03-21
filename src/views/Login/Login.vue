@@ -70,10 +70,7 @@ const themeChange = () => {
             <div
               class="h-full flex items-center m-auto w-[100%] at-2xl:max-w-500px at-xl:max-w-500px at-md:max-w-500px at-lg:max-w-500px"
             >
-              <Form
-                :schema="data"
-                class="p-20px h-auto m-auto lt-xl:rounded-3xl lt-xl:light:bg-white"
-              />
+              <Form :schema="data" class="w-full" />
             </div>
           </Transition>
         </div>
@@ -100,6 +97,32 @@ const themeChange = () => {
       background-position: center;
       background-repeat: no-repeat;
       content: '';
+    }
+  }
+
+  :deep(.el-form) {
+    position: relative;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .dark & {
+      border-color: rgba(255, 255, 255, 0.1);
+
+      &:hover {
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+      }
     }
   }
 }

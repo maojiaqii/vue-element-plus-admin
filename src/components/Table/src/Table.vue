@@ -842,12 +842,13 @@ export default defineComponent({
             </>
           )}
           {unref(getProps).pagination ? (
-            <ElPagination
-              v-model:pageSize={pageSizeRef.value}
-              v-model:currentPage={currentPageRef.value}
-              class="mt-10px"
-              {...unref(pagination)}
-            ></ElPagination>
+            <div class="flex justify-end items-center mt-10px">
+              <ElPagination
+                v-model:pageSize={pageSizeRef.value}
+                v-model:currentPage={currentPageRef.value}
+                {...unref(pagination)}
+              ></ElPagination>
+            </div>
           ) : undefined}
         </div>
       )

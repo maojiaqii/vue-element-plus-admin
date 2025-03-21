@@ -1,5 +1,5 @@
 :root {
-  --login-bg-color: #293146;
+  --login-bg-color: var(--el-bg-color-overlay);
 
   /* left menu start */
   --left-menu-max-width: 200px;
@@ -26,7 +26,7 @@
   /* logo end */
 
   /* header start */
-  --top-header-bg-color: '#fff';
+  --top-header-bg-color:  var(--el-bg-color-overlay);
 
   --top-header-text-color: 'inherit';
 

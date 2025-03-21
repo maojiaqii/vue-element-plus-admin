@@ -24,7 +24,7 @@ const getCaches = computed((): string[] => {
     <router-view>
       <template #default="{ Component, route }">
         <keep-alive :include="getCaches">
-          <component :is="Component" :key="route.fullPath" />
+          <component :is="Component" :key="route.fullPath" class="h-full overflow-auto" />
         </keep-alive>
       </template>
     </router-view>
