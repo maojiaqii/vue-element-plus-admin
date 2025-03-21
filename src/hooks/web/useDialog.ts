@@ -39,33 +39,33 @@ function createDialog(options: Recordable) {
     const dialogClass = 'M' + toAnyString()
     const footerVNodes: VNode[] = []
 
-    watch(
-      () => fullscreem.value,
-      async (val: boolean) => {
-        await nextTick()
-        if (val) {
-          const windowHeight = document.documentElement.offsetHeight
-          dialogHeight.value = `${windowHeight - 55 - 60 - 63}px`
-          dialogWidth.value = '100%'
-        } else {
-          dialogHeight.value = isUtil.isNumber(state.maxHeight)
-            ? `${state.maxHeight}px`
-            : state.maxHeight
-          dialogWidth.value = state.width
-        }
-      },
-      {
-        immediate: true
-      }
-    )
-
     const closeDialog = () => {
       closeFunc.value.close()
       resolve(unref(contentRef))
     }
 
-    const toggleFull = () => {
+    const toggleFull = async () => {
       fullscreem.value = !fullscreem.value
+      await nextTick()
+      const dia = document.querySelector(`.${dialogClass}`)
+      if (fullscreem.value) {
+        const windowHeight = document.documentElement.offsetHeight
+        dialogHeight.value = `${windowHeight - 185}px`
+        if (dia) {
+          dia.style.setProperty('width', '100%', 'important')
+          dia.style.setProperty('margin-top', '0', 'important')
+          dia.style.setProperty('margin-bottom', '0', 'important')
+        }
+      } else {
+        dialogHeight.value = isUtil.isNumber(state.maxHeight)
+          ? `${state.maxHeight}px`
+          : state.maxHeight
+        if (dia) {
+          dia.style.setProperty('width', state.width, 'important')
+          dia.style.setProperty('margin-top', '15vh', 'important')
+          dia.style.setProperty('margin-bottom', '50px', 'important')
+        }
+      }
     }
 
     const register = async (expose: any) => {

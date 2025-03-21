@@ -37,9 +37,15 @@ function createDrawer(options: Recordable) {
       resolve(unref(contentRef))
     }
 
-    const toggleFull = () => {
-      dialogWidth.value = dialogWidth.value === '100%' ? state.width : '100%'
+    const toggleFull = async () => {
       fullscreem.value = !fullscreem.value
+      await nextTick()
+      const dia = document.querySelector(`.${dialogClass}`)
+      if (dia) {
+        fullscreem.value
+          ? dia.style.setProperty('width', '100%', 'important')
+          : dia.style.setProperty('width', state.width, 'important')
+      }
     }
 
     const register = async (expose: any) => {
