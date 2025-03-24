@@ -13,9 +13,7 @@ const keyClick = (key: string) => {
   }
 }
 const register = async (methods: any) => {
-  console.log(methods)
   formMethods.value = await methods.getFormData()
-  console.log(formMethods.value)
 }
 
 watch(
@@ -33,8 +31,8 @@ watch(
     title="提示"
     :schema="[
       {
-        label: '适配Element Plus V2.5.6版本绝大部分组件，推荐使用',
-        keys: ['Element Plus V2.5.6']
+        label: '适配Element Plus V2.7.7版本绝大部分组件，推荐使用',
+        keys: ['Element Plus V2.7.7']
       },
       {
         label: '官网地址',

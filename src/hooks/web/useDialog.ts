@@ -1,5 +1,5 @@
-import { createVNode, render, reactive, ref, unref, watch, nextTick, VNode } from 'vue'
-import { ElDialog, ElScrollbar } from 'element-plus'
+import { createVNode, render, reactive, ref, unref, nextTick, VNode } from 'vue'
+import { ElConfigProvider, ElDialog, ElScrollbar } from 'element-plus'
 import { Form } from '@/components/Form'
 import { Container } from '@/components/Container'
 import { Icon } from '@/components/Icon'
@@ -9,8 +9,10 @@ import * as isUtil from '@/utils/is'
 import { isCustomFunction } from '@/utils/is'
 import { newFunction } from '@/utils/newFunction'
 import { hasPermi } from '@/components/Permission'
+import { useLocaleStore } from '@/store/modules/locale'
 
 function createDialog(options: Recordable) {
+  const localeStore = useLocaleStore()
   return new Promise((resolve) => {
     const container = document.createElement('div')
     document.body.appendChild(container)
@@ -80,106 +82,115 @@ function createDialog(options: Recordable) {
     }
 
     const vnode = createVNode(
-      ElDialog,
+      ElConfigProvider,
       {
-        modelValue: true,
-        ...state,
-        width: dialogWidth.value,
-        class: dialogClass
+        locale: localeStore.getCurrentLocale.elLocale
       },
       {
-        header: (close) => {
-          closeFunc.value = close
-          return createVNode(
-            'div',
-            { class: 'flex justify-between items-center h-54px pl-15px pr-15px relative' },
-            [
-              options.title,
-              createVNode(
-                'div',
-                {
-                  class:
-                    'h-54px flex justify-between items-center absolute top-[50%] right-15px translate-y-[-50%]'
-                },
-                [
-                  createVNode(Icon, {
-                    class: 'cursor-pointer is-hover !h-54px mr-10px',
-                    icon: unref(fullscreem)
-                      ? 'radix-icons:exit-full-screen'
-                      : 'radix-icons:enter-full-screen',
-                    color: 'var(--el-color-info)',
-                    hoverColor: 'var(--el-color-primary)',
-                    onClick: () => {
-                      toggleFull()
-                    }
-                  }),
-                  createVNode(Icon, {
-                    class: 'cursor-pointer is-hover !h-54px',
-                    icon: 'ep:close',
-                    color: 'var(--el-color-info)',
-                    hoverColor: 'var(--el-color-primary)',
-                    onClick: () => {
-                      closeDialog()
-                    }
-                  })
-                ]
-              )
-            ]
-          )
-        },
-        default: () => {
-          const vNodes: VNode[] = []
-          if (options.content) {
-            for (const con of options.content) {
-              let component: any = undefined
-              if (con.type === 'form') {
-                component = Form
-              } else if (con.type === 'container') {
-                component = Container
-              } else {
-                throw new Error(`无法识别的内容类型： ${con.type}`)
-              }
-              component &&
-                vNodes.push(
-                  createVNode(component, {
-                    ...con.props,
-                    onRegister: (expose: any) => register(expose)
-                  })
-                )
-            }
-          }
-          return createVNode(
-            ElScrollbar,
-            { style: { height: dialogHeight.value }, class: 'useDialog-scrollbar' },
+        default: () =>
+          createVNode(
+            ElDialog,
             {
+              modelValue: true,
+              ...state,
+              width: dialogWidth.value,
+              class: dialogClass
+            },
+            {
+              header: (close) => {
+                closeFunc.value = close
+                return createVNode(
+                  'div',
+                  { class: 'flex justify-between items-center h-54px pl-15px pr-15px relative' },
+                  [
+                    options.title,
+                    createVNode(
+                      'div',
+                      {
+                        class:
+                          'h-54px flex justify-between items-center absolute top-[50%] right-15px translate-y-[-50%]'
+                      },
+                      [
+                        createVNode(Icon, {
+                          class: 'cursor-pointer is-hover !h-54px mr-10px',
+                          icon: unref(fullscreem)
+                            ? 'radix-icons:exit-full-screen'
+                            : 'radix-icons:enter-full-screen',
+                          color: 'var(--el-color-info)',
+                          hoverColor: 'var(--el-color-primary)',
+                          onClick: () => {
+                            toggleFull()
+                          }
+                        }),
+                        createVNode(Icon, {
+                          class: 'cursor-pointer is-hover !h-54px',
+                          icon: 'ep:close',
+                          color: 'var(--el-color-info)',
+                          hoverColor: 'var(--el-color-primary)',
+                          onClick: () => {
+                            closeDialog()
+                          }
+                        })
+                      ]
+                    )
+                  ]
+                )
+              },
               default: () => {
-                return createVNode('div', {}, vNodes)
+                const vNodes: VNode[] = []
+                if (options.content) {
+                  for (const con of options.content) {
+                    let component: any = undefined
+                    if (con.type === 'form') {
+                      component = Form
+                    } else if (con.type === 'container') {
+                      component = Container
+                    } else {
+                      throw new Error(`无法识别的内容类型： ${con.type}`)
+                    }
+                    component &&
+                      vNodes.push(
+                        createVNode(component, {
+                          ...con.props,
+                          onRegister: (expose: any) => register(expose)
+                        })
+                      )
+                  }
+                }
+                return createVNode(
+                  ElScrollbar,
+                  { style: { height: dialogHeight.value }, class: 'useDialog-scrollbar' },
+                  {
+                    default: () => {
+                      return createVNode('div', {}, vNodes)
+                    }
+                  }
+                )
+              },
+              footer: () => {
+                if (state.buttons.length > 0) {
+                  for (const con of state.buttons) {
+                    const binds = { ...unref(con) }
+                    if (hasPermi(binds.permi)) {
+                      binds.icon && (binds.icon = createVNode(Icon, { icon: binds.icon }))
+                      footerVNodes.push(
+                        createVNode(
+                          BaseButton,
+                          { ...binds, onClick: () => renderClick(binds.on?.click) },
+                          {
+                            default: () => binds.staticText
+                          }
+                        )
+                      )
+                    }
+                  }
+                  return createVNode('div', { class: 'dialog-footer' }, footerVNodes)
+                } else {
+                  return undefined
+                }
               }
             }
           )
-        },
-        footer: () => {
-          if (state.buttons.length > 0) {
-            for (const con of state.buttons) {
-              const binds = { ...unref(con) }
-              if (hasPermi(binds.permi)) {
-                binds.icon && (binds.icon = createVNode(Icon, { icon: binds.icon }))
-                footerVNodes.push(
-                  createVNode(
-                    BaseButton,
-                    { ...binds, onClick: () => renderClick(binds.on?.click) },
-                    {
-                      default: () => binds.staticText
-                    }
-                  )
-                )
-              }
-            }
-            return createVNode('div', { class: 'dialog-footer' }, footerVNodes)
-          } else {
-            return undefined
-          }
-        }
       }
     )
 

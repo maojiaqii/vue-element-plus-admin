@@ -39,7 +39,7 @@ export default defineComponent({
     },
     mode: propTypes.string.validate((v: string) => ['view', 'edit'].includes(v)).def('view'),
     // 是否展示表格的工具栏
-    showAction: propTypes.bool.def(false),
+    showAction: propTypes.bool.def(true),
     // 是否展示可编辑表格的工具栏
     showEditAction: propTypes.bool.def(false),
     // 是否所有的超出隐藏，优先级低于schema中的showOverflowTooltip,

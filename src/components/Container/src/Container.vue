@@ -67,7 +67,7 @@ const sideHeight = computed(() => {
   if (!yip.value) return 50
   const isInDialog =
     yip.value.closest('.useDialog-scrollbar') || yip.value.closest('.useDrawer-scrollbar')
-  const containerHeight = isInDialog ? isInDialog.clientHeight : yip.value.clientHeight + 170
+  const containerHeight = isInDialog ? isInDialog.clientHeight + 200 : yip.value.clientHeight + 170
   return containerHeight - 250
 })
 
@@ -152,7 +152,6 @@ onMounted(() => {
 const initObserver = () => {
   nextTick(() => {
     const searchElement = yip.value?.querySelector('.el-header')
-    console.log(searchElement)
     if (searchElement) {
       searchObserver.value = new MutationObserver(debouncedResize)
       searchObserver.value.observe(searchElement, {
