@@ -15,15 +15,18 @@ const prefixCls = getPrefixCls('layout')
 
 const commonClasses = {
   // 基础卡片样式
-  card: ['rounded-[16px]', 'overflow-hidden'],
-  // 基础阴影和悬浮效果
-  shadowHover: [
-    'shadow-[0_4px_16px_-2px_rgba(64,158,255,0.15)]',
-    'hover:shadow-[0_8px_32px_-4px_rgba(64,158,255,0.25)]',
+  card: [
+    'rounded-[16px]',
     'transform',
     'transition-all',
     'duration-300',
-    'ease-in-out'
+    'ease-in-out',
+    'overflow-hidden'
+  ],
+  // 基础阴影和悬浮效果
+  shadowHover: [
+    'shadow-[0_4px_16px_-2px_rgba(64,158,255,0.15)]',
+    'hover:shadow-[0_8px_32px_-4px_rgba(64,158,255,0.25)]'
   ],
   // 左侧菜单特殊阴影和悬浮效果
   leftMenuShadow: [

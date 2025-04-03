@@ -32,6 +32,7 @@ import { BaseButton } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 import { Table } from '@/components/Table'
 import { ImageCropping } from '@/components/ImageCropping'
+import { Infotip } from '@/components/Infotip'
 
 const componentMap: Recordable<string, Component> = {
   RadioGroup: ElRadioGroup,
@@ -66,7 +67,8 @@ const componentMap: Recordable<string, Component> = {
   Icon: Icon,
   Tag: ElTag,
   Table: Table,
-  ImageCropping: ImageCropping
+  ImageCropping: ImageCropping,
+  Infotip: Infotip
 }
 
 export { componentMap }

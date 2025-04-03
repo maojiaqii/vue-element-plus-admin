@@ -1,6 +1,7 @@
 {
   "size": "default",
   "mode": "demo",
+  "dividerType": "tabs",
   "formItems": [
     {
       "itemProps": {
@@ -10,7 +11,7 @@
         "component": "Divider",
         "title": "数字输入框",
         "message": "更多属性请参考ElementPlus官网InputNumber组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -99,7 +100,7 @@
         "component": "Divider",
         "title": "输入框",
         "message": "更多属性请参考ElementPlus官网Input组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -249,7 +250,7 @@
         "component": "Divider",
         "title": "选择器",
         "message": "更多属性请参考ElementPlus官网Select组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -672,7 +673,7 @@
         "component": "Divider",
         "title": "单选框",
         "message": "更多属性请参考ElementPlus官网Radio组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -810,7 +811,7 @@
         "component": "Divider",
         "title": "多选框",
         "message": "更多属性请参考ElementPlus官网Checkbox组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -1004,7 +1005,7 @@
         "component": "Divider",
         "title": "日期选择器",
         "message": "更多属性请参考ElementPlus官网DatePicker组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -1117,7 +1118,7 @@
         "component": "Divider",
         "title": "时间选择器",
         "message": "更多属性请参考ElementPlus官网TimePicker组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -1214,7 +1215,7 @@
         "component": "Divider",
         "title": "滑块",
         "message": "更多属性请参考ElementPlus官网Slider组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -1357,7 +1358,7 @@
         "component": "Divider",
         "title": "开关",
         "message": "更多属性请参考ElementPlus官网Switch组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -1481,7 +1482,7 @@
         "component": "Divider",
         "title": "评分",
         "message": "更多属性请参考ElementPlus官网Rate组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -1579,7 +1580,7 @@
         "component": "Divider",
         "title": "颜色选择器",
         "message": "更多属性请参考ElementPlus官网ColorPicker组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -1668,7 +1669,7 @@
         "component": "Divider",
         "title": "穿梭框",
         "message": "更多属性请参考ElementPlus官网Transfer组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -1745,7 +1746,7 @@
         "component": "Divider",
         "title": "时间选择",
         "message": "更多属性请参考ElementPlus官网TimeSelect组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -1845,7 +1846,7 @@
         "component": "Divider",
         "title": "树形选择",
         "message": "更多属性请参考ElementPlus官网TreeSelect组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -1982,7 +1983,7 @@
         "component": "Divider",
         "title": "文件上传",
         "message": "基于ElementPlus Upload组件二次开发，支持妙传、断点续传、实时展示上传进度",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -2062,7 +2063,7 @@
         "component": "Divider",
         "title": "可录入表格",
         "message": "基于ElementPlus Table组件二次开发",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -2402,7 +2403,7 @@
         "component": "Divider",
         "title": "编辑器",
         "message": "第三方编辑器组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {
@@ -2466,7 +2467,7 @@
         "component": "Divider",
         "title": "其他组件",
         "message": "其他二次开发的组件",
-        "collapses": true
+        "collapses": false
       }
     },
     {

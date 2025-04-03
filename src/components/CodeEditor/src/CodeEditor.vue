@@ -2,6 +2,9 @@
 import { useMonacoEditor } from '@/hooks/web/useMonacoEditor'
 import { onMounted, computed, watch, ref, nextTick } from 'vue'
 import { useAppStore } from '@/store/modules/app'
+import { useLocaleStore } from '@/store/modules/locale'
+
+const localeStore = useLocaleStore()
 
 const props = withDefaults(
   defineProps<{
@@ -94,5 +97,26 @@ defineExpose({ updateOptions })
 </script>
 
 <template>
-  <div ref="monacoEditorRef" :style="monacoEditorStyle"></div>
+  <div class="code-editor-wrapper">
+    <div ref="monacoEditorRef" :style="monacoEditorStyle"></div>
+  </div>
 </template>
+
+<style lang="scss" scoped>
+.code-editor-wrapper {
+  border: 1px solid var(--el-border-color);
+  border-radius: var(--el-input-border-radius, 4px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 4px;
+  background-color: var(--el-input-bg-color, var(--el-fill-color-blank));
+
+  &:hover {
+    border-color: var(--el-border-color-hover);
+  }
+
+  &:focus-within {
+    border-color: var(--el-color-primary);
+    box-shadow: 0 0 0 1px var(--el-color-primary-light-5);
+  }
+}
+</style>

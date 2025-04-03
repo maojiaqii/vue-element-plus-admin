@@ -7,7 +7,7 @@ import { BaseButton } from '@/components/Button'
 import { Icon } from '@/components/Icon'
 import { isCustomFunction } from '@/utils/is'
 import { newFunction } from '@/utils/newFunction'
-import { hasPermi } from '@/components/Permission'
+import { hasButtonPermi } from '@/components/Permission'
 
 export default defineComponent({
   name: 'TableButtons',
@@ -37,7 +37,7 @@ export default defineComponent({
         <div class="mb-10px float-left w-90%">
           {props.buttons.map((value) => {
             const binds = { ...unref(value) }
-            if (hasPermi(binds.permi)) {
+            if (hasButtonPermi(binds.permi)) {
               binds.icon && (binds.icon = <Icon icon={binds.icon as string} />)
               return (
                 <BaseButton {...binds} onClick={() => renderClick(binds.on?.click)}>
@@ -51,6 +51,6 @@ export default defineComponent({
       </>
     )
   },
-  methods: { hasPermi }
+  methods: { hasButtonPermi }
 })
 </script>

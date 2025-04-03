@@ -7,14 +7,14 @@ import { BaseButton } from '@/components/Button'
 import { toAnyString } from '@/utils'
 import { isCustomFunction } from '@/utils/is'
 import { newFunction } from '@/utils/newFunction'
-import { hasPermi } from '@/components/Permission'
+import { hasButtonPermi } from '@/components/Permission'
 import { useLocaleStore } from '@/store/modules/locale'
 
 function createDrawer(options: Recordable) {
   const localeStore = useLocaleStore()
   return new Promise((resolve) => {
     const container = document.createElement('div')
-    document.body.appendChild(container)
+    document.getElementById('layout')?.appendChild(container)
     const closeFunc = ref()
 
     const state = reactive({
@@ -151,7 +151,7 @@ function createDrawer(options: Recordable) {
                 if (state.buttons.length > 0) {
                   for (const con of state.buttons) {
                     const binds = { ...unref(con) }
-                    if (hasPermi(binds.permi)) {
+                    if (hasButtonPermi(binds.permi)) {
                       binds.icon && (binds.icon = createVNode(Icon, { icon: binds.icon }))
                       footerVNodes.push(
                         createVNode(

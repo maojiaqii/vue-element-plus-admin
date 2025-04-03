@@ -47,7 +47,8 @@ const props = defineProps({
       isSearch: false, // 是否是查询条件表单
       expandIndex: 3, // 伸缩的界限字段
       isDescription: false, // 是否描述列表表单
-      direction: 'horizontal' // 列表标题显示位置
+      direction: 'horizontal', // 列表标题显示位置
+      dividerType: 'lines' // 列表标题显示位置
     })
   },
   model: {
@@ -86,6 +87,10 @@ const formItemComponents = ref({})
 const formMode = ref(props.schema.mode || 'edit')
 const expanded = ref(true)
 const expandIndex = ref(props.schema.expandIndex || 3)
+// 添加hover状态变量
+const isHovered = ref('')
+// 添加当前激活的tab
+const activeTab = ref('')
 
 const getGroupIndex = (index: string) => {
   let groupIndex = ''
@@ -158,6 +163,31 @@ const setFormConstant = (filed: string, val: any) => {
   formConstant.value[filed] = val
 }
 
+// 获取所有divider项
+const getDividerItems = () => {
+  const dividers: any[] = []
+  for (const formItem of props.schema.formItems) {
+    if (formItem.componentProps.component === 'Divider') {
+      dividers.push({
+        key: formItem.itemProps.prop,
+        title: formItem.componentProps.title,
+        prop: formItem.itemProps.prop,
+        message: formItem.componentProps.message
+      })
+    }
+  }
+  return dividers
+}
+
+// 处理tab切换
+const handleTabChange = (tabName: string) => {
+  activeTab.value = tabName
+  // 切换tab时，更新dividerCollapses状态
+  for (const key in dividerCollapses.value) {
+    dividerCollapses.value[key] = key !== tabName
+  }
+}
+
 defineExpose({
   getComponentExpose,
   getFormItemExpose,
@@ -167,6 +197,17 @@ defineExpose({
 })
 
 onMounted(() => {
+  // 如果是tabs模式，设置默认激活的tab
+  if (props.schema.dividerType === 'tabs') {
+    const dividers = getDividerItems()
+    if (dividers.length > 0) {
+      activeTab.value = dividers[0].prop
+      // 初始化时只显示第一个tab的内容
+      for (const key in dividerCollapses.value) {
+        dividerCollapses.value[key] = key !== dividers[0].prop
+      }
+    }
+  }
   setFormRules(unref(props.schema.formValidators), unref(formModel)).then((res) => {
     formRules.value = res
   })
@@ -199,16 +240,82 @@ onUnmounted(() => {
 
 <template>
   <ElForm ref="elFormRef" v-bind="schema" :model="formModel" :rules="formRules" :class="prefixCls">
-    <div :class="[prefixCls, 'p-t-10px rounded-[16px] bg-[var(--el-bg-color-overlay)]']">
+    <div
+      :class="[
+        prefixCls,
+        'rounded-[16px] bg-[var(--el-bg-color-overlay)]',
+        { 'has-tabs': schema.dividerType === 'tabs' }
+      ]"
+    >
+      <!-- Tabs模式的导航栏 -->
+      <div v-if="schema.dividerType === 'tabs'" class="tabs-container">
+        <ElScrollbar class="tabs-scrollbar">
+          <div class="tabs-nav">
+            <div
+              v-for="item in getDividerItems()"
+              :key="item.prop"
+              :class="[
+                'tab-item',
+                'rounded-t-[16px] relative h-50px shadow-[0_8px_16px_-2px_rgba(64,158,255,0.15)] hover:shadow-[0_8px_32px_-4px_rgba(64,158,255,0.25)] flex justify-between items-center px-10px cursor-pointer',
+                activeTab === item.prop ? 'active' : ''
+              ]"
+              :style="{
+                backgroundColor:
+                  activeTab === item.prop
+                    ? 'var(--left-menu-bg-active-color)'
+                    : 'var(--el-bg-color)',
+                color:
+                  activeTab === item.prop
+                    ? 'var(--left-menu-text-active-color)'
+                    : 'var(--el-text-color-regular)'
+              }"
+              @mouseenter="isHovered = item.prop"
+              @mouseleave="isHovered = ''"
+              @click="handleTabChange(item.prop)"
+            >
+              <div
+                :class="[
+                  `${prefixCls}-header__title`,
+                  'relative font-18px font-bold ml-10px duration-300 ease-in-out',
+                  isHovered === item.prop ? 'translate-x-1.5' : 'translate-x--1.5'
+                ]"
+              >
+                <div class="flex items-center">
+                  {{ item.title }}
+                  <ElTooltip v-if="item.message" :content="item.message" placement="right">
+                    <Icon icon="bi:question-circle-fill" class="ml-5px" :size="14" />
+                  </ElTooltip>
+                </div>
+              </div>
+              <Icon :icon="activeTab === item.prop ? 'ep:arrow-up' : 'ep:arrow-down'" />
+            </div>
+          </div>
+        </ElScrollbar>
+      </div>
       <ElRow>
         <template v-for="(formItem, key) in schema.formItems" :key="formItem.itemProps.prop">
+          <!-- Lines模式下的Divider或Tabs模式下隐藏Divider -->
+          <!-- 修改 Lines 模式下的 Divider -->
           <div
             v-if="formItem.componentProps.component === 'Divider'"
-            :class="`${prefixCls}-header`"
-            class="w-full m-b-20px relative h-50px flex justify-between items-center layout-border__bottom px-10px cursor-pointer"
+            :class="[`${prefixCls}-header`, schema.dividerType === 'lines' ? 'sticky-divider' : '']"
+            class="rounded-t-[16px] w-full m-b-20px relative h-50px shadow-[0_8px_16px_-2px_rgba(64,158,255,0.15)] hover:shadow-[0_8px_32px_-4px_rgba(64,158,255,0.25)] flex justify-between items-center layout-border__bottom px-10px cursor-pointer"
+            :style="{
+              backgroundColor: 'var(--left-menu-bg-active-color)',
+              color: 'var(--left-menu-text-active-color)',
+              display: schema.dividerType === 'tabs' ? 'none' : 'flex'
+            }"
+            @mouseenter="isHovered = formItem.itemProps.prop"
+            @mouseleave="isHovered = ''"
             @click="toggleGroupVisibility(getGroupIndex(formItem.itemProps.prop))"
           >
-            <div :class="[`${prefixCls}-header__title`, 'relative font-18px font-bold ml-10px']">
+            <div
+              :class="[
+                `${prefixCls}-header__title`,
+                'relative font-18px font-bold ml-10px duration-300 ease-in-out',
+                isHovered === formItem.itemProps.prop ? 'translate-x-1.5' : 'translate-x--1.5'
+              ]"
+            >
               <div class="flex items-center">
                 {{ formItem.componentProps.title }}
                 <ElTooltip
@@ -232,11 +339,15 @@ onUnmounted(() => {
             <ElCol
               v-if="formItemProps[formItem.itemProps.prop].hidden"
               v-show="
-                (Object.keys(dividerCollapses).length !== 0 &&
-                  !dividerCollapses[getGroupIndex(formItem.itemProps.prop)] &&
+                (schema.dividerType === 'tabs' &&
+                  activeTab === getGroupIndex(formItem.itemProps.prop) &&
                   formItemProps[formItem.itemProps.prop].display) ||
-                (Object.keys(dividerCollapses).length === 0 &&
-                  formItemProps[formItem.itemProps.prop].display)
+                (schema.dividerType !== 'tabs' &&
+                  ((Object.keys(dividerCollapses).length !== 0 &&
+                    !dividerCollapses[getGroupIndex(formItem.itemProps.prop)] &&
+                    formItemProps[formItem.itemProps.prop].display) ||
+                    (Object.keys(dividerCollapses).length === 0 &&
+                      formItemProps[formItem.itemProps.prop].display)))
               "
               v-bind="formItemProps[formItem.itemProps.prop].colProps"
             >
@@ -378,5 +489,75 @@ onUnmounted(() => {
       content: '';
     }
   }
+}
+
+// Tabs样式
+.has-tabs {
+  position: relative;
+}
+
+.tabs-container {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 10px 10px 0;
+  margin-bottom: 15px;
+  background-color: var(--el-bg-color-overlay);
+  border-radius: 16px 16px 0 0;
+}
+
+.tabs-scrollbar {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.tabs-nav {
+  display: flex;
+  flex-wrap: nowrap;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+.tab-item {
+  min-width: 150px;
+  transition: all 0.3s;
+
+  &.active {
+    border-bottom: 2px solid var(--el-color-primary);
+  }
+
+  .@{prefix-cls}-header__title {
+    &::after {
+      position: absolute;
+      top: 3px;
+      left: -10px;
+      width: 4px;
+      height: 70%;
+      background: var(--el-color-primary);
+      content: '';
+    }
+  }
+}
+
+.@{prefix-cls}-header {
+  &__title {
+    &::after {
+      position: absolute;
+      top: 3px;
+      left: -10px;
+      width: 4px;
+      height: 70%;
+      background: var(--el-color-primary);
+      content: '';
+    }
+  }
+}
+
+// 添加 sticky divider 样式
+.sticky-divider {
+  position: sticky;
+  top: 0;
+  z-index: 9;
+  background-color: var(--left-menu-bg-active-color) !important;
 }
 </style>

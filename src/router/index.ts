@@ -10,11 +10,12 @@ const { t } = useI18n()
 export const constantRouterMap: AppRouteRecordRaw[] = [
   {
     path: '/',
-    component: Layout,
-    redirect: '/dashboard/analysis',
+    component: () => import('@/views/Login/Login.vue'),
     name: 'Root',
     meta: {
-      hidden: true
+      hidden: true,
+      title: t('router.login'),
+      noTagsView: true
     }
   },
   {

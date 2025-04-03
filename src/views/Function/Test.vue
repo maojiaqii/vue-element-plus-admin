@@ -2,7 +2,7 @@
 import { ContentWrap } from '@/components/ContentWrap'
 import { ref, unref } from 'vue'
 import { ElDivider, ElRow, ElCol } from 'element-plus'
-import { hasPermi } from '@/components/Permission'
+import { hasButtonPermi } from '@/components/Permission'
 
 const permission = ref('add')
 
@@ -55,15 +55,15 @@ setTimeout(() => {
     <ElRow :gutter="20">
       <ElCol :span="8">
         新增权限：
-        <BaseButton v-if="hasPermi('add')" type="primary"> Add </BaseButton>
+        <BaseButton v-if="hasButtonPermi('add')" type="primary"> Add </BaseButton>
       </ElCol>
       <ElCol :span="8">
         删除权限：
-        <BaseButton v-if="hasPermi('delete')" type="danger"> Delete </BaseButton>
+        <BaseButton v-if="hasButtonPermi('delete')" type="danger"> Delete </BaseButton>
       </ElCol>
       <ElCol :span="8">
         3秒后切换查看权限：
-        <BaseButton v-if="hasPermi(unref(permission))" type="primary"> View </BaseButton>
+        <BaseButton v-if="hasButtonPermi(unref(permission))" type="primary"> View </BaseButton>
       </ElCol>
     </ElRow>
   </ContentWrap>

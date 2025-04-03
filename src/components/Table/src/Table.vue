@@ -29,6 +29,7 @@ import RenderTableItem from './components/RenderTableItem.vue'
 import { toAnyString } from '@/utils'
 import { ButtonComponentProps } from '@/components/Form/src/types'
 import { TreeHelperConfig, listToTree } from '@/utils/tree'
+import { hasColumnPermi } from '@/components/Permission'
 
 export default defineComponent({
   name: 'Table',
@@ -713,6 +714,7 @@ export default defineComponent({
           )
         } else {
           const props = { ...v } as any
+          if (!hasColumnPermi(props.permi)) return null
           if (props.children) delete props.children
 
           const children = v.children

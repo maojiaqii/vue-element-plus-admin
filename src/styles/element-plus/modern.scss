@@ -227,17 +227,43 @@
   box-shadow: 0 4px 12px -4px rgba(var(--el-color-primary-rgb), 0.08) !important;
   overflow: hidden;
 
+  // 修改表头样式
   th.el-table__cell {
-    background: var(--el-fill-color-light);
+    background: var(--left-menu-bg-active-color) !important;
+    color: var(--left-menu-text-active-color);
     font-weight: 600;
+    font-size: 15px;  // 增加字体大小
+    padding: 16px 0;  // 增加内边距使行高更大
+    height: 56px;    // 设置固定行高
+  }
+
+  // 表头行样式
+  .el-table__header-row {
+    background: var(--left-menu-bg-active-color);
   }
 
   .el-table__cell {
     transition: all 0.3s ease;
   }
 
+  tbody {
+    tr {
+      &:hover > td.el-table__cell {
+        background: var(--el-fill-color-light) !important;  // 使用更柔和的背景色
+        transform: translateY(-1px);  // 添加轻微上浮效果
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      &.current-row > td.el-table__cell {
+        background: var(--el-color-primary-light-9) !important;  // 使用主题色最浅色
+        color: var(--el-color-primary);  // 文字使用主题色
+        font-weight: 500;  // 稍微加粗文字
+      }
+    }
+  }
+
   tbody tr:hover > td.el-table__cell {
-    background: var(--el-fill-color-lighter);
+    background: var(--left-menu-bg-active-color) !important;
   }
 }
 
@@ -561,7 +587,7 @@ html.dark .el-form-item.is-error {
     border-radius: 6px;
     height: 40px;
     line-height: 40px;
-    margin: 4px 0;
+    margin: 4px 8px;
 
     &:hover {
       transform: translateX(4px);

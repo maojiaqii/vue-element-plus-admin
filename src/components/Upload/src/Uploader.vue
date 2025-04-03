@@ -327,7 +327,7 @@ function handleMouseEnter(row: any, column: any, cell: HTMLTableCellElement, eve
 function handleMouseLeave() {
   clearTimeout(hoverTimeout.value)
   hoverTimeout.value = setTimeout(() => {
-    if (!isModalHovered.value) {
+    if (!isModalHovered.value && !document.querySelector('.el-popconfirm')) {
       hoverRow.value = null
       hoverRect.value = null
     }
@@ -442,6 +442,7 @@ onMounted(() => {})
       v-if="fileTable"
       :data="tableValueRef"
       border
+      stripe
       style="width: 100%; position: relative"
       height="250"
       max-height="250"

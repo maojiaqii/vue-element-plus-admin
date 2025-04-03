@@ -46,6 +46,7 @@ export type ComponentName = CamelCaseComponentName
 
 export interface ButtonComponentProps extends Partial<ButtonProps> {
   staticText?: string
+  permi?: string
   on?: {
     click?: (...args: any[]) => void
   }
@@ -691,5 +692,7 @@ export interface FormProps extends Partial<ElFormProps> {
   isDescription: boolean
   // 列表标题显示位置
   direction: 'horizontal' | 'vertical'
+  // 列表标题显示位置 lines现在默认的样式，tabs显示成类似页签的样式
+  dividerType: 'lines' | 'tabs'
   [key: string]: any
 }

@@ -1,10 +1,10 @@
 import { AxiosResponse, InternalAxiosRequestConfig } from './types'
 import { ElMessage } from 'element-plus'
 import qs from 'qs'
-import bcrypt from 'bcryptjs'
+import CryptoJS from 'crypto-js'
 import { SUCCESS_CODE, TRANSFORM_REQUEST_DATA } from '@/constants'
 import { useUserStore } from '@/store/modules/user'
-import { enCodePwd, objToFormData } from '@/utils'
+import { enCodePwd, objToFormData, toAnyString } from '@/utils'
 
 const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
   const useUser = useUserStore()
@@ -27,9 +27,13 @@ const defaultRequestInterceptors = (config: InternalAxiosRequestConfig) => {
     config.method === 'post' &&
     config.headers['Content-Type'] === 'application/json'
   ) {
+    const timestamp = config.headers['timestamp']
+    const nonce = toAnyString()
+    config.headers['nonce'] = nonce
     config.data = JSON.stringify(config.data)
     // 后端做了防篡改，添加sign
-    config.headers['sign'] = bcrypt.hashSync(config.headers['timestamp'] + config.data)
+    const signStr = `${timestamp}${nonce}${config.data}${import.meta.env.VITE_APP_SECRET_KEY}`
+    config.headers['sign'] = CryptoJS.SHA256(signStr).toString()
   }
   if (config.method === 'get' && config.params) {
     config.paramsSerializer = (params) => qs.stringify(params)

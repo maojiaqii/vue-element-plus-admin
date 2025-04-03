@@ -14,6 +14,7 @@ import { DEFAULT_FILTER_COLUMN } from '@/constants'
 import { VueDraggable } from 'vue-draggable-plus'
 import { BaseButton } from '@/components/Button'
 import { Icon } from '@/components/Icon'
+import { hasColumnPermi } from '@/components/Permission'
 
 const modelValue = defineModel<boolean>()
 
@@ -69,7 +70,10 @@ const initColumns = (columns: TableColumn[], isReStore = false) => {
     if (!isReStore) {
       item.fixed = item.fixed !== void 0 ? item.fixed : undefined
     }
-    return (item.type && !DEFAULT_FILTER_COLUMN.includes(item.type)) || !item.type
+    return (
+      (item.type && !DEFAULT_FILTER_COLUMN.includes(item.type)) ||
+      (!item.type && hasColumnPermi(item.permi))
+    )
   })
   if (!unref(oldColumns)?.length) {
     oldColumns.value = cloneDeep(newColumns)
@@ -105,7 +109,7 @@ watch(
 </script>
 
 <template>
-  <ElDrawer v-model="modelValue" title="列设置" size="350px">
+  <ElDrawer v-model="modelValue" title="列设置" size="350px" :append-to-body="true">
     <div>
       <div class="flex items-center justify-between">
         <div class="flex items-center justify-between">
