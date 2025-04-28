@@ -52,6 +52,12 @@ const setupAll = async () => {
 
   setupPermission(app)
 
+  app.directive('focus', {
+    mounted(el) {
+      el.focus();
+    }
+  });
+
   app.mount('#app')
 }
 

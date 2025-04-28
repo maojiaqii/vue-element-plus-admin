@@ -180,7 +180,13 @@ export const useForm = () => {
           permissionStore.setIsAddRouters(true)
           router.push({
             // @ts-ignore
-            path: router.currentRoute.value.query?.redirect || permissionStore.addRouters[0].path
+            path:
+              router.currentRoute.value.query?.redirect &&
+              permissionStore.addRouters.findIndex(
+                (e) => e.path == router.currentRoute.value.query?.redirect
+              ) !== -1
+                ? router.currentRoute.value.query?.redirect
+                : permissionStore.addRouters[0].path
           })
         }
       })

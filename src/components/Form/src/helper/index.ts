@@ -16,7 +16,7 @@ import { createVNode, reactive } from 'vue'
 import { Icon } from '@/components/Icon'
 import { isCustomFunction } from '@/utils/is'
 import { newFunction } from '@/utils/newFunction'
-import { hasFieldPermi } from '@/components/Permission'
+import { hasButtonPermi, hasFieldPermi } from '@/components/Permission'
 
 const { t } = useI18n()
 
@@ -104,7 +104,10 @@ export const setComponentProps = (
     if (col.hidden === false) {
       values[col.itemProps.prop].hidden = false
     } else {
-      values[col.itemProps.prop].hidden = hasFieldPermi(col.permi)
+      values[col.itemProps.prop].hidden =
+        values[col.itemProps.prop].componentProps.component === 'Button'
+          ? hasButtonPermi(col.permi)
+          : hasFieldPermi(col.permi)
     }
     col.display === false && (values[col.itemProps.prop].display = false)
     !col.componentProps.disabled && (values[col.itemProps.prop].componentProps.disabled = false)

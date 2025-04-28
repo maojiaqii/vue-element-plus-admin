@@ -7,7 +7,10 @@ import {
   ElTooltipProps,
   ElImage,
   ElEmpty,
-  ElCard
+  ElCard,
+  ElDropdown,
+  ElDropdownMenu,
+  ElDropdownItem
 } from 'element-plus'
 import { defineComponent, PropType, ref, computed, unref, watch, onMounted } from 'vue'
 import { propTypes } from '@/utils/propTypes'
@@ -23,16 +26,18 @@ import { createVideoViewer } from '@/components/VideoPlayer'
 import { Icon } from '@/components/Icon'
 import { BaseButton } from '@/components/Button'
 import { TableSearch } from '@/api/table/types'
-import { isEmpty, isFunction, isNullOrUnDef } from '@/utils/is'
+import { isCustomFunction, isEmpty, isFunction, isNullOrUnDef } from '@/utils/is'
 import { FormSchema } from '@/components/Form'
 import RenderTableItem from './components/RenderTableItem.vue'
 import { toAnyString } from '@/utils'
 import { ButtonComponentProps } from '@/components/Form/src/types'
 import { TreeHelperConfig, listToTree } from '@/utils/tree'
-import { hasColumnPermi } from '@/components/Permission'
+import { hasButtonPermi, hasColumnPermi } from '@/components/Permission'
+import { newFunction } from '@/utils/newFunction'
 
 export default defineComponent({
   name: 'Table',
+  components: { ElDropdownItem, ElDropdownMenu },
   props: {
     modelValue: {
       type: Array as PropType<Recordable[]>,
@@ -640,6 +645,74 @@ export default defineComponent({
       )
     }
 
+    const renderClick = (click: any, rowData: Recordable<string, any>) => {
+      isCustomFunction(click) &&
+        newFunction(click, { tableRef: unref(elTableRef)?.$parent, row: rowData }).then((res) =>
+          res.params ? res.func(res.params) : res.func()
+        )
+    }
+
+    const renderOperationButtons = (
+      buttons: Array<ButtonComponentProps>,
+      rowData: Recordable<string, any>
+    ) => {
+      const butC = buttons.map((value, index) => {
+        const binds = { ...unref(value) }
+        if (hasButtonPermi(binds.permi)) {
+          if (index < 2) {
+            binds.icon && (binds.icon = <Icon icon={binds.icon as string} />)
+            return (
+              <BaseButton {...binds} onClick={() => renderClick(binds.on?.click, rowData)}>
+                {binds.staticText}
+              </BaseButton>
+            )
+          } else {
+            return
+          }
+        }
+        return
+      })
+      let butD
+      if (buttons.length >= 3) {
+        butD = (
+          <ElDropdown trigger="click">
+            {{
+              default: () => (
+                <span class="el-dropdown-link">
+                  更多
+                  <Icon icon="ep:arrow-down" />
+                </span>
+              ),
+              dropdown: () => (
+                <ElDropdownMenu>
+                  {buttons.map((value, index) => {
+                    const binds = { ...unref(value) }
+                    if (hasButtonPermi(binds.permi)) {
+                      if (index >= 2) {
+                        binds.icon && (binds.icon = <Icon icon={binds.icon as string} />)
+                        return (
+                          <ElDropdownItem>
+                            <BaseButton
+                              {...binds}
+                              onClick={() => renderClick(binds.on?.click, rowData)}
+                            >
+                              {binds.staticText}
+                            </BaseButton>
+                          </ElDropdownItem>
+                        )
+                      }
+                    }
+                    return null
+                  })}
+                </ElDropdownMenu>
+              )
+            }}
+          </ElDropdown>
+        )
+      }
+      return <div class="flex items-center">{[butC, butD]}</div>
+    }
+
     const renderTableColumnComponent = (
       data: any,
       component: FormSchema[],
@@ -712,15 +785,42 @@ export default defineComponent({
               width="50"
             ></ElTableColumn>
           )
+        } else if (v.type === 'operation') {
+          const props = { ...v } as any
+          const slots = {}
+          if (isFunction(props?.slots?.default)) {
+            slots['default'] = (...args: any[]) => props.slots.default(...args)
+          } else {
+            slots['default'] = (...args: any[]) => {
+              return renderOperationButtons(v.buttons, args[0].row)
+            }
+          }
+
+          if (isFunction(props?.slots?.header)) {
+            slots['header'] = (...args: any[]) => props.slots.header(...args)
+          }
+
+          return (
+            <ElTableColumn
+              showOverflowTooltip={false}
+              align={align}
+              headerAlign={headerAlign}
+              {...props}
+            >
+              {slots}
+            </ElTableColumn>
+          )
         } else {
           const props = { ...v } as any
           if (!hasColumnPermi(props.permi)) return null
           if (props.children) delete props.children
 
           const children = v.children
-
-          const slots = {
-            default: (...args: any[]) => {
+          const slots = {}
+          if (isFunction(props?.slots?.default)) {
+            slots['default'] = (...args: any[]) => props.slots.default(...args)
+          } else {
+            slots['default'] = (...args: any[]) => {
               const data = args[0]
               let isPreview = false
               isPreview =
@@ -736,7 +836,7 @@ export default defineComponent({
                         data,
                         props.slots.default,
                         tableItemProps.value,
-                        props.type === 'operation' ? 'edit' : mode,
+                        mode,
                         props.type
                       )
                   : v?.formatter
@@ -746,7 +846,8 @@ export default defineComponent({
                       : get(data.row, v.field)
             }
           }
-          if (props?.slots?.header) {
+
+          if (isFunction(props?.slots?.header)) {
             slots['header'] = (...args: any[]) => props.slots.header(...args)
           }
 
@@ -858,3 +959,13 @@ export default defineComponent({
   }
 })
 </script>
+
+<style scoped>
+.el-dropdown-link {
+  cursor: pointer;
+  color: var(--el-color-primary);
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+}
+</style>

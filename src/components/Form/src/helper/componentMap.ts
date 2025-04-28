@@ -30,9 +30,16 @@ import { Captcha } from '@/components/Captcha'
 import { Upload } from '@/components/Upload'
 import { BaseButton } from '@/components/Button'
 import { Icon } from '@/components/Icon'
-import { Table } from '@/components/Table'
+import { CharAvatar } from '@/components/CharAvatar'
 import { ImageCropping } from '@/components/ImageCropping'
 import { Infotip } from '@/components/Infotip'
+import { Tree } from '@/components/Tree'
+
+// 创建一个懒加载的 Table 组件
+import { defineAsyncComponent } from 'vue'
+const AsyncTable = defineAsyncComponent(() =>
+  import('@/components/Table').then((mod) => ({ default: mod.Table }))
+)
 
 const componentMap: Recordable<string, Component> = {
   RadioGroup: ElRadioGroup,
@@ -66,9 +73,11 @@ const componentMap: Recordable<string, Component> = {
   Button: BaseButton,
   Icon: Icon,
   Tag: ElTag,
-  Table: Table,
+  Table: AsyncTable,
   ImageCropping: ImageCropping,
-  Infotip: Infotip
+  Infotip: Infotip,
+  Tree: Tree,
+  CharAvatar: CharAvatar
 }
 
 export { componentMap }

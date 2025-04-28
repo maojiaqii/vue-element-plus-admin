@@ -441,7 +441,7 @@ html.dark .el-form-item.is-error {
   }
 
   &__header {
-    margin-bottom: 0;
+    margin-bottom: 0 !important;
     padding: var(--el-drawer-padding-primary);
     border-bottom: 1px solid var(--el-border-color-light);
     

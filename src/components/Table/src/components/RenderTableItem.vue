@@ -214,8 +214,6 @@ onUnmounted(() => {
             <ElDropdownMenu>
               <ElDropdownItem v-for="formItem in tableItems2" :key="formItem.itemProps.prop">
                 <BaseButton
-                  :is="componentMap[formItem.componentProps.component]"
-                  v-model="val[props.scope.column.property]"
                   v-bind="tableItemProps[scope.$index][formItem.itemProps.prop].componentProps"
                   v-on="setThisComponentEvents(formItem)"
                 >
@@ -254,11 +252,3 @@ onUnmounted(() => {
     </template>
   </ElRow>
 </template>
-<style scoped>
-.el-dropdown-link {
-  cursor: pointer;
-  color: var(--el-color-primary);
-  display: flex;
-  align-items: center;
-}
-</style>

@@ -95,7 +95,7 @@ export const usePermissionStore = defineStore('permission', {
     }
   },
   persist: {
-    paths: ['routers', 'addRouters', 'menuTabRouters', 'currentTenancy', 'tenancys']
+    paths: ['menuTabRouters', 'tenancys', 'currentTenancy']
   }
 })
 

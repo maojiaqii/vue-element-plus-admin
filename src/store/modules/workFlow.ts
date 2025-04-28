@@ -2,8 +2,7 @@ import { defineStore } from 'pinia'
 import { store } from '@/store'
 
 interface WorkFlowState {
-  tableId: string
-  isTried: boolean
+  flowId: string
   promoterDrawer: boolean
   flowPermission1: Recordable
   approverDrawer: boolean
@@ -17,8 +16,7 @@ interface WorkFlowState {
 export const useWorkFlowStore = defineStore('workFlow', {
   state: (): WorkFlowState => {
     return {
-      tableId: '',
-      isTried: false,
+      flowId: '',
       promoterDrawer: false,
       flowPermission1: {},
       approverDrawer: false,
@@ -32,11 +30,8 @@ export const useWorkFlowStore = defineStore('workFlow', {
     }
   },
   actions: {
-    setTableId(payload: string) {
-      this.tableId = payload
-    },
-    setIsTried(payload: boolean) {
-      this.isTried = payload
+    setFlowId(payload: string) {
+      this.flowId = payload
     },
     setPromoter(payload: boolean) {
       this.promoterDrawer = payload
@@ -62,8 +57,7 @@ export const useWorkFlowStore = defineStore('workFlow', {
     setConditionsConfig(payload: Recordable) {
       this.conditionsConfig1 = payload
     }
-  },
-  persist: true
+  }
 })
 
 export const useWorkFlowStoreWithOut = () => {

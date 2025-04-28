@@ -56,51 +56,32 @@
     {
       "type": "operation",
       "label": "操作",
-      "slots": {
-        "default": [
-          {
-            "itemProps": {
-              "prop": "button1"
-            },
-            "colProps": {
-              "span": 10
-            },
-            "componentProps": {
-              "component": "Button",
-              "type": "primary",
-              "on": {
-                "click": "() => { this.formData.label = '喂喂喂'\n this.formItems.button2.display = false\n console.log(this.formData)\n console.log(this.formItems)\n  console.log(this.userStore)\n }"
-              },
-              "slots": {
-                "default": {
-                  "html": "查看"
-                }
-              }
-            }
+      "buttons": [
+        {
+          "component": "Button",
+          "type": "primary",
+          "on": {
+            "click": "() => {}"
           },
-          {
-            "itemProps": {
-              "prop": "button2"
-            },
-            "colProps": {
-              "span": 10,
-              "style": "margin-left: 8px"
-            },
-            "componentProps": {
-              "component": "Button",
-              "type": "danger",
-              "on": {
-                "click": "() => this.login()"
-              },
-              "slots": {
-                "default": {
-                  "html": "删除"
-                }
-              }
+          "slots": {
+            "default": {
+              "html": "查看"
             }
           }
-        ]
-      }
+        },
+        {
+          "component": "Button",
+          "type": "danger",
+          "on": {
+            "click": "() => {}"
+          },
+          "slots": {
+            "default": {
+              "html": "删除"
+            }
+          }
+        }
+      ]
     }
   ],
   "query": {

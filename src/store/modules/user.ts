@@ -82,7 +82,8 @@ export const useUserStore = defineStore('user', {
       this.setToken('')
       this.setUserInfo(undefined)
       this.setRoleRouters([])
-      router.replace('/login')
+      // router.replace('/login')
+      location.reload()
     },
     logout() {
       this.reset()
