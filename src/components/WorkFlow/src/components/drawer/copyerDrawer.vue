@@ -45,7 +45,7 @@
       <div class="approver_btn" v-show="copyerConfig.setType === 3">
         <BaseButton type="primary" @click="addRoleApprover">添加/修改角色</BaseButton>
         <el-checkbox
-          v-model="copyerConfig.promoterDepartment"
+          v-model="copyerConfig.roleRange"
           label="本部门"
           border
           style="width: 100%; height: 45px; margin-top: 10px"
@@ -183,7 +183,6 @@ const closeDrawer = () => {
     display: unset;
   }
   .el-radio {
-    width: 18%;
     margin-bottom: 20px;
     height: 16px;
   }

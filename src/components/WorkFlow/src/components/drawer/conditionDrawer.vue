@@ -29,7 +29,7 @@
         <p>🚩条件表达式</p>
         <el-input
           class="m-b-10px"
-          placeholder="请填写规范的条件表达式，如：${age > 18} AND ${status == 'approved'}"
+          placeholder="请填写规范的条件表达式，如：${age > 18 && status == 'approved'}"
           v-model="conditionConfig.conditions"
           type="textarea"
           :validate-event="true"

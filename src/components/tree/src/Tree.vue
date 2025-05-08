@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, useAttrs, unref, onMounted, nextTick, watch } from 'vue'
+import { ref, useAttrs, unref, onMounted, nextTick, watch, computed, onUpdated } from 'vue'
 import { ElInput, ElTreeV2 } from 'element-plus'
 import { propTypes } from '@/utils/propTypes'
 import { useConfigGlobal } from '@/hooks/web/useConfigGlobal'
@@ -13,6 +13,7 @@ const prefixCls = getPrefixCls('tree-v2')
 
 const props = defineProps({
   modelValue: propTypes.arrayOf(propTypes.any).def([]),
+  leafOnly: propTypes.bool.def(false),
   includeHalfChecked: propTypes.bool.def(false)
 })
 
@@ -21,56 +22,18 @@ const { configGlobal } = useConfigGlobal()
 const emit = defineEmits(['update:modelValue'])
 
 const query = ref('')
+
 const valueRef = ref(props.modelValue)
 const treeRef = ref<InstanceType<typeof ElTreeV2>>()
 
-// 监听 modelValue 变化，更新内部 valueRef
-watch(
-  () => props.modelValue,
-  (newVal) => {
-    valueRef.value = newVal
-    // 如果树已经初始化，则同步选中状态
-    if (treeRef.value) {
-      nextTick(() => {
-        updateTreeCheckedState()
-      })
-    }
-  },
-  { deep: true }
-)
-
-// 更新树的选中状态
-const updateTreeCheckedState = () => {
-  if (!treeRef.value) return
-
-  // 先清空所有选中状态
-  const allKeys = treeRef.value.getCheckedKeys(false)
-  allKeys.forEach((key) => {
-    treeRef.value!.setChecked(key, false)
-  })
-
-  // 设置新的选中状态
-  valueRef.value.forEach((key) => {
-    treeRef.value!.setChecked(key, true)
-  })
-}
-
 const checkChange = () => {
   if (!treeRef.value) return
-  const checkedKeys = treeRef.value.getCheckedKeys(false)
+  const checkedKeys = treeRef.value.getCheckedKeys(unref(props.leafOnly))
+  console.log(checkedKeys)
   const halfcheckedKeys = unref(props.includeHalfChecked) ? treeRef.value.getHalfCheckedKeys() : []
+  console.log(halfcheckedKeys)
   emit('update:modelValue', [...checkedKeys, ...halfcheckedKeys])
 }
-
-// 在组件挂载后，等待树组件渲染完成再同步选中状态
-onMounted(() => {
-  nextTick(() => {
-    if (treeRef.value && valueRef.value.length > 0) {
-      updateTreeCheckedState()
-      checkChange()
-    }
-  })
-})
 
 const onQueryChanged = (query: string) => {
   if (treeRef.value) {
@@ -83,6 +46,27 @@ const filterMethod = (query: string, node: TreeNodeData) => {
     ? node[attrs.props?.label]?.toString().includes(query)
     : node.label?.toString().includes(query)
 }
+
+// 监听数据加载完成
+watch(
+  () => attrs.data,
+  (newData) => {
+    if (newData?.length) {
+      nextTick(() => {
+        // 确保树实例存在
+        if (treeRef.value) {
+          // 同步勾选状态
+          treeRef.value.setCheckedKeys(props.modelValue)
+          nextTick(() => {
+            // 触发检查
+            checkChange()
+          })
+        }
+      })
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <template>
@@ -98,10 +82,9 @@ const filterMethod = (query: string, node: TreeNodeData) => {
       ref="treeRef"
       :class="`${prefixCls}__tree`"
       v-bind="$attrs"
-      :default-checked-keys="valueRef"
       show-checkbox
       :filter-method="filterMethod"
-      @check="checkChange"
+      @check-change="checkChange"
     />
   </div>
 </template>

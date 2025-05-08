@@ -17,6 +17,12 @@ export let setTypes = [
   { value: 7, label: '自定义' }
 ]
 
+export let setRoleRangeTypes = [
+  { value: 1, label: '发起人部门' },
+  { value: 2, label: '发起人部门及上级部门' },
+  { value: 3, label: '全局' }
+]
+
 export let setTypesCs = [
   { value: 1, label: '指定成员' },
   { value: 3, label: '指定角色' },

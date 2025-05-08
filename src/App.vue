@@ -34,11 +34,11 @@ const handleBeforeUnload = (e: BeforeUnloadEvent) => {
 
 onMounted(() => {
   appStore.initTheme()
-  window.addEventListener('beforeunload', handleBeforeUnload)
+  // window.addEventListener('beforeunload', handleBeforeUnload)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('beforeunload', handleBeforeUnload)
+  // window.removeEventListener('beforeunload', handleBeforeUnload)
 })
 </script>
 

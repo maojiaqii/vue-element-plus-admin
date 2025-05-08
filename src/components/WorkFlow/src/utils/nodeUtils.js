@@ -29,8 +29,9 @@ export class NodeUtils {
       nodeFrom: '',
       nodeTo: [],
       setType: 1,
-      promoterDepartment: true,
+      roleRange: 1,
       signType: 1,
+      approvePercent: 50,
       childNode: undefined,
       error: true,
       buttons: {
@@ -112,7 +113,7 @@ export class NodeUtils {
   static createStartNode() {
     return [
       {
-        nodeId: this.idGenerator(),
+        nodeId: 'FSTARTERIDM',
         nodeType: 1,
         nodeFrom: '',
         prevId: [],

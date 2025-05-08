@@ -126,7 +126,7 @@ const flowHistoryVersionProps = {
       label: '版本号',
       width: '80px',
       formatter: (_: Recordable, __: TableColumn, cellValue: number) => {
-        return <ElTag type="info">{cellValue}</ElTag>
+        return <ElTag type="info">v{cellValue}</ElTag>
       }
     },
     {
@@ -212,10 +212,9 @@ const testFlow = (row?: any) => {
   flowTestParams.value = JSON.stringify({
     businessKey: toAnyString(),
     flowCode: row.flowCode,
-    formData: {
-      age: 88
-    }
+    formData: {}
   })
+  testResult.value = {}
 }
 
 const startTest = async () => {
@@ -388,7 +387,6 @@ const getStatusStyle = (published: boolean) => {
       </template>
     </Table>
   </ContentWrap>
-
   <ElDrawer v-model="drawerVisible" size="80%" destroy-on-close>
     <template #header>
       <h4>流程设计</h4>
@@ -433,7 +431,13 @@ const getStatusStyle = (published: boolean) => {
   </ElDrawer>
 
   <!-- 流程信息表单对话框 -->
-  <ElDialog v-model="formDialogVisible" title="流程信息" width="500px" destroy-on-close>
+  <ElDialog
+    v-model="formDialogVisible"
+    title="流程信息"
+    width="500px"
+    destroy-on-close
+    :close-on-click-modal="false"
+  >
     <ElForm ref="formRef" :model="formData" :rules="formRules" label-width="80px">
       <ElFormItem label="流程编码" prop="flowCode">
         <ElInput
@@ -482,7 +486,13 @@ const getStatusStyle = (published: boolean) => {
   </ElDialog>
 
   <!-- 流程信息表单对话框 -->
-  <ElDialog v-model="flowTestDialogVisible" title="流程测试" width="500px" destroy-on-close>
+  <ElDialog
+    v-model="flowTestDialogVisible"
+    title="流程测试"
+    width="500px"
+    destroy-on-close
+    :close-on-click-modal="false"
+  >
     <Infotip
       :show-index="false"
       title="提示"

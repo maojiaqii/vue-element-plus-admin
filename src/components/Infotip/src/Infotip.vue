@@ -69,7 +69,7 @@ const keyClick = (key: string) => {
       <span :class="[`${prefixCls}__title`, 'pl-5px text-16px font-bold']">{{ title }}</span>
     </div>
     <div :class="`${prefixCls}__content`">
-      <p v-for="(item, $index) in schema" :key="$index" class="text-14px mt-15px">
+      <div v-for="(item, $index) in schema" :key="$index" class="text-14px">
         <Highlight
           :keys="typeof item === 'string' ? [] : item.keys"
           :color="highlightColor"
@@ -77,7 +77,7 @@ const keyClick = (key: string) => {
         >
           {{ showIndex ? `${$index + 1}、` : '' }}{{ typeof item === 'string' ? item : item.label }}
         </Highlight>
-      </p>
+      </div>
     </div>
   </div>
 </template>

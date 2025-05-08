@@ -1,3 +1,4 @@
+import { setRoleRangeTypes } from '../utils/const'
 function All() {}
 All.prototype = {
   arrToStr(arr) {
@@ -45,7 +46,7 @@ All.prototype = {
       if (nodeConfig.nodeApproveList.length > 0) {
         return (
           '指定' +
-          (nodeConfig.promoterDepartment ? '本部门' : '') +
+          setRoleRangeTypes.find((e) => e.value === nodeConfig.roleRange).label +
           ' (' +
           this.arrToStr(nodeConfig.nodeApproveList) +
           ') 角色'

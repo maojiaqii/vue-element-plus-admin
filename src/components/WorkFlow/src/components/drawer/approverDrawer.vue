@@ -41,14 +41,21 @@
             </p>
           </div>
           <div class="approver_btn" v-show="approverConfig.setType === 3">
-            <BaseButton type="primary" @click="addRoleApprover">添加/修改角色</BaseButton>
-            <el-checkbox
-              v-model="approverConfig.promoterDepartment"
-              label="本部门"
-              border
+            <BaseButton class="m-b-10px" type="primary" @click="addRoleApprover"
+              >添加/修改角色</BaseButton
+            >
+            <p><b>角色范围</b></p>
+            <el-radio-group
+              v-model="approverConfig.roleRange"
+              class="clear"
               style="width: 100%; height: 45px; margin-top: 10px"
-            />
-            <p class="selected_list">
+            >
+              <el-radio v-for="{ value, label } in setRoleRangeTypes" :key="value" :value="value">{{
+                label
+              }}</el-radio>
+            </el-radio-group>
+            <div class="selected_list">
+              <div><b>已选角色</b></div>
               <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index"
                 >🙍‍♂️{{ item.name }}
                 <Icon
@@ -63,21 +70,25 @@
                 @click="approverConfig.nodeApproveList = []"
                 >清除</a
               >
-            </p>
+            </div>
           </div>
           <div class="approver_text" v-if="approverConfig.setType === 5">
             <p>该审批节点设置“发起人自己”后，审批人默认为发起人</p>
           </div>
         </div>
         <div class="approver_block">
-          <p>✍多人审批时采用的审批方式</p>
+          <p>✍审批方式</p>
           <el-radio-group v-model="approverConfig.signType" class="clear">
             <el-radio :value="1">或签（只需一名审批人同意或拒绝即可）</el-radio>
             <br />
             <el-radio :value="2">会签（需所有审批人同意，不限顺序）</el-radio>
             <br />
-            <el-radio :value="3">委派（指定一名审批人）</el-radio>
+            <el-radio :value="3">比例签（通过率达到指定比例即算通过）</el-radio>
           </el-radio-group>
+          <div v-if="approverConfig.signType === 3">
+            <span><b>通过率（%）：</b></span>
+            <ElInputNumber v-model="approverConfig.approvePercent" :max="99" :min="1" />
+          </div>
         </div>
       </el-tab-pane>
       <el-tab-pane label="按钮设置" name="btnTab">
@@ -118,9 +129,17 @@
 </template>
 <script setup>
 import { ref, watch, computed } from 'vue'
-import { ElDrawer, ElTabs, ElTabPane, ElRadio, ElRadioGroup, ElCheckbox } from 'element-plus'
+import {
+  ElDrawer,
+  ElTabs,
+  ElTabPane,
+  ElRadio,
+  ElRadioGroup,
+  ElCheckbox,
+  ElInputNumber
+} from 'element-plus'
 import $func from '../../utils/index'
-import { setTypes } from '../../utils/const'
+import { setRoleRangeTypes, setTypes } from '../../utils/const'
 import { useWorkFlowStore } from '@/store/modules/workFlow'
 import selectUser from '../dialog/selectUserDialog.vue'
 import roleDialog from '../dialog/selectRoleDialog.vue'
@@ -155,6 +174,7 @@ watch(approverConfig1, (val) => {
 const changeType = () => {
   approverConfig.value.nodeApproveList = []
   approverConfig.value.signType = 1
+  approverConfig.value.approvePercent = 50
 }
 const addApprover = () => {
   approverVisible.value = true
@@ -243,7 +263,6 @@ const closeDrawer = () => {
     display: unset;
   }
   .el-radio {
-    width: 18%;
     margin-bottom: 20px;
     height: 16px;
   }
