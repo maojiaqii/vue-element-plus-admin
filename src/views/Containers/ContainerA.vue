@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Container } from '@/components/Container'
+import { ContainerA } from '@/components/Container'
 import { onMounted, ref, unref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { getTableInfoApi, getFormInfoApi, getDictDataApi } from '@/api/common'
@@ -111,7 +111,7 @@ onMounted(() => {
 <template>
   <div class="h-full overflow-hidden relative">
     <Transition name="slide-fade" mode="out-in">
-      <Container
+      <ContainerA
         :key="currentContainer.key"
         :search="currentContainer.search"
         :table="currentContainer.table"

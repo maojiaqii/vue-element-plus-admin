@@ -34,6 +34,7 @@ import { CharAvatar } from '@/components/CharAvatar'
 import { ImageCropping } from '@/components/ImageCropping'
 import { Infotip } from '@/components/Infotip'
 import { Tree } from '@/components/Tree'
+import { WorkFlow, FlowTimeline } from '@/components/WorkFlow'
 
 // 创建一个懒加载的 Table 组件
 import { defineAsyncComponent } from 'vue'
@@ -77,7 +78,9 @@ const componentMap: Recordable<string, Component> = {
   ImageCropping: ImageCropping,
   Infotip: Infotip,
   Tree: Tree,
-  CharAvatar: CharAvatar
+  CharAvatar: CharAvatar,
+  WorkFlow: WorkFlow,
+  FlowTimeline: FlowTimeline
 }
 
 export { componentMap }

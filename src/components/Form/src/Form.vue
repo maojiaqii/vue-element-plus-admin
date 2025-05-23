@@ -239,7 +239,14 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <ElForm ref="elFormRef" v-bind="schema" :model="formModel" :rules="formRules" :class="prefixCls">
+  <ElForm
+    ref="elFormRef"
+    v-bind="schema"
+    :disabled="formMode == 'view'"
+    :model="formModel"
+    :rules="formRules"
+    :class="prefixCls"
+  >
     <div
       :class="[
         prefixCls,

@@ -568,53 +568,6 @@ export default defineComponent({
       return bindValue
     })
 
-    const renderTreeTableColumn = (columnsChildren: TableColumn[]) => {
-      const { align, headerAlign, showOverflowTooltip, imagePreview, videoPreview } =
-        unref(getProps)
-      return columnsChildren.map((v) => {
-        if (v.hidden) return null
-        const props = { ...v } as any
-        if (props.children) delete props.children
-
-        const children = v.children
-
-        const slots = {
-          default: (...args: any[]) => {
-            const data = args[0]
-            let isPreview = false
-            isPreview =
-              imagePreview.some((item) => (item as string) === v.field) ||
-              videoPreview.some((item) => (item as string) === v.field)
-
-            return children && children.length
-              ? renderTreeTableColumn(children)
-              : props?.slots?.default
-                ? props.slots.default(...args)
-                : v?.formatter
-                  ? v?.formatter?.(data.row, data.column, get(data.row, v.field), data.$index)
-                  : isPreview
-                    ? renderPreview(get(data.row, v.field), v.field)
-                    : get(data.row, v.field)
-          }
-        }
-        if (props?.slots?.header) {
-          slots['header'] = (...args: any[]) => props.slots.header(...args)
-        }
-
-        return (
-          <ElTableColumn
-            showOverflowTooltip={showOverflowTooltip}
-            align={align}
-            headerAlign={headerAlign}
-            {...props}
-            prop={v.field}
-          >
-            {slots}
-          </ElTableColumn>
-        )
-      })
-    }
-
     const renderPreview = (url: string, field: string) => {
       const { imagePreview, videoPreview } = unref(getProps)
       return (
@@ -656,24 +609,29 @@ export default defineComponent({
       buttons: Array<ButtonComponentProps>,
       rowData: Recordable<string, any>
     ) => {
-      const butC = buttons.map((value, index) => {
+      const butC = buttons.filter((value) => {
         const binds = { ...unref(value) }
-        if (hasButtonPermi(binds.permi)) {
-          if (index < 2) {
-            binds.icon && (binds.icon = <Icon icon={binds.icon as string} />)
-            return (
-              <BaseButton {...binds} onClick={() => renderClick(binds.on?.click, rowData)}>
-                {binds.staticText}
-              </BaseButton>
-            )
-          } else {
-            return
-          }
+        return hasButtonPermi(binds.permi)
+      })
+      const butE = butC.map((value, index) => {
+        const binds = { ...unref(value) }
+        if (index < 2) {
+          binds.icon && (binds.icon = <Icon icon={binds.icon as string} />)
+          return (
+            <BaseButton
+              {...binds}
+              class="btn-wrap"
+              onClick={() => renderClick(binds.on?.click, rowData)}
+            >
+              {binds.staticText}
+            </BaseButton>
+          )
+        } else {
+          return
         }
-        return
       })
       let butD
-      if (buttons.length >= 3) {
+      if (butC.length >= 3) {
         butD = (
           <ElDropdown trigger="click">
             {{
@@ -685,24 +643,21 @@ export default defineComponent({
               ),
               dropdown: () => (
                 <ElDropdownMenu>
-                  {buttons.map((value, index) => {
+                  {butC.map((value, index) => {
                     const binds = { ...unref(value) }
-                    if (hasButtonPermi(binds.permi)) {
-                      if (index >= 2) {
-                        binds.icon && (binds.icon = <Icon icon={binds.icon as string} />)
-                        return (
-                          <ElDropdownItem>
-                            <BaseButton
-                              {...binds}
-                              onClick={() => renderClick(binds.on?.click, rowData)}
-                            >
-                              {binds.staticText}
-                            </BaseButton>
-                          </ElDropdownItem>
-                        )
-                      }
+                    if (index >= 2) {
+                      binds.icon && (binds.icon = <Icon icon={binds.icon as string} />)
+                      return (
+                        <ElDropdownItem>
+                          <BaseButton
+                            {...binds}
+                            onClick={() => renderClick(binds.on?.click, rowData)}
+                          >
+                            {binds.staticText}
+                          </BaseButton>
+                        </ElDropdownItem>
+                      )
                     }
-                    return null
                   })}
                 </ElDropdownMenu>
               )
@@ -710,7 +665,7 @@ export default defineComponent({
           </ElDropdown>
         )
       }
-      return <div class="flex items-center">{[butC, butD]}</div>
+      return <div class="flex flex-wrap flex-gap-10px items-center">{[butE, butD]}</div>
     }
 
     const renderTableColumnComponent = (
@@ -805,6 +760,8 @@ export default defineComponent({
               showOverflowTooltip={false}
               align={align}
               headerAlign={headerAlign}
+              width={props.width || 'auto'}
+              minWidth={props.minWidth || '100'}
               {...props}
             >
               {slots}
@@ -828,7 +785,7 @@ export default defineComponent({
                 videoPreview.some((item) => (item as string) === v.field)
 
               return children && children.length
-                ? renderTreeTableColumn(children)
+                ? renderTableColumn(children)
                 : props?.slots?.default
                   ? isFunction(props?.slots?.default)
                     ? props.slots.default(...args)
@@ -966,6 +923,12 @@ export default defineComponent({
   color: var(--el-color-primary);
   display: flex;
   align-items: center;
-  margin-left: 10px;
+}
+
+.btn-wrap {
+  white-space: normal;
+  height: auto;
+  margin: 0;
+  word-break: break-word;
 }
 </style>

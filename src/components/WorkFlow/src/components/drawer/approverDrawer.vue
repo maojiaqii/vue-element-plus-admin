@@ -22,8 +22,9 @@
           </el-radio-group>
 
           <div class="approver_btn" v-if="approverConfig.setType === 1">
-            <BaseButton type="primary" @click="addApprover">添加/修改成员</BaseButton>
-            <p class="selected_list">
+            <BaseButton type="primary" @click="addApprover">添加/修改用户</BaseButton>
+            <div class="selected_list">
+              <div><b>已选用户</b></div>
               <span v-for="(item, index) in approverConfig.nodeApproveList" :key="index"
                 >🙍‍♂️{{ item.name }}
                 <Icon
@@ -38,7 +39,7 @@
                 @click="approverConfig.nodeApproveList = []"
                 >清除</a
               >
-            </p>
+            </div>
           </div>
           <div class="approver_btn" v-show="approverConfig.setType === 3">
             <BaseButton class="m-b-10px" type="primary" @click="addRoleApprover"

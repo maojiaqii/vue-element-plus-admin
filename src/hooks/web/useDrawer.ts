@@ -1,7 +1,7 @@
 import { createVNode, render, reactive, ref, unref, nextTick, VNode } from 'vue'
 import { ElDrawer, ElScrollbar, ElConfigProvider } from 'element-plus'
 import { Form } from '@/components/Form'
-import { Container } from '@/components/Container'
+import { ContainerA } from '@/components/Container'
 import { Icon } from '@/components/Icon'
 import { BaseButton } from '@/components/Button'
 import { toAnyString } from '@/utils'
@@ -81,7 +81,7 @@ function createDrawer(options: Recordable) {
                 closeFunc.value = close
                 return createVNode(
                   'div',
-                  { class: 'flex justify-between items-center h-54px pl-15px pr-15px relative' },
+                  { class: 'flex justify-between items-center pl-15px pr-15px relative' },
                   [
                     options.title,
                     createVNode(
@@ -123,8 +123,8 @@ function createDrawer(options: Recordable) {
                     let component: any = undefined
                     if (con.type === 'form') {
                       component = Form
-                    } else if (con.type === 'container') {
-                      component = Container
+                    } else if (con.type === 'containerA') {
+                      component = ContainerA
                     } else {
                       throw new Error(`无法识别的内容类型： ${con.type}`)
                     }

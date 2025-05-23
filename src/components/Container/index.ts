@@ -1,3 +1,3 @@
-import Container from './src/Container.vue'
+import ContainerA from './src/ContainerA.vue'
 
-export { Container }
+export { ContainerA }

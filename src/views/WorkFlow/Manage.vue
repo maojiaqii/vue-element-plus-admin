@@ -389,7 +389,7 @@ const getStatusStyle = (published: boolean) => {
   </ContentWrap>
   <ElDrawer v-model="drawerVisible" size="80%" destroy-on-close>
     <template #header>
-      <h4>流程设计</h4>
+      <div><b>流程设计</b></div>
     </template>
     <template #default>
       <WorkFlow ref="flowDesigner" :nodeConfig="workflowData" />
@@ -404,7 +404,7 @@ const getStatusStyle = (published: boolean) => {
 
   <ElDrawer v-model="flowViewVisible" size="80%" destroy-on-close>
     <template #header>
-      <h4>流程查看</h4>
+      <div><b>流程查看</b></div>
     </template>
     <template #default>
       <WorkFlow
@@ -418,7 +418,7 @@ const getStatusStyle = (published: boolean) => {
 
   <ElDrawer v-model="drawerVisible1" size="80%" destroy-on-close>
     <template #header>
-      <h4>流程历史版本</h4>
+      <div><b>流程历史版本</b></div>
     </template>
     <template #default>
       <Table

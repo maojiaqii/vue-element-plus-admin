@@ -1,38 +1,76 @@
 <template>
   <div class="node-wrap" v-if="propsNodeConfig.nodeType !== 2">
     <el-popover
-      v-if="isNodeExecuted(propsNodeConfig) && propsNodeConfig.executedInfo"
+      v-if="isNodeExecuted(propsNodeConfig) && propsNodeConfig.executedInfos"
       placement="right"
-      :width="300"
-      trigger="hover"
-      show-after="200"
+      :width="600"
+      trigger="click"
+      :show-after="200"
     >
       <template #default>
-        <el-descriptions :column="1" border>
-          <el-descriptions-item label="节点名称">{{
-            propsNodeConfig.executedInfo.activityName
-          }}</el-descriptions-item>
-          <el-descriptions-item label="节点类型">{{
-            propsNodeConfig.executedInfo.activityType
-          }}</el-descriptions-item>
-          <el-descriptions-item label="开始时间">{{
-            propsNodeConfig.executedInfo.startTime
-          }}</el-descriptions-item>
-          <el-descriptions-item label="结束时间">{{
-            propsNodeConfig.executedInfo.endTime
-          }}</el-descriptions-item>
-          <el-descriptions-item label="耗时(分钟)">{{
-            propsNodeConfig.executedInfo.durationInMin === 0
-              ? '少于1分钟'
-              : propsNodeConfig.executedInfo.durationInMin
-          }}</el-descriptions-item>
-          <el-descriptions-item label="处理人">{{
-            propsNodeConfig.executedInfo.assignee
-          }}</el-descriptions-item>
-          <el-descriptions-item label="处理意见">{{
-            propsNodeConfig.executedInfo.comment
-          }}</el-descriptions-item>
-        </el-descriptions>
+        <el-carousel trigger="click" height="250px">
+          <el-carousel-item v-for="item in propsNodeConfig.executedInfos" :key="item">
+            <div
+              v-if="item.comment"
+              class="stamp"
+              :class="{
+                'stamp-pass': item.comment.startsWith('通过'),
+                'stamp-reject': item.comment.startsWith('退回')
+              }"
+            >
+              {{ item.comment.substring(0, 2) }}
+            </div>
+            <el-descriptions :column="1" border :title="item.activityName">
+              <el-descriptions-item>
+                <template #label>
+                  <Icon icon="ant-design:user-outlined" class="m-r-5px" size="16" />处理人
+                </template>
+                {{ item.assignee }}
+              </el-descriptions-item>
+              <el-descriptions-item v-if="false" label="节点类型">{{
+                item.activityType
+              }}</el-descriptions-item>
+              <el-descriptions-item>
+                <template #label>
+                  <Icon icon="ep:alarm-clock" class="m-r-5px" size="16" />开始时间
+                </template>
+                {{ item.startTime }}
+              </el-descriptions-item>
+              <el-descriptions-item>
+                <template #label>
+                  <Icon icon="ep:alarm-clock" class="m-r-5px" size="16" />结束时间
+                </template>
+                {{ item.endTime }}
+              </el-descriptions-item>
+              <el-descriptions-item>
+                <template #label>
+                  <Icon icon="ant-design:clock-circle-outlined" class="m-r-5px" size="16" />耗时
+                </template>
+                <el-tag :type="item.durationInMin === -1 ? 'primary' : 'success'">{{
+                  item.durationInMin === -1
+                    ? '进行中'
+                    : item.durationInMin === 0
+                      ? '少于1分钟'
+                      : item.durationInMin + '分钟'
+                }}</el-tag>
+              </el-descriptions-item>
+              <el-descriptions-item>
+                <template #label>
+                  <Icon icon="tdesign:pen" class="m-r-5px" size="16" />处理意见
+                </template>
+                <span
+                  v-if="item.comment && item.comment.length > 3 && item.comment.length > 33"
+                  class="comment-ellipsis"
+                  :title="item.comment.substring(3)"
+                  >{{ item.comment.substring(3, 33) + '...' }}</span
+                >
+                <span v-else>{{
+                  item.comment && item.comment.length > 3 && item.comment.substring(3)
+                }}</span>
+              </el-descriptions-item>
+            </el-descriptions>
+          </el-carousel-item>
+        </el-carousel>
       </template>
       <template #reference>
         <div
@@ -40,8 +78,7 @@
           :class="[
             propsNodeConfig.nodeType === 1 ? 'start-node' : '',
             propsNodeConfig.error ? 'active error' : '',
-            isNodeExecuted(propsNodeConfig) ? 'executed' : '',
-            nodeStatusClass(propsNodeConfig)
+            isNodeExecuted(propsNodeConfig) ? 'executed' : ''
           ]"
         >
           <div class="title" :style="`background: rgb(${bgColors[propsNodeConfig.nodeType]});`">
@@ -100,8 +137,7 @@
       :class="[
         propsNodeConfig.nodeType === 1 ? 'start-node' : '',
         propsNodeConfig.error ? 'active error' : '',
-        isNodeExecuted(propsNodeConfig) ? 'executed' : '',
-        nodeStatusClass(propsNodeConfig)
+        isNodeExecuted(propsNodeConfig) ? 'executed' : ''
       ]"
     >
       <div class="title" :style="`background: rgb(${bgColors[propsNodeConfig.nodeType]});`">
@@ -152,11 +188,7 @@
         </div>
       </div>
     </div>
-    <addNode
-      v-model:childNodeP="propsNodeConfig.childNode"
-      :preview-mode="previewMode"
-      :node-status="getNodeStatus(propsNodeConfig)"
-    />
+    <addNode v-model:childNodeP="propsNodeConfig.childNode" :preview-mode="previewMode" />
   </div>
   <div class="branch-wrap" v-if="propsNodeConfig.nodeType === 2">
     <div class="branch-box-wrap">
@@ -172,11 +204,7 @@
             <div class="condition-node-box">
               <div
                 class="auto-judge"
-                :class="[
-                  item.error ? 'error active' : '',
-                  isNodeExecuted(item) ? 'executed' : '',
-                  nodeStatusClass(item)
-                ]"
+                :class="[item.error ? 'error active' : '', isNodeExecuted(item) ? 'executed' : '']"
               >
                 <div
                   class="sort-left"
@@ -220,11 +248,7 @@
                   item.nodeDisplayName || '暂无说明'
                 }}</div>
               </div>
-              <addNode
-                v-model:childNodeP="item.childNode"
-                :preview-mode="previewMode"
-                :node-status="getNodeStatus(item)"
-              />
+              <addNode v-model:childNodeP="item.childNode" :preview-mode="previewMode" />
             </div>
           </div>
           <nodeWrap
@@ -254,11 +278,7 @@
           </template>
         </div>
       </div>
-      <addNode
-        v-model:childNodeP="propsNodeConfig.childNode"
-        :preview-mode="previewMode"
-        :node-status="getNodeStatus(propsNodeConfig)"
-      />
+      <addNode v-model:childNodeP="propsNodeConfig.childNode" :preview-mode="previewMode" />
     </div>
   </div>
   <nodeWrap
@@ -274,7 +294,14 @@ import { useWorkFlowStore } from '@/store/modules/workFlow'
 import { bgColors, placeholderList } from '../../utils/const'
 import { NodeUtils } from '../../utils/nodeUtils'
 import AddNode from './addNode.vue'
-import { ElPopover, ElDescriptions, ElDescriptionsItem } from 'element-plus'
+import {
+  ElPopover,
+  ElDescriptions,
+  ElDescriptionsItem,
+  ElCarousel,
+  ElCarouselItem,
+  ElTag
+} from 'element-plus'
 import { Icon } from '@/components/Icon'
 
 let props = defineProps({
@@ -490,21 +517,6 @@ const arrTransfer = (index, type = 1) => {
 const isNodeExecuted = (node) => {
   return node && node.executed === true
 }
-const getNodeStatus = (node) => {
-  if (!node || !node.executedInfo) return ''
-
-  const status = node.executedInfo.status
-  if (status === 'APPROVED' || status === 'COMPLETED') return 'approved'
-  if (status === 'PROCESSING') return 'processing'
-  return ''
-}
-
-const nodeStatusClass = (node) => {
-  const status = getNodeStatus(node)
-  if (status === 'approved') return 'node-status-approved'
-  if (status === 'processing') return 'node-status-processing'
-  return ''
-}
 </script>
 <style lang="css" scoped>
 @import '../../css/base.css';
@@ -513,44 +525,6 @@ const nodeStatusClass = (node) => {
 .promoter_person .el-dialog__body {
   padding: 16px 24px;
   border-radius: 8px;
-}
-
-.selected_list {
-  margin-bottom: 20px;
-  line-height: 30px;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.selected_list span {
-  padding: 4px 10px;
-  line-height: 1.5;
-  white-space: nowrap;
-  border-radius: 4px;
-  border: 1px solid #e8e8e8;
-  background: #f5f7fa;
-  transition: all 0.3s;
-  display: inline-flex;
-  align-items: center;
-}
-
-.selected_list span:hover {
-  border-color: #40a9ff;
-  background: #e6f7ff;
-}
-
-.selected_list img {
-  margin-left: 6px;
-  width: 12px;
-  height: 12px;
-  cursor: pointer;
-  opacity: 0.7;
-  transition: all 0.3s;
-}
-
-.selected_list img:hover {
-  opacity: 1;
 }
 
 /* 优化节点样式 */
@@ -641,5 +615,36 @@ const nodeStatusClass = (node) => {
   box-shadow:
     0 12px 24px -8px rgba(0, 0, 0, 0.12),
     0 12px 32px 0 rgba(0, 0, 0, 0.08);
+}
+
+.stamp {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  z-index: 10;
+  padding: 6px 18px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  opacity: 0.8;
+  transform: rotate(-15deg);
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: 4px;
+}
+.stamp-pass {
+  background: #52c41a;
+}
+.stamp-reject {
+  background: #f5222d;
+}
+
+.comment-ellipsis {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 </style>

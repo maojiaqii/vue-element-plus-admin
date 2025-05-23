@@ -63,10 +63,6 @@ let props = defineProps({
   previewMode: {
     type: Boolean,
     default: false
-  },
-  nodeStatus: {
-    type: String,
-    default: ''
   }
 })
 

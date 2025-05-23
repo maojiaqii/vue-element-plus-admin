@@ -2537,11 +2537,11 @@
     "input1": [
       {
         "required": true,
-        "message": "必填"
+        "message": "() => {\n\tconst node_id = this.formData.formData.flow_current_node_id\n\tif(node_id === undefined || node_id === 'FSTARTERIDM'){\n\t\tthis.formItems.checkType.display = true\n\t\tthis.formItems.backNode.hidden = true\n\t}\n}"
       }
     ]
   },
   "lifecycle": {
-    "mounted": "() => {console.log(this)}"
+    "mounted": "() => {\n  const constant = this.getFormConstantExpose()\n  console.log(constant, this.formItems.flow)\n  this.formItems.flow.componentProps.nodeConfig = constant.flowNodes\n  this.formItems.flow.componentProps.finished = constant.finished\n  this.formItems.timeline.componentProps.flowHistory = constant.fullPath\n}"
   }
 }

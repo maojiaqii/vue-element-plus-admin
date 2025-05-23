@@ -45,6 +45,8 @@ import { resetImage, wheelZoomFunc, zoomInit } from './utils/zoom.js'
 import { FormatDisplayUtils } from './utils/formatdisplay_data'
 import { FormatUtils } from './utils/formatcommit_data'
 import { propTypes } from '@/utils/propTypes'
+import { BaseButton } from '@/components/Button'
+import { Icon } from '@/components/Icon'
 
 const emit = defineEmits(['update:nodeConfig', 'nextChange'])
 const props = defineProps({

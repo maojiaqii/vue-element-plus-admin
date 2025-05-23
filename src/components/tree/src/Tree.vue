@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, useAttrs, unref, onMounted, nextTick, watch, computed, onUpdated } from 'vue'
+import { ref, useAttrs, unref, nextTick, watch } from 'vue'
 import { ElInput, ElTreeV2 } from 'element-plus'
 import { propTypes } from '@/utils/propTypes'
 import { useConfigGlobal } from '@/hooks/web/useConfigGlobal'
@@ -8,22 +8,15 @@ import { TreeNodeData } from 'element-plus/es/components/tree-v2/src/types'
 
 const { getPrefixCls } = useDesign()
 const attrs = useAttrs()
-
 const prefixCls = getPrefixCls('tree-v2')
-
 const props = defineProps({
   modelValue: propTypes.arrayOf(propTypes.any).def([]),
   leafOnly: propTypes.bool.def(false),
   includeHalfChecked: propTypes.bool.def(false)
 })
-
 const { configGlobal } = useConfigGlobal()
-
 const emit = defineEmits(['update:modelValue'])
-
 const query = ref('')
-
-const valueRef = ref(props.modelValue)
 const treeRef = ref<InstanceType<typeof ElTreeV2>>()
 
 const checkChange = () => {
