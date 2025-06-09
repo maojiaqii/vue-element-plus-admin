@@ -2,6 +2,7 @@
 import { ElCard, ElTooltip } from 'element-plus'
 import { propTypes } from '@/utils/propTypes'
 import { useDesign } from '@/hooks/web/useDesign'
+import { Icon } from '@/components/Icon'
 
 const { getPrefixCls } = useDesign()
 

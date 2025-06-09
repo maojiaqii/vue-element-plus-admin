@@ -34,6 +34,7 @@ import { ButtonComponentProps } from '@/components/Form/src/types'
 import { TreeHelperConfig, listToTree } from '@/utils/tree'
 import { hasButtonPermi, hasColumnPermi } from '@/components/Permission'
 import { newFunction } from '@/utils/newFunction'
+import { vLoading } from 'element-plus'
 
 export default defineComponent({
   name: 'Table',
@@ -554,7 +555,7 @@ export default defineComponent({
 
     watch(
       () => elTableRef.value?.data,
-      (val: []) => {
+      (val: Array<any> | unknown) => {
         emit('update:modelValue', val)
         emit('change', val)
       },

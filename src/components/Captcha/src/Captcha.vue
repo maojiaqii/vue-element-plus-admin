@@ -8,7 +8,6 @@ import { getCaptchaApi } from '@/api/common'
 import { useCaptchaStore } from '@/store/modules/captcha'
 
 const { getPrefixCls } = useDesign()
-
 const prefixCls = getPrefixCls('input-captcha')
 
 const props = defineProps({

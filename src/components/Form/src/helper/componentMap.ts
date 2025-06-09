@@ -1,4 +1,5 @@
 import type { Component } from 'vue'
+import { defineAsyncComponent } from 'vue'
 import {
   ElCascader,
   ElCheckbox,
@@ -34,10 +35,11 @@ import { CharAvatar } from '@/components/CharAvatar'
 import { ImageCropping } from '@/components/ImageCropping'
 import { Infotip } from '@/components/Infotip'
 import { Tree } from '@/components/Tree'
+import { Table } from '@/components/Table'
 import { WorkFlow, FlowTimeline } from '@/components/WorkFlow'
+import { SelectTable } from '@/components/SelectTable'
 
 // 创建一个懒加载的 Table 组件
-import { defineAsyncComponent } from 'vue'
 const AsyncTable = defineAsyncComponent(() =>
   import('@/components/Table').then((mod) => ({ default: mod.Table }))
 )
@@ -74,13 +76,14 @@ const componentMap: Recordable<string, Component> = {
   Button: BaseButton,
   Icon: Icon,
   Tag: ElTag,
-  Table: AsyncTable,
+  Table: Table,
   ImageCropping: ImageCropping,
   Infotip: Infotip,
   Tree: Tree,
   CharAvatar: CharAvatar,
   WorkFlow: WorkFlow,
-  FlowTimeline: FlowTimeline
+  FlowTimeline: FlowTimeline,
+  SelectTable: SelectTable
 }
 
 export { componentMap }

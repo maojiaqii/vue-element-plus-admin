@@ -10,15 +10,13 @@ import {
 } from '@/components/Form/src/helper'
 import { FormSchema } from '@/components/Form'
 import { componentMap } from '../helper/componentMap'
-import { ElCol, ElRow, ElDropdown, ElDropdownMenu, ElDropdownItem } from 'element-plus'
+import { ElCol, ElRow } from 'element-plus'
 import { isEmpty, isFunction } from '@/utils/is'
 import { propTypes } from '@/utils/propTypes'
-import { useI18n } from '@/hooks/web/useI18n'
 
 const { renderSelectOptions } = useRenderSelect()
 const { renderRadioOptions } = useRenderRadio()
 const { renderCheckboxOptions } = useRenderCheckbox()
-const { t } = useI18n()
 
 // 接收表单项和其他相关属性
 const props = defineProps({
@@ -47,12 +45,7 @@ const val = ref<any>(props.scope.row)
 const onMountedRef = ref<Function[]>([])
 const onUpdatedRef = ref<any[]>([])
 const onUnmountedRef = ref<any[]>([])
-const tableItems1 = ref<FormSchema[]>(
-  props.columnType === 'operation' ? props.tableItems.slice(0, 2) : props.tableItems
-)
-const tableItems2 = ref<FormSchema[]>(
-  props.columnType === 'operation' ? props.tableItems.slice(2) : []
-)
+const tableItems = ref<FormSchema[]>(props.tableItems)
 
 watch(
   () => tableItemPropsRef.value,
@@ -139,7 +132,7 @@ onUnmounted(() => {
 </script>
 <template>
   <ElRow>
-    <template v-for="formItem in tableItems1" :key="formItem.itemProps.prop">
+    <template v-for="formItem in tableItems" :key="formItem.itemProps.prop">
       <ElCol
         v-if="tableItemProps[scope.$index][formItem.itemProps.prop].hidden"
         v-show="tableItemProps[scope.$index][formItem.itemProps.prop].display"
@@ -201,53 +194,6 @@ onUnmounted(() => {
             {{ tableItemProps[scope.$index][formItem.itemProps.prop].componentProps.staticText }}
           </template>
         </component>
-      </ElCol>
-    </template>
-    <template v-if="tableItems2.length > 0">
-      <ElCol :span="6" class="ml-2 mt-2">
-        <ElDropdown trigger="click">
-          <span class="el-dropdown-link">
-            {{ t('common.more') }}
-            <Icon icon="ep:arrow-down" />
-          </span>
-          <template #dropdown>
-            <ElDropdownMenu>
-              <ElDropdownItem v-for="formItem in tableItems2" :key="formItem.itemProps.prop">
-                <BaseButton
-                  v-bind="tableItemProps[scope.$index][formItem.itemProps.prop].componentProps"
-                  v-on="setThisComponentEvents(formItem)"
-                >
-                  <template
-                    v-for="(value, key) in tableItemProps[scope.$index][formItem.itemProps.prop]
-                      .componentProps.slots"
-                    :key="key"
-                    #[key]="{ data }"
-                  >
-                    <component
-                      v-if="value.component"
-                      :is="componentMap[value.component]"
-                      v-bind="value"
-                    />
-                    <div v-else-if="value.html" v-html="value.html"></div>
-                    <div v-else-if="isFunction(value)">{{ value(data) }}</div>
-                    <span v-else>{{ value.staticText }}</span>
-                  </template>
-                  <template
-                    v-if="
-                      tableItemProps[scope.$index][formItem.itemProps.prop].componentProps
-                        .staticText
-                    "
-                  >
-                    {{
-                      tableItemProps[scope.$index][formItem.itemProps.prop].componentProps
-                        .staticText
-                    }}
-                  </template>
-                </BaseButton>
-              </ElDropdownItem>
-            </ElDropdownMenu>
-          </template>
-        </ElDropdown>
       </ElCol>
     </template>
   </ElRow>

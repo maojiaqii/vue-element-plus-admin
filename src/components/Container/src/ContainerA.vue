@@ -90,7 +90,7 @@ const tableHeight = computed(() => {
   if (unref(props.search)) {
     // 考虑 header 的 margin-bottom
     const headerMargin = 10
-    return containerHeight - (searchAreaHeight.value + contentWrapPadding + headerMargin + 155)
+    return containerHeight - (searchAreaHeight.value + contentWrapPadding + headerMargin + 135)
   }
   return containerHeight - (contentWrapPadding + 100)
 })
@@ -210,7 +210,6 @@ watch(
 )
 
 const filterNode = (value: string, data: Tree) => {
-  console.log(value, data)
   if (!value) return true
   return data[unref(props.side!.props.label || 'label')].includes(value)
 }
@@ -250,7 +249,7 @@ onUnmounted(() => {
         </div>
       </el-aside>
       <el-container class="h-full overflow-hidden">
-        <el-header v-if="unref(props.search)" class="mb-10px overflow-hidden">
+        <el-header v-if="unref(props.search)" class="h-auto! mb-10px overflow-hidden">
           <ContentWrap>
             <ElScrollbar max-height="100px">
               <Search
@@ -262,8 +261,8 @@ onUnmounted(() => {
             </ElScrollbar>
           </ContentWrap>
         </el-header>
-        <el-main v-if="unref(props.table)" class="overflow-hidden!">
-          <ContentWrap class="h-full">
+        <el-main v-if="unref(props.table)">
+          <ContentWrap>
             <Table
               :height="tableHeight"
               v-bind="unref(props.table)"

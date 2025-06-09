@@ -667,6 +667,39 @@
     },
     {
       "itemProps": {
+        "prop": "divider3-1"
+      },
+      "componentProps": {
+        "component": "Divider",
+        "title": "表格选择器",
+        "message": "基于ElementPlus官网Popover、Table等组件封装",
+        "collapses": false
+      }
+    },
+    {
+      "itemProps": {
+        "prop": "selectTable1",
+        "label": "基础用法"
+      },
+      "colProps": {
+        "xl": 6,
+        "lg": 6,
+        "md": 12,
+        "sm": 12,
+        "xs": 24
+      },
+      "componentProps": {
+        "component": "SelectTable",
+        "table": "table-6",
+        "search": "user_search",
+        "side": "sys_dept",
+        "on": {
+          "select": "(val) => console.log(val)"
+        }
+      }
+    },
+    {
+      "itemProps": {
         "prop": "divider4"
       },
       "componentProps": {
@@ -2537,11 +2570,11 @@
     "input1": [
       {
         "required": true,
-        "message": "() => {\n\tconst node_id = this.formData.formData.flow_current_node_id\n\tif(node_id === undefined || node_id === 'FSTARTERIDM'){\n\t\tthis.formItems.checkType.display = true\n\t\tthis.formItems.backNode.hidden = true\n\t}\n}"
+        "message": "必填"
       }
     ]
   },
   "lifecycle": {
-    "mounted": "() => {\n  const constant = this.getFormConstantExpose()\n  console.log(constant, this.formItems.flow)\n  this.formItems.flow.componentProps.nodeConfig = constant.flowNodes\n  this.formItems.flow.componentProps.finished = constant.finished\n  this.formItems.timeline.componentProps.flowHistory = constant.fullPath\n}"
+    "mounted": "() => {console.log(this)}"
   }
 }

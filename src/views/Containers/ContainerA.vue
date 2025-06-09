@@ -134,11 +134,11 @@ onMounted(() => {
   padding: 8px 16px;
   background: var(--el-bg-color);
   border-radius: 16px;
-  box-shadow: 0 2px 12px 0 rgba(var(--el-color-primary-rgb), 0.1);
+  box-shadow: 0 2px 12px 0 rgba(var(--el-color-primary-rgb), 0.3);
   z-index: 10;
 
   &:hover {
-    box-shadow: 0 2px 12px 0 rgba(var(--el-color-primary-rgb), 0.2);
+    box-shadow: 0 2px 12px 0 rgba(var(--el-color-primary-rgb), 0.8);
   }
 }
 
