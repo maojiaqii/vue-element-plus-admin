@@ -28,6 +28,7 @@ const getUserAccessSource = async () => {
       'legend.data',
       res.data.map((v) => t(v.name))
     )
+    set(pieOptionsData, 'title.text', t('analysis.userAccessSource'))
     pieOptionsData!.series![0].data = res.data.map((v) => {
       return {
         name: t(v.name),

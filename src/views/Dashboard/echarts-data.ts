@@ -74,37 +74,24 @@ export const lineOptions: EChartsOption = {
 
 export const pieOptions: EChartsOption = {
   title: {
-    text: t('analysis.userAccessSource'),
+    text: '',
     left: 'center'
   },
   tooltip: {
     trigger: 'item',
-    formatter: '{a} <br/>{b} : {c} ({d}%)'
+    formatter: '{b} : {c} ({d}%)'
   },
   legend: {
     orient: 'vertical',
     left: 'left',
-    data: [
-      t('analysis.directAccess'),
-      t('analysis.mailMarketing'),
-      t('analysis.allianceAdvertising'),
-      t('analysis.videoAdvertising'),
-      t('analysis.searchEngines')
-    ]
+    data: []
   },
   series: [
     {
-      name: t('analysis.userAccessSource'),
       type: 'pie',
       radius: '55%',
       center: ['50%', '60%'],
-      data: [
-        { value: 335, name: t('analysis.directAccess') },
-        { value: 310, name: t('analysis.mailMarketing') },
-        { value: 234, name: t('analysis.allianceAdvertising') },
-        { value: 135, name: t('analysis.videoAdvertising') },
-        { value: 1548, name: t('analysis.searchEngines') }
-      ]
+      data: []
     }
   ]
 }

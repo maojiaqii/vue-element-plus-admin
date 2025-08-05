@@ -7,6 +7,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { setComponentEvents, setFormLifecycle } from '@/components/Form/src/helper'
 import { ElCheckbox } from 'element-plus'
 import { FormSchema } from '@/components/Form'
+import { Table } from '@/components/Table'
 import { componentMap } from '../helper/componentMap'
 import { isArray, isFunction } from '@/utils/is'
 import RenderSlotItem from '@/components/Form/src/components/RenderSlotItem.vue'
@@ -134,6 +135,18 @@ onUnmounted(() => {
   <component
     v-if="formItem.componentProps.component.toUpperCase() == 'CHECKBOX'"
     :is="ElCheckbox"
+    v-model="formModelRef[formItem.itemProps.prop]"
+    v-bind="formItemProps[formItem.itemProps.prop].componentProps"
+    :label="t(formItemProps?.[formItem.itemProps.prop].componentProps.label)"
+    v-on="formComponentEventsRef"
+  />
+  <component
+    v-else-if="
+      formItem.componentProps.component.toUpperCase() == 'TABLE' &&
+      formItem.componentProps.tableCode &&
+      renderTableProps(formItem.componentProps.tableCode)
+    "
+    :is="Table"
     v-model="formModelRef[formItem.itemProps.prop]"
     v-bind="formItemProps[formItem.itemProps.prop].componentProps"
     :label="t(formItemProps?.[formItem.itemProps.prop].componentProps.label)"

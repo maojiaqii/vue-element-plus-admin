@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ElRow, ElCol, ElCard, ElSkeleton } from 'element-plus'
-import { CountTo } from '@/components/CountTo'
 import { useDesign } from '@/hooks/web/useDesign'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive } from 'vue'
 import { getCountApi } from '@/api/dashboard/analysis'
 import type { AnalysisTotalTypes } from '@/api/dashboard/analysis/types'
+import { Panel } from '@/components/Panel'
 
 const { t } = useI18n()
 
@@ -40,26 +40,11 @@ getCount()
       <ElCard shadow="hover" class="mb-20px">
         <ElSkeleton :loading="loading" animated :rows="2">
           <template #default>
-            <div :class="`${prefixCls}__item flex justify-between`">
-              <div>
-                <div
-                  :class="`${prefixCls}__item--icon ${prefixCls}__item--peoples p-16px inline-block rounded-6px`"
-                >
-                  <Icon icon="svg-icon:peoples" :size="40" />
-                </div>
-              </div>
-              <div class="flex flex-col justify-between">
-                <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
-                  t('analysis.newUser')
-                }}</div>
-                <CountTo
-                  class="text-20px font-700 text-right"
-                  :start-val="0"
-                  :end-val="102400"
-                  :duration="2600"
-                />
-              </div>
-            </div>
+            <Panel
+              :icon="{ icon: 'svg-icon:peoples', color: '#40c9c6' }"
+              :title="t('analysis.newUser')"
+              :value="102400"
+            />
           </template>
         </ElSkeleton>
       </ElCard>
@@ -69,26 +54,11 @@ getCount()
       <ElCard shadow="hover" class="mb-20px">
         <ElSkeleton :loading="loading" animated :rows="2">
           <template #default>
-            <div :class="`${prefixCls}__item flex justify-between`">
-              <div>
-                <div
-                  :class="`${prefixCls}__item--icon ${prefixCls}__item--message p-16px inline-block rounded-6px`"
-                >
-                  <Icon icon="svg-icon:message" :size="40" />
-                </div>
-              </div>
-              <div class="flex flex-col justify-between">
-                <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
-                  t('analysis.unreadInformation')
-                }}</div>
-                <CountTo
-                  class="text-20px font-700 text-right"
-                  :start-val="0"
-                  :end-val="81212"
-                  :duration="2600"
-                />
-              </div>
-            </div>
+            <Panel
+              :icon="{ icon: 'svg-icon:message', color: '#36a3f7' }"
+              :title="t('analysis.unreadInformation')"
+              :value="81212"
+            />
           </template>
         </ElSkeleton>
       </ElCard>
@@ -98,26 +68,11 @@ getCount()
       <ElCard shadow="hover" class="mb-20px">
         <ElSkeleton :loading="loading" animated :rows="2">
           <template #default>
-            <div :class="`${prefixCls}__item flex justify-between`">
-              <div>
-                <div
-                  :class="`${prefixCls}__item--icon ${prefixCls}__item--money p-16px inline-block rounded-6px`"
-                >
-                  <Icon icon="svg-icon:money" :size="40" />
-                </div>
-              </div>
-              <div class="flex flex-col justify-between">
-                <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
-                  t('analysis.transactionAmount')
-                }}</div>
-                <CountTo
-                  class="text-20px font-700 text-right"
-                  :start-val="0"
-                  :end-val="9280"
-                  :duration="2600"
-                />
-              </div>
-            </div>
+            <Panel
+              :icon="{ icon: 'svg-icon:money', color: '#f4516c' }"
+              :title="t('analysis.transactionAmount')"
+              :value="9280"
+            />
           </template>
         </ElSkeleton>
       </ElCard>
@@ -127,74 +82,14 @@ getCount()
       <ElCard shadow="hover" class="mb-20px">
         <ElSkeleton :loading="loading" animated :rows="2">
           <template #default>
-            <div :class="`${prefixCls}__item flex justify-between`">
-              <div>
-                <div
-                  :class="`${prefixCls}__item--icon ${prefixCls}__item--shopping p-16px inline-block rounded-6px`"
-                >
-                  <Icon icon="svg-icon:shopping" :size="40" />
-                </div>
-              </div>
-              <div class="flex flex-col justify-between">
-                <div :class="`${prefixCls}__item--text text-16px text-gray-500 text-right`">{{
-                  t('analysis.totalShopping')
-                }}</div>
-                <CountTo
-                  class="text-20px font-700 text-right"
-                  :start-val="0"
-                  :end-val="13600"
-                  :duration="2600"
-                />
-              </div>
-            </div>
+            <Panel
+              :icon="{ icon: 'svg-icon:shopping', color: '#34bfa3' }"
+              :title="t('analysis.totalShopping')"
+              :value="13600"
+            />
           </template>
         </ElSkeleton>
       </ElCard>
     </ElCol>
   </ElRow>
 </template>
-
-<style lang="less" scoped>
-@prefix-cls: ~'@{namespace}-panel';
-
-.@{prefix-cls} {
-  &__item {
-    &--peoples {
-      color: #40c9c6;
-    }
-
-    &--message {
-      color: #36a3f7;
-    }
-
-    &--money {
-      color: #f4516c;
-    }
-
-    &--shopping {
-      color: #34bfa3;
-    }
-
-    &:hover {
-      :deep(.@{namespace}-icon) {
-        color: #fff !important;
-      }
-      .@{prefix-cls}__item--icon {
-        transition: all 0.38s ease-out;
-      }
-      .@{prefix-cls}__item--peoples {
-        background: #40c9c6;
-      }
-      .@{prefix-cls}__item--message {
-        background: #36a3f7;
-      }
-      .@{prefix-cls}__item--money {
-        background: #f4516c;
-      }
-      .@{prefix-cls}__item--shopping {
-        background: #34bfa3;
-      }
-    }
-  }
-}
-</style>
