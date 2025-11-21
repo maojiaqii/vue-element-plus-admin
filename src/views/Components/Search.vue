@@ -17,13 +17,7 @@ const register = (methods: any) => {
 
 <template>
   <ContentWrap :title="t('searchDemo.search')" :message="t('searchDemo.searchDes')">
-    <Search
-      :schema="data"
-      :expand-index="4"
-      @search="handleSearch"
-      @reset="handleSearch"
-      @register="register"
-    />
+    <Search :schema="data" @search="handleSearch" @reset="handleSearch" @register="register" />
   </ContentWrap>
 </template>
 

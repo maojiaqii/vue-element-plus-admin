@@ -9,12 +9,12 @@ import {
   SelectOption
 } from '../types'
 import { get, set } from 'lodash-es'
-import { ElMessage, FormRules, FormItemRule } from 'element-plus'
+import { ElMessage, FormItemRule, FormRules } from 'element-plus'
 import * as isUtil from '@/utils/is'
+import { isCustomFunction, isEmpty } from '@/utils/is'
 import { getDictDataApi } from '@/api/common'
 import { createVNode, reactive } from 'vue'
 import { Icon } from '@/components/Icon'
-import { isCustomFunction } from '@/utils/is'
 import { newFunction } from '@/utils/newFunction'
 import { hasButtonPermi, hasFieldPermi } from '@/components/Permission'
 
@@ -55,12 +55,13 @@ export const setComponentProps = (
     if (autoSetPlaceholder) {
       placeholder = setTextPlaceholder(col)
     }
-
+    col.componentProps.others = col.componentProps.others || {}
     values[col.itemProps.prop].componentProps = {
       options: [],
       ...placeholder,
       ...col.componentProps,
-      disabled: true
+      disabled: true,
+      ...col.componentProps.others
     }
 
     if (
@@ -233,7 +234,11 @@ export const setRemoteOptions = async (
     'RadioButton',
     'CheckboxButton'
   ]
-  if (optionsMap.includes(item?.componentProps?.component) && item?.componentProps?.query) {
+  if (
+    optionsMap.includes(item?.componentProps?.component) &&
+    item?.componentProps?.query &&
+    !isEmpty(item?.componentProps?.query)
+  ) {
     item.componentProps.loading = true
     const placeholder = { options: [] } // 占位默认值
     const res = await getDictDataApi(item?.componentProps?.query)
@@ -254,7 +259,7 @@ export const setRemoteOptions = async (
  * @description 合并传入进来的栅格属性
  */
 export const setGridProp = (col: ColProps = {}): ColProps => {
-  const colProps: ColProps = {
+  return {
     // 如果有span，代表用户优先级更高，所以不需要默认栅格
     ...(col.span
       ? {}
@@ -267,7 +272,6 @@ export const setGridProp = (col: ColProps = {}): ColProps => {
         }),
     ...col
   }
-  return colProps
 }
 
 /**
@@ -278,6 +282,7 @@ export const setGridProp = (col: ColProps = {}): ColProps => {
  * @description 生成对应的formModel
  */
 export const initModel = (schema: FormProps, formModel: Recordable) => {
+  console.log(schema, formModel)
   const model: Recordable = { ...formModel }
   for (const key in schema) {
     if (schema[key]) {

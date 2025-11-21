@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100%" height="40" viewBox="0 0 300 40" xmlns="http://www.w3.org/2000/svg">
+    <rect x="5" y="5" width="290" height="30" rx="6" fill="none" stroke="#409EFF" stroke-width="2"/>
+    <!-- 主色头像 -->
+    <circle cx="40" cy="20" r="12" fill="#409EFF" stroke="#409EFF"/>
+    <text x="40" y="20" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="middle" fill="#FFFFFF">A</text>
+
+    <!-- 成功色头像 -->
+    <circle cx="80" cy="20" r="12" fill="#67C23A" stroke="#67C23A"/>
+    <text x="80" y="20" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="middle" fill="#FFFFFF">B</text>
+
+    <!-- 灰色占位头像 -->
+    <circle cx="120" cy="20" r="12" fill="#E4E7ED" stroke="#E4E7ED"/>
+    <text x="120" y="20" font-size="12" font-weight="600" text-anchor="middle" dominant-baseline="middle" fill="#606266">C</text>
+    <text x="285" y="23" text-anchor="end" font-size="12" fill="#409EFF">CharAvatar</text>
+</svg>

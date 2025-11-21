@@ -2090,7 +2090,7 @@
     },
     {
       "itemProps": {
-        "prop": "divider18"
+        "prop": "divider17"
       },
       "componentProps": {
         "component": "Divider",
@@ -2494,7 +2494,38 @@
     },
     {
       "itemProps": {
-        "prop": "divider17"
+        "prop": "divider18"
+      },
+      "componentProps": {
+        "component": "Divider",
+        "title": "子表单",
+        "message": "分组子表单",
+        "collapses": false
+      }
+    },
+    {
+      "itemProps": {
+        "prop": "subForm1",
+        "label": "子表单1"
+      },
+      "colProps": {
+        "xl": 24,
+        "lg": 24,
+        "md": 24,
+        "sm": 24,
+        "xs": 24
+      },
+      "componentProps": {
+        "component": "SubForm",
+        "formCode": "user_form",
+        "on": {
+          "change": "(val)=>{console.log(val)}"
+        }
+      }
+    },
+    {
+      "itemProps": {
+        "prop": "divider19"
       },
       "componentProps": {
         "component": "Divider",

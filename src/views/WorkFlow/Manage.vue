@@ -60,7 +60,8 @@ const formData = ref<WorkflowDesign>({
   flowCode: '',
   flowName: '',
   status: 0, // 0为正常，1为停用
-  remark: ''
+  remark: '',
+  flowVersion: 0
 })
 const formRules = {
   flowCode: [required()],
@@ -78,7 +79,8 @@ const editFlow = async (data: Recordable) => {
       flowCode: flowObj.flowCode,
       flowName: flowObj.flowName,
       status: flowObj.status,
-      remark: flowObj.remark
+      remark: flowObj.remark,
+      flowVersion: flowObj.flowVersion
     }
     workflowData.value = flowObj.flowNodes
     drawerVisible.value = true
@@ -389,7 +391,10 @@ const getStatusStyle = (published: boolean) => {
   </ContentWrap>
   <ElDrawer v-model="drawerVisible" size="80%" destroy-on-close>
     <template #header>
-      <div><b>流程设计</b></div>
+      <div
+        ><b>流程设计：{{ formData.flowName }}</b
+        ><ElTag type="info" size="small">v{{ formData.flowVersion }}</ElTag></div
+      >
     </template>
     <template #default>
       <WorkFlow ref="flowDesigner" :nodeConfig="workflowData" />

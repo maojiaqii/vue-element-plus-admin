@@ -2,9 +2,8 @@
 import { useMonacoEditor } from '@/hooks/web/useMonacoEditor'
 import { onMounted, computed, watch, ref, nextTick } from 'vue'
 import { useAppStore } from '@/store/modules/app'
-import { useLocaleStore } from '@/store/modules/locale'
-
-const localeStore = useLocaleStore()
+import { isArray, isObject } from '@/utils/is'
+import { debounce } from 'lodash-es'
 
 const props = withDefaults(
   defineProps<{
@@ -12,25 +11,26 @@ const props = withDefaults(
     height?: string | number
     language?: string
     editorOption?: Object
-    modelValue: string
+    modelValue: string | Object
   }>(),
   {
     width: '100%',
     height: '100%',
     language: 'javascript',
     editorOption: () => ({}),
-    modelValue: ''
+    modelValue: undefined
   }
 )
 
 const emits = defineEmits<{
-  (e: 'blur'): void
-  (e: 'update:modelValue', val: string): void
-  (e: 'change', val: string): void
+  (e: 'blur', val: string | Object): void
+  (e: 'update:modelValue', val: string | Object): void
+  (e: 'change', val: string | Object): void
 }>()
 
 const appStore = useAppStore()
 const isDark = computed(() => appStore.getIsDark)
+const isObj = isObject(props.modelValue) || isArray(props.modelValue)
 
 const monacoEditorStyle = computed(() => {
   return {
@@ -49,13 +49,30 @@ const {
   changeTheme
 } = useMonacoEditor(props.language)
 
+const emitVal = debounce(() => {
+  let value = getEditor()?.getValue()
+  if (isObj && value) {
+    try {
+      const jsonObject = JSON.parse(value)
+      emits('update:modelValue', jsonObject)
+      emits('blur', jsonObject)
+      emits('change', jsonObject)
+    } catch (error) {
+      console.error('Error parsing JSON:', error)
+    }
+  } else {
+    emits('update:modelValue', value || undefined)
+    emits('blur', value || undefined)
+    emits('change', value || undefined)
+  }
+}, 1000)
+
 onMounted(() => {
   const monacoEditor = createEditor(props.editorOption)
-  updateMonacoVal(props.modelValue)
-  monacoEditor?.onDidChangeModelContent(() => {
-    emits('update:modelValue', monacoEditor?.getValue())
-    emits('change', monacoEditor?.getValue())
-  })
+  updateMonacoVal(
+    isObj ? JSON.stringify(props.modelValue, null, '\t') : (props.modelValue as string)
+  )
+  monacoEditor?.onDidChangeModelContent(() => emitVal())
   monacoEditor?.onDidBlurEditorText(() => {
     emits('blur')
   })
@@ -64,7 +81,9 @@ onMounted(() => {
 watch(
   () => props.modelValue,
   () => {
-    updateMonacoVal(props.modelValue)
+    updateMonacoVal(
+      isObj ? JSON.stringify(props.modelValue, null, '\t') : (props.modelValue as string)
+    )
   }
 )
 
@@ -104,6 +123,7 @@ defineExpose({ updateOptions })
 
 <style lang="scss" scoped>
 .code-editor-wrapper {
+  width: 100%;
   border: 1px solid var(--el-border-color);
   border-radius: var(--el-input-border-radius, 4px);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

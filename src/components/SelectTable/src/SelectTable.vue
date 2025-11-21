@@ -26,10 +26,13 @@ const { configGlobal } = useConfigGlobal()
 const prefixCls = getPrefixCls('select-table')
 
 const props = defineProps({
-  modelValue: Array<Recordable>,
+  modelValue: {
+    type: [Array<Recordable>, Object]
+  },
   side: propTypes.string.def(undefined),
   search: propTypes.string.def(undefined),
-  table: propTypes.string.def(undefined)
+  table: propTypes.string.def(undefined),
+  multiple: propTypes.bool.def(true)
 })
 const emit = defineEmits(['select'])
 
@@ -118,7 +121,20 @@ const renderSide = async (dictCode: string) => {
 }
 
 const comfirm = () => {
-  emit('select', unref(tableExpose).getSelectRows())
+  if (unref(tableExpose).getSelectRows().length === 0) {
+    ElMessage.warning('未选择数据！')
+    return
+  }
+  if (!props.multiple && unref(tableExpose).getSelectRows().length > 1) {
+    ElMessage.error('请选择一条数据！')
+    return
+  } else {
+    if (props.multiple) {
+      emit('select', unref(tableExpose).getSelectRows())
+    } else {
+      emit('select', unref(tableExpose).getSelectRows()[0])
+    }
+  }
 }
 
 onMounted(() => {

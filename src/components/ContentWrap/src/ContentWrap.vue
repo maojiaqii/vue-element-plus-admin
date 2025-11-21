@@ -11,7 +11,7 @@ const prefixCls = getPrefixCls('content-wrap')
 defineProps({
   title: propTypes.string.def(''),
   message: propTypes.string.def(''),
-  style: propTypes.string.def('')
+  style: propTypes.any.def()
 })
 </script>
 
@@ -19,16 +19,16 @@ defineProps({
   <ElCard :class="[prefixCls]" shadow="hover">
     <template v-if="title" #header>
       <div class="flex items-center">
-        <span class="text-16px font-700">{{ title }}</span>
-        <ElTooltip v-if="message" effect="dark" placement="right">
-          <template #content>
-            <div class="max-w-200px">{{ message }}</div>
-          </template>
-          <Icon class="ml-5px" icon="bi:question-circle-fill" :size="14" />
-        </ElTooltip>
-        <div class="flex pl-20px flex-grow">
-          <slot name="header"></slot>
-        </div>
+        <span class="text-16px font-700 w-full"
+          >{{ title }}
+          <ElTooltip v-if="message" effect="dark" placement="right">
+            <template #content>
+              <div class="max-w-200px">{{ message }}</div>
+            </template>
+            <Icon class="ml-5px" icon="bi:question-circle-fill" :size="14" />
+          </ElTooltip>
+        </span>
+        <slot name="header"></slot>
       </div>
     </template>
     <div :style="style">

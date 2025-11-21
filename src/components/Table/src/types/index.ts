@@ -3,7 +3,7 @@ import { TableSearch } from '@/api/table/types'
 import { ButtonComponentProps } from '@/components/Form/src/types'
 import { TreeHelperConfig } from '@/utils/tree'
 export interface TableColumn {
-  field: string
+  field?: string
   label?: string
   type?: string
   /**
@@ -77,7 +77,7 @@ export interface TableSetProps {
 export interface TableProps extends Omit<Partial<ElTableProps<any[]>>, 'data'> {
   showAction?: boolean
   showEditAction?: boolean
-  // 是否所有的超出隐藏，优先级低于schema中的showOverflowTooltip,
+  // 是否所有的超出隐藏
   showOverflowTooltip?: boolean
   // 表头
   columns?: TableColumn[]

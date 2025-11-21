@@ -80,17 +80,18 @@ const tableHeight = computed(() => {
   const isInDialog =
     yip.value.closest('.useDialog-scrollbar') || yip.value.closest('.useDrawer-scrollbar')
   const containerHeight = isInDialog ? isInDialog.clientHeight : yip.value.clientHeight
-
   // 获取 ContentWrap 的 padding 和 margin
   const mainElement = yip.value.querySelector('.el-main')
   const contentWrapPadding = mainElement
     ? parseInt(getComputedStyle(mainElement).paddingTop) * 2
     : 0
-
   if (unref(props.search)) {
     // 考虑 header 的 margin-bottom
     const headerMargin = 10
-    return containerHeight - (searchAreaHeight.value + contentWrapPadding + headerMargin + 135)
+    console.log(
+      containerHeight - (searchAreaHeight.value + contentWrapPadding + headerMargin + 170)
+    )
+    return containerHeight - (searchAreaHeight.value + contentWrapPadding + headerMargin + 170)
   }
   return containerHeight - (contentWrapPadding + 100)
 })

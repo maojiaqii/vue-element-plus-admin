@@ -76,9 +76,6 @@ export function useMonacoEditor(language: string = 'javascript') {
         updateOptions({ readOnly: false })
       }
       monacoEditor?.setValue(val)
-      setTimeout(async () => {
-        await formatDoc()
-      }, 10)
     })
   }
 

@@ -11,7 +11,17 @@ import {
 } from 'element-plus'
 import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
-import { onMounted, ref, unref, PropType, onUpdated, onUnmounted, nextTick } from 'vue'
+import {
+  onMounted,
+  ref,
+  unref,
+  PropType,
+  onUpdated,
+  onUnmounted,
+  nextTick,
+  computed,
+  watch
+} from 'vue'
 import { useForm } from '@/hooks/web/useForm'
 import { useDesign } from '@/hooks/web/useDesign'
 import {
@@ -61,7 +71,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['register', 'search', 'reset', 'expand'])
+const emit = defineEmits(['register', 'search', 'reset', 'expand', 'change'])
 
 const formItemProps = ref(
   setComponentProps(unref(props.schema.formItems), unref(props.schema.autoSetPlaceholder))
@@ -164,20 +174,22 @@ const setFormConstant = (filed: string, val: any) => {
 }
 
 // 获取所有divider项
-const getDividerItems = () => {
+const dividerItems = computed(() => {
   const dividers: any[] = []
-  for (const formItem of props.schema.formItems) {
-    if (formItem.componentProps.component === 'Divider') {
-      dividers.push({
-        key: formItem.itemProps.prop,
-        title: formItem.componentProps.title,
-        prop: formItem.itemProps.prop,
-        message: formItem.componentProps.message
-      })
+  if (props.schema.formItems) {
+    for (const formItem of props.schema.formItems) {
+      if (formItem.componentProps.component === 'Divider') {
+        dividers.push({
+          key: formItem.itemProps.prop,
+          title: formItem.componentProps.title,
+          prop: formItem.itemProps.prop,
+          message: formItem.componentProps.message
+        })
+      }
     }
   }
   return dividers
-}
+})
 
 // 处理tab切换
 const handleTabChange = (tabName: string) => {
@@ -187,6 +199,15 @@ const handleTabChange = (tabName: string) => {
     dividerCollapses.value[key] = key !== tabName
   }
 }
+
+// 监听
+watch(
+  () => formModel.value,
+  (val: Recordable) => {
+    emit('change', val)
+  },
+  { deep: true, immediate: true }
+)
 
 defineExpose({
   getComponentExpose,
@@ -199,12 +220,11 @@ defineExpose({
 onMounted(() => {
   // 如果是tabs模式，设置默认激活的tab
   if (props.schema.dividerType === 'tabs') {
-    const dividers = getDividerItems()
-    if (dividers.length > 0) {
-      activeTab.value = dividers[0].prop
+    if (dividerItems.value.length > 0) {
+      activeTab.value = dividerItems.value[0].prop
       // 初始化时只显示第一个tab的内容
       for (const key in dividerCollapses.value) {
-        dividerCollapses.value[key] = key !== dividers[0].prop
+        dividerCollapses.value[key] = key !== dividerItems.value[0].prop
       }
     }
   }
@@ -241,7 +261,7 @@ onUnmounted(() => {
 <template>
   <ElForm
     ref="elFormRef"
-    v-bind="schema"
+    v-bind="{ ...schema, ...schema.others }"
     :disabled="formMode == 'view'"
     :model="formModel"
     :rules="formRules"
@@ -259,7 +279,7 @@ onUnmounted(() => {
         <ElScrollbar class="tabs-scrollbar">
           <div class="tabs-nav">
             <div
-              v-for="item in getDividerItems()"
+              v-for="item in dividerItems"
               :key="item.prop"
               :class="[
                 'tab-item',
@@ -380,7 +400,7 @@ onUnmounted(() => {
                   <ElFormItem
                     v-if="formItem.componentProps.component"
                     :ref="(el: any) => setFormItemRefMap(el, formItem.itemProps.prop)"
-                    v-bind="formItem.itemProps"
+                    v-bind="{ ...formItem.itemProps, ...formItem.itemProps.others }"
                     label=""
                   >
                     <RenderFormItem
@@ -423,6 +443,12 @@ onUnmounted(() => {
                         :data="schema.formItems![key]"
                       />
                     </ElScrollbar>
+                  </ElPopover>
+                  <ElPopover v-else-if="formItem.itemProps.tip" placement="top">
+                    <template #reference>
+                      <Icon class="ml-5px mt-10px" icon="bi:question-circle-fill" :size="14" />
+                    </template>
+                    {{ formItem.itemProps.tip }}
                   </ElPopover>
                 </template>
                 <RenderFormItem

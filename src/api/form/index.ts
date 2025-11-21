@@ -1,5 +1,8 @@
 import request from '@/axios'
 
-export const getLoginFormApi = () => {
-  return request.get({ url: '/mock/form/login' })
+export const getFormPropsApi = (params: Recordable) => {
+  return request.get({
+    url: '/form/formProps',
+    params
+  })
 }

@@ -538,6 +538,8 @@ export interface FormSetProps {
 
 export interface FormItemProps extends Partial<ElFormItemProps> {
   prop: string
+  tip?: string
+  others?: Record<string, any>
   style?: CSSProperties
   slots?: {
     default?: (...args: any[]) => JSX.Element | null
@@ -670,29 +672,65 @@ export interface FormSchema {
   /**
    * 权限标志
    */
-  permi: string
+  permi?: string
 
   /**
    * 样式隐藏，不会把值一同删掉，类似v-show
    */
   display?: boolean
+  componentInfo?: ComponentInfo
+}
+
+export interface ComponentInfo {
+  key?: string
+  title: string
+  type: string
+  icon: string
 }
 
 export interface FormProps extends Partial<ElFormProps> {
-  formItems?: FormSchema[]
-  formValidators?: Recordable
+  formItems: FormSchema[]
+  formValidators: Recordable
+  lifecycle: Recordable
   autoSetPlaceholder?: boolean
   // 表单模式
-  mode: 'demo' | 'edit' | 'view'
+  mode?: 'demo' | 'edit' | 'view'
   // 是否是查询条件表单
-  isSearch: boolean
+  isSearch?: boolean
   // 伸缩的界限字段
-  expandIndex: number
+  expandIndex?: number
   // 是否描述列表表单
-  isDescription: boolean
+  isDescription?: boolean
   // 列表标题显示位置
-  direction: 'horizontal' | 'vertical'
+  direction?: 'horizontal' | 'vertical'
   // 列表标题显示位置 lines现在默认的样式，tabs显示成类似页签的样式
-  dividerType: 'lines' | 'tabs'
+  dividerType?: 'lines' | 'tabs'
+  others?: Recordable
+  [key: string]: any
+}
+
+export interface DbMappingObj {
+  isKey?: boolean
+  isMainKey?: boolean
+  isJson?: boolean
+  isDetail: boolean
+  detail?: object
+  dbColumn: string
+  formField: string
+}
+
+export interface DbMapping {
+  dbTableName: string
+  mapping: DbMappingObj[]
+}
+
+export interface FormInfo {
+  formCode: string
+  formName: string
+  formType: number
+  status: 0 | 1
+  remark: string
+  schema: FormProps
+  dbMapping: DbMapping
   [key: string]: any
 }

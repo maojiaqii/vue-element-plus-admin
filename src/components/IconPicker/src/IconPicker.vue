@@ -3,7 +3,15 @@ import epIcons from './data/icons.ep'
 import antIcons from './data/icons.ant-design'
 import tIcons from './data/icons.tdesign'
 import { useDesign } from '@/hooks/web/useDesign'
-import { ElInput, ElPopover, ElScrollbar, ElTabs, ElTabPane, ElPagination } from 'element-plus'
+import {
+  ElInput,
+  ElPopover,
+  ElScrollbar,
+  ElTabs,
+  ElTabPane,
+  ElPagination,
+  ElButton
+} from 'element-plus'
 import { Icon } from '@/components/Icon'
 import { useAppStore } from '@/store/modules/app'
 import { computed, CSSProperties, ref, unref, watch } from 'vue'
@@ -119,7 +127,7 @@ const inputClear = () => {
 
 <template>
   <div :class="prefixCls" class="flex justify-center items-center box">
-    <ElInput readonly v-model="modelValue" clearable />
+    <ElInput readonly v-model="modelValue" />
     <ElPopover
       placement="bottom"
       trigger="click"
@@ -185,6 +193,7 @@ const inputClear = () => {
           layout="total, prev, pager, next, jumper"
           :total="filterItemIcons(icons[currentIconNameIndex]?.icons)?.length"
         />
+        <ElButton type="danger" text size="small" @click="modelValue = undefined">清空</ElButton>
       </div>
     </ElPopover>
   </div>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100%" height="40" viewBox="0 0 300 40" xmlns="http://www.w3.org/2000/svg">
+    <rect x="5" y="5" width="290" height="30" rx="6" fill="none" stroke="#409EFF" stroke-width="2"/>
+
+    <!-- 轨道背景 -->
+    <line x1="20" y1="20" x2="180" y2="20"
+          stroke="#E4E7ED" stroke-width="6" stroke-linecap="round"/>
+
+    <!-- 已选择进度（示例为约 62.5%，位置在 x=120） -->
+    <line x1="20" y1="20" x2="120" y2="20"
+          stroke="#409EFF" stroke-width="6" stroke-linecap="round"/>
+
+    <!-- 滑块阴影 -->
+    <defs>
+        <filter id="knobShadow" x="-50%" y="-50%" width="200%" height="200%">
+            <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="#000" flood-opacity="0.2"/>
+        </filter>
+    </defs>
+
+    <!-- 滑块圆点 -->
+    <circle cx="120" cy="20" r="8"
+            fill="#FFFFFF" stroke="#409EFF" stroke-width="2"
+            filter="url(#knobShadow)"/>
+    <text x="285" y="25" text-anchor="end" font-size="12" fill="#409EFF">Slider</text>
+</svg>

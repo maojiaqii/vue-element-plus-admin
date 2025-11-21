@@ -38,41 +38,46 @@ import { Tree } from '@/components/Tree'
 import { Table } from '@/components/Table'
 import { WorkFlow, FlowTimeline } from '@/components/WorkFlow'
 import { SelectTable } from '@/components/SelectTable'
+import { SubForm } from '@/components/SubForm'
 
 // 创建一个懒加载的 Table 组件
 const AsyncTable = defineAsyncComponent(() =>
   import('@/components/Table').then((mod) => ({ default: mod.Table }))
 )
 
+const AsyncSubForm = defineAsyncComponent(() =>
+  import('@/components/SubForm').then((mod) => ({ default: mod.SubForm }))
+)
+
 const componentMap: Recordable<string, Component> = {
+  Input: ElInput,
+  InputNumber: ElInputNumber,
+  InputPassword: InputPassword,
+  Switch: ElSwitch,
+  Rate: ElRate,
+  Slider: ElSlider,
   RadioGroup: ElRadioGroup,
   RadioButton: ElRadioGroup,
   Checkbox: ElCheckbox,
   CheckboxGroup: ElCheckboxGroup,
   CheckboxButton: ElCheckboxGroup,
-  Input: ElInput,
   Autocomplete: ElAutocomplete,
-  InputNumber: ElInputNumber,
   Select: ElSelect,
   Cascader: ElCascader,
-  Switch: ElSwitch,
-  Slider: ElSlider,
   TimePicker: ElTimePicker,
   DatePicker: ElDatePicker,
-  Rate: ElRate,
   ColorPicker: ElColorPicker,
   Transfer: ElTransfer,
-  Divider: ElDivider,
   TimeSelect: ElTimeSelect,
-  SelectV2: ElSelectV2,
-  InputPassword: InputPassword,
-  Editor: Editor,
   TreeSelect: ElTreeSelect,
+  SelectV2: ElSelectV2,
+  Editor: Editor,
   CodeEditor: CodeEditor,
   IconPicker: IconPicker,
   IAgree: IAgree,
   Captcha: Captcha,
   Upload: Upload,
+  Divider: ElDivider,
   Button: BaseButton,
   Icon: Icon,
   Tag: ElTag,
@@ -83,7 +88,8 @@ const componentMap: Recordable<string, Component> = {
   CharAvatar: CharAvatar,
   WorkFlow: WorkFlow,
   FlowTimeline: FlowTimeline,
-  SelectTable: SelectTable
+  SelectTable: SelectTable,
+  SubForm: SubForm
 }
 
 export { componentMap }

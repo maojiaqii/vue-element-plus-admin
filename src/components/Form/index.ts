@@ -1,4 +1,5 @@
-import Form from './src/Form.vue'
+import Form from '../Form/src/Form.vue'
+import Designer from '../Form/src/Designer.vue'
 export type {
   ComponentName,
   InputComponentProps,
@@ -30,7 +31,7 @@ export type {
   PlaceholderModel,
   InputPasswordComponentProps,
   TreeSelectComponentProps
-} from './src/types'
+} from '../Form/src/types'
 
 export interface FormExpose {
   formModel: Recordable
@@ -40,4 +41,4 @@ export interface FormExpose {
   setFormConstant: (field: string, val: any) => any
 }
 
-export { Form }
+export { Form, Designer }

@@ -5,17 +5,19 @@ import { useRenderRadio } from './useRenderRadio'
 import { useRenderCheckbox } from './useRenderCheckbox'
 import { useI18n } from '@/hooks/web/useI18n'
 import { setComponentEvents, setFormLifecycle } from '@/components/Form/src/helper'
-import { ElCheckbox } from 'element-plus'
+import { ElCheckbox, ElMessage } from 'element-plus'
 import { FormSchema } from '@/components/Form'
 import { Table } from '@/components/Table'
 import { componentMap } from '../helper/componentMap'
 import { isArray, isFunction } from '@/utils/is'
 import RenderSlotItem from '@/components/Form/src/components/RenderSlotItem.vue'
+import { getTableInfoApi } from '@/api/common'
 
 const { renderSelectOptions } = useRenderSelect()
 const { renderRadioOptions } = useRenderRadio()
 const { renderCheckboxOptions } = useRenderCheckbox()
 const { t } = useI18n()
+const tableOptions = ref()
 
 // 接收表单项和其他相关属性
 const props = defineProps({
@@ -63,6 +65,37 @@ const lifecycle = ref(
   )
 )
 
+const getTableOptions = async (tableCode: string) => {
+  if (tableCode) {
+    const res = await getTableInfoApi({ code: tableCode })
+    if (res.code != 200) {
+      ElMessage.error(res.msg)
+      tableOptions.value = undefined
+    } else {
+      tableOptions.value = res.data
+      // 前台页面取值作为参数给表格查询数据（如：明细表对应主表的id）
+      if (tableOptions.value.query.params) {
+        for (const f in tableOptions.value.query.params) {
+          if (
+            tableOptions.value.query.params[f].startsWith('#{') &&
+            tableOptions.value.query.params[f].endsWith('}')
+          ) {
+            tableOptions.value.query.params[f] =
+              formModelRef.value[
+                tableOptions.value.query.params[f].substring(
+                  2,
+                  tableOptions.value.query.params[f].length - 1
+                )
+              ]
+          }
+        }
+      }
+    }
+  } else {
+    tableOptions.value = undefined
+  }
+}
+
 watch(
   () => unref(formModelRef),
   (val = {}) => {
@@ -88,6 +121,11 @@ const isSelectComponent = (formItem: FormSchema) => {
   return formItem.componentProps.component.toUpperCase() === 'SELECT'
 }
 
+// 判断是否是Table组件
+const isTableComponent = (formItem: FormSchema) => {
+  return formItem.componentProps.component.toUpperCase() === 'TABLE'
+}
+
 // 判断是否是Radio组件
 const isRadioComponent = (formItem: FormSchema) => {
   return formItem.componentProps.component.toUpperCase().startsWith('RADIO')
@@ -108,6 +146,9 @@ const setComponentRefMap = (ref: any, filed: string) => {
 }
 
 onMounted(() => {
+  if (isTableComponent(props.formItem)) {
+    getTableOptions(props.formItem.componentProps.tableCode)
+  }
   nextTick(() => {
     if (unref(lifecycle)?.mounted !== void 0 && isFunction(unref(lifecycle)?.mounted)) {
       unref(lifecycle).mounted()
@@ -141,16 +182,13 @@ onUnmounted(() => {
     v-on="formComponentEventsRef"
   />
   <component
-    v-else-if="
-      formItem.componentProps.component.toUpperCase() == 'TABLE' &&
-      formItem.componentProps.tableCode &&
-      renderTableProps(formItem.componentProps.tableCode)
-    "
+    v-else-if="isTableComponent(formItem) && tableOptions"
     :is="Table"
     v-model="formModelRef[formItem.itemProps.prop]"
-    v-bind="formItemProps[formItem.itemProps.prop].componentProps"
+    v-bind="tableOptions"
     :label="t(formItemProps?.[formItem.itemProps.prop].componentProps.label)"
     v-on="formComponentEventsRef"
+    class="w-full"
   />
   <component
     v-else

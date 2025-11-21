@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 40" preserveAspectRatio="xMidYMid meet">
+    <rect x="5" y="5" width="290" height="30" rx="4" fill="none" stroke="#409EFF" stroke-width="2"/>
+    <line x1="5" y1="15" x2="295" y2="15" stroke="#409EFF" stroke-width="1"/>
+    <line x1="5" y1="25" x2="295" y2="25" stroke="#409EFF" stroke-width="1"/>
+    <line x1="60" y1="5" x2="60" y2="35" stroke="#409EFF" stroke-width="1"/>
+    <line x1="140" y1="5" x2="140" y2="35" stroke="#409EFF" stroke-width="1"/>
+    <line x1="220" y1="5" x2="220" y2="35" stroke="#409EFF" stroke-width="1"/>
+    <text x="285" y="25" text-anchor="end" font-size="12" fill="#409EFF">Table</text>
+</svg>

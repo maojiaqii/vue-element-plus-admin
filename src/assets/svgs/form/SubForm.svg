@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 40" preserveAspectRatio="xMidYMid meet">
+    <rect x="8" y="8" width="284" height="24" rx="4" fill="none" stroke="#409EFF" stroke-width="2"/>
+    <rect x="14" y="12" width="80" height="8" fill="#409EFF" opacity="0.2"/>
+    <rect x="100" y="12" width="80" height="8" fill="#409EFF" opacity="0.2"/>
+    <rect x="186" y="12" width="80" height="8" fill="#409EFF" opacity="0.2"/>
+    <text x="285" y="23" text-anchor="end" font-size="12" fill="#409EFF">SubForm</text>
+</svg>

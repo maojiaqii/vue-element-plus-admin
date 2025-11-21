@@ -7,6 +7,9 @@ import { Infotip } from '@/components/Infotip'
 const schema = ref<FormProps>(data as any)
 const formMethods = ref()
 
+const keyClick1 = () => {
+  schema.value.dividerType = schema.value.dividerType === 'lines' ? 'tabs' : 'lines'
+}
 const keyClick = (key: string) => {
   if (key === '官网地址') {
     window.open('https://element-plus.org/')
@@ -41,5 +44,6 @@ watch(
     ]"
     @click="keyClick"
   />
+  <base-button type="primary" @click="keyClick1" />
   <Form :schema="schema" @register="register" />
 </template>

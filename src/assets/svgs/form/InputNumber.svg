@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 40" preserveAspectRatio="xMidYMid meet">
+    <rect x="5" y="5" width="290" height="30" rx="6" ry="6" fill="none" stroke="#409EFF" stroke-width="2"/>
+    <text x="20" y="25" font-size="16" fill="#409EFF" font-weight="bold">123</text>
+    <text x="270" y="22" text-anchor="end" font-size="12" fill="#409EFF">InputNumber</text>
+    <text x="283" y="30" font-size="16" fill="#409EFF" font-weight="bold">-</text>
+    <text x="280" y="21" font-size="16" fill="#409EFF" font-weight="bold">+</text>
+</svg>
