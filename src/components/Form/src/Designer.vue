@@ -308,6 +308,18 @@ watch(
             item.componentInfo!.key = toAnyString()
             formInfo.value.schema.formItems.push(item)
           }
+
+          if (!formInfo.value.schema.formValidators.hasOwnProperty(item.itemProps.prop)) {
+            formInfo.value.schema.formValidators[item.itemProps.prop] = [
+              {
+                required: false,
+                message: '必填'
+              },
+              {
+                validator: '(_, val, callback) => {\n' + '   callback()\n' + '}'
+              }
+            ]
+          }
         }
       } else if (val === 3) {
         // 我的已办查询表单
@@ -319,6 +331,18 @@ watch(
             item.componentInfo!.key = toAnyString()
             formInfo.value.schema.formItems.push(item)
           }
+
+          if (!formInfo.value.schema.formValidators.hasOwnProperty(item.itemProps.prop)) {
+            formInfo.value.schema.formValidators[item.itemProps.prop] = [
+              {
+                required: false,
+                message: '必填'
+              },
+              {
+                validator: '(_, val, callback) => {\n' + '   callback()\n' + '}'
+              }
+            ]
+          }
         }
       } else if (val === 4) {
         // 我发起的查询表单
@@ -329,6 +353,18 @@ watch(
           if (index === -1) {
             item.componentInfo!.key = toAnyString()
             formInfo.value.schema.formItems.push(item)
+          }
+
+          if (!formInfo.value.schema.formValidators.hasOwnProperty(item.itemProps.prop)) {
+            formInfo.value.schema.formValidators[item.itemProps.prop] = [
+              {
+                required: false,
+                message: '必填'
+              },
+              {
+                validator: '(_, val, callback) => {\n' + '   callback()\n' + '}'
+              }
+            ]
           }
         }
       }
@@ -374,27 +410,32 @@ const addRequireValidatorAndDbMapping = (val: string, component: string) => {
       }
     ]
   }
-  // 删除修改前的prop
-  let index = formInfo.value.dbMapping.mapping.findIndex(
-    (item) => item.formField === currentProp.value
-  )
-  if (index !== -1) {
-    formInfo.value.dbMapping.mapping.splice(index, 1)
-  }
-  let hasColumn = false
-  for (const dbTableColumn of dbTableColumnsListOri.value) {
-    if (dbTableColumn.value === val) {
-      hasColumn = true
+  if (!isEmpty(formInfo.value.dbMapping.dbTableName)) {
+    // 删除修改前的prop
+    let index = formInfo.value.dbMapping.mapping.findIndex(
+      (item) => item.formField === currentProp.value
+    )
+    if (index !== -1) {
+      formInfo.value.dbMapping.mapping.splice(index, 1)
+    }
+    let hasColumn = false
+    for (const dbTableColumn of dbTableColumnsListOri.value) {
+      if (dbTableColumn.value === val) {
+        hasColumn = true
+      }
+    }
+    let index2 = formInfo.value.dbMapping.mapping.findIndex((item) => item.formField === val)
+    if (index2 === -1) {
+      formInfo.value.dbMapping.mapping.push({
+        dbColumn: hasColumn ? val : '',
+        formField: val,
+        isMainKey: false,
+        isDetail: false,
+        isJson: component === 'Table' || component === 'SubForm',
+        isKey: false
+      })
     }
   }
-  formInfo.value.dbMapping.mapping.push({
-    dbColumn: hasColumn ? val : '',
-    formField: val,
-    isMainKey: false,
-    isDetail: false,
-    isJson: component === 'Table' || component === 'SubForm',
-    isKey: false
-  })
 }
 
 // 判断组件是否多选（默认有multiple的组件，且multiple为true时返回数组）
@@ -630,7 +671,10 @@ onMounted(() => {
         <div class="tabs-nav">
           <div
             v-for="item in tabs"
-            v-show="item !== '数据库映射' || (item === '数据库映射' && !formInfo.schema.isSearch)"
+            v-show="
+              item !== '数据库映射' ||
+              (item === '数据库映射' && !isEmpty(formInfo.dbMapping.dbTableName))
+            "
             :key="item"
             :class="[
               'tab-item',
@@ -1180,6 +1224,22 @@ onMounted(() => {
                         />
                       </ElFormItem>
                       <ElFormItem
+                        v-if="selectedItem.componentProps.hasOwnProperty('strength')"
+                        label="密码强度"
+                      >
+                        <template #label="{ label }">
+                          <ElTooltip :show-after="500" content="显示密码强度" placement="top-start">
+                            {{ label }}
+                          </ElTooltip>
+                        </template>
+                        <ElSwitch
+                          v-model="selectedItem.componentProps.strength"
+                          active-text="是"
+                          inactive-text="否"
+                          style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                        />
+                      </ElFormItem>
+                      <ElFormItem
                         v-if="selectedItem.componentProps.hasOwnProperty('precision')"
                         label="精度"
                       >
@@ -1322,8 +1382,8 @@ onMounted(() => {
                             :key="item.value"
                             :label="item.label + ' ' + item.value"
                             :value="item.value"
-                            @click="selectedItem.componentProps['db_mapping'] = item.db_mapping"
                           />
+                          <!--  @click="selectedItem.componentProps['db_mapping'] = item.db_mapping"                        -->
                         </ElSelect>
                       </ElFormItem>
                       <ElFormItem
@@ -1345,8 +1405,8 @@ onMounted(() => {
                             :key="item.value"
                             :label="item.label + ' ' + item.value"
                             :value="item.value"
-                            @click="selectedItem.componentProps['db_mapping'] = item.db_mapping"
                           />
+                          <!--  @click="selectedItem.componentProps['db_mapping'] = item.db_mapping"                        -->
                         </ElSelect>
                       </ElFormItem>
                       <ElFormItem

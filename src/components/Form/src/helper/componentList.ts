@@ -1207,6 +1207,49 @@ const componentList: FormSchema[] = [
   {
     itemProps: {
       prop: '',
+      label: '密码框',
+      tip: undefined,
+      slots: {
+        default: undefined,
+        label: undefined,
+        error: undefined
+      },
+      others: {}
+    },
+    colProps: {
+      span: 12,
+      xs: 24,
+      sm: 12,
+      md: 12,
+      lg: 12,
+      xl: 12
+    },
+    componentProps: {
+      component: 'InputPassword',
+      strength: false,
+      disabled: false,
+      clearable: true,
+      on: {
+        change: ''
+      },
+      lifecycle: {
+        mounted: undefined,
+        updated: undefined,
+        unmounted: undefined
+      }
+    },
+    hidden: true,
+    display: true,
+    permi: undefined,
+    componentInfo: {
+      title: '密码框',
+      type: 'InputPassword',
+      icon: 'tdesign:component-input'
+    }
+  },
+  {
+    itemProps: {
+      prop: '',
       label: '提示说明',
       tip: undefined,
       slots: {

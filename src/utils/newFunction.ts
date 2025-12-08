@@ -1,13 +1,13 @@
 import * as isUtil from '@/utils/is'
-import { getJsInfoApi } from '@/api/common'
+import { getDictDataApi, getJsInfoApi } from '@/api/common'
 import createDialog from '@/hooks/web/useDialog'
 import createDrawer from '@/hooks/web/useDrawer'
 import request from '@/axios'
 import SparkMD5 from 'spark-md5'
 import * as treeUtil from '@/utils/tree'
 import {
-  ElMessageBox,
   ElMessage,
+  ElMessageBox,
   ElNotification,
   MessageProps,
   NotificationProps
@@ -38,6 +38,29 @@ const notification = (msgProp: NotificationProps) => {
   }, 100)
 }
 
+const initTreeComponentData = (dictCode: string): Promise<Array<Recordable>> => {
+  return new Promise((resolve) => {
+    getDictDataApi({ dictCode: dictCode })
+      .then((res) => {
+        if (res.code == 200) {
+          const dict = res.data
+          resolve(
+            treeUtil.listToTree(dict.data, {
+              id: dict.dictValue,
+              pid: dict.dictPid
+            })
+          )
+        } else {
+          ElMessage({ type: 'error', message: '获取数据失败！' })
+          resolve([])
+        }
+      })
+      .catch(() => {
+        resolve([])
+      })
+  })
+}
+
 export const newFunction = (click: any, binds?: Recordable): Promise<FuncTypes> => {
   return new Promise((resolve) => {
     if (isUtil.isObject(click)) {
@@ -57,7 +80,8 @@ export const newFunction = (click: any, binds?: Recordable): Promise<FuncTypes> 
               isUtil: isUtil,
               treeUtil: treeUtil,
               t: t,
-              sparkMD5: new SparkMD5()
+              sparkMD5: new SparkMD5(),
+              initTreeComponentData: initTreeComponentData
             })(),
             params: clickObj.params || {}
           })
@@ -79,7 +103,8 @@ export const newFunction = (click: any, binds?: Recordable): Promise<FuncTypes> 
           isUtil: isUtil,
           treeUtil: treeUtil,
           t: t,
-          sparkMD5: new SparkMD5()
+          sparkMD5: new SparkMD5(),
+          initTreeComponentData: initTreeComponentData
         })()
       })
     } else if (isUtil.isFunction(click)) {
@@ -96,7 +121,8 @@ export const newFunction = (click: any, binds?: Recordable): Promise<FuncTypes> 
           isUtil: isUtil,
           treeUtil: treeUtil,
           t: t,
-          sparkMD5: new SparkMD5()
+          sparkMD5: new SparkMD5(),
+          initTreeComponentData: initTreeComponentData
         })
       })
     }
