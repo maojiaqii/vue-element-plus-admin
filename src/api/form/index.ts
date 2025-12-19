@@ -6,3 +6,17 @@ export const getFormPropsApi = (params: Recordable) => {
     params
   })
 }
+
+export const saveFormPropsApi = (data: Recordable) => {
+  return request.post({
+    url: '/form/save',
+    data
+  })
+}
+
+export const deleteFormPropsApi = (data: Recordable) => {
+  return request.post({
+    url: '/form/delete',
+    data
+  })
+}

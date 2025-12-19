@@ -662,6 +662,10 @@ onMounted(() => {
   searchListApi()
   dbTableListApi()
 })
+
+defineExpose({
+  formInfo
+})
 </script>
 
 <template>
@@ -715,7 +719,7 @@ onMounted(() => {
                 {{ label }}
               </ElTooltip>
             </template>
-            <ElInput v-model="formInfo.formCode" clearable />
+            <ElInput v-model="formInfo.formCode" :disabled="props.formId" clearable />
           </ElFormItem>
           <ElFormItem label="表单名称" :required="true">
             <template #label="{ label }">

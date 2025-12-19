@@ -1,16 +1,18 @@
 <script setup lang="tsx">
 import { ContainerA } from '@/components/Container'
 import { TableColumn, TableProps } from '@/components/Table'
-import { ElDrawer, ElTag } from 'element-plus'
+import { ElDrawer, ElMessage, ElMessageBox, ElTag } from 'element-plus'
 import { BaseButton } from '@/components/Button'
 import { useIcon } from '@/hooks/web/useIcon'
 import { ref } from 'vue'
 import { Designer } from '@/components/Form'
 import { SearchProps } from '@/components/Search'
+import { saveFormPropsApi, deleteFormPropsApi } from '@/api/form'
 
 const drawerVisible = ref(false)
 const formId = ref('')
 const formDesigner = ref()
+const tableExposedRef = ref()
 
 const addForm = () => {
   formId.value = ''
@@ -21,8 +23,15 @@ const cancelClick = () => {
   drawerVisible.value = false
 }
 
-const confirmClick = () => {
-  drawerVisible.value = false
+const confirmClick = async () => {
+  const res = await saveFormPropsApi(formDesigner.value.formInfo)
+  if (res.code === 200) {
+    ElMessage.success('操作成功')
+    tableExposedRef.value.refresh()
+    drawerVisible.value = false
+  } else {
+    ElMessage.error(res.msg)
+  }
 }
 
 const editForm = (data: Recordable) => {
@@ -31,7 +40,25 @@ const editForm = (data: Recordable) => {
 }
 
 const deleteForm = async (data: Recordable) => {
-  console.log(data)
+  ElMessageBox.confirm('确定删除当前数据?', '提示', {
+    confirmButtonText: '确认',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(async () => {
+      const res = await deleteFormPropsApi({ formId: data.row.form_id })
+      if (res.code === 200) {
+        ElMessage.success('删除成功')
+        tableExposedRef.value.refresh()
+      } else {
+        ElMessage.error(res.msg)
+      }
+    })
+    .catch(() => {})
+}
+
+const register = (tableExpose: any) => {
+  tableExposedRef.value = tableExpose
 }
 
 const searchFormProps: SearchProps = {
@@ -157,7 +184,7 @@ const tableProps: TableProps = {
                 text={true}
                 type="success"
                 icon={useIcon({ icon: 'tdesign:file-export' })}
-                onClick={() => deleteForm(data)}
+                onClick={() => editForm(data)}
               >
                 导出
               </BaseButton>
@@ -183,7 +210,7 @@ const tableProps: TableProps = {
 </script>
 
 <template>
-  <ContainerA :search="searchFormProps" :table="tableProps" />
+  <ContainerA @register="register" :search="searchFormProps" :table="tableProps" />
   <ElDrawer v-model="drawerVisible" size="100%" destroy-on-close>
     <template #header>
       <div><b>表单设计</b></div>

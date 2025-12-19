@@ -62,9 +62,37 @@ const initTreeComponentData = (dictCode: string): Promise<Array<Recordable>> => 
 }
 
 export const newFunction = (click: any, binds?: Recordable): Promise<FuncTypes> => {
+  const remoteJs = (jsObj: JsTypes) => {
+    getJsInfoApi({ code: jsObj.js }).then((res) => {
+      if (res.code === 200) {
+        const func = new Function('params', 'return ' + res.data?.js).bind({
+          ...binds,
+          createDialog: createDialog,
+          createDrawer: createDrawer,
+          message: message,
+          notification: notification,
+          messageBox: ElMessageBox,
+          userStore: userStore,
+          request: request,
+          isUtil: isUtil,
+          treeUtil: treeUtil,
+          t: t,
+          sparkMD5: new SparkMD5(),
+          initTreeComponentData: initTreeComponentData,
+          remoteJs: remoteJs
+        })()
+        return jsObj.params ? func({ ...jsObj.params }) : func()
+      } else {
+        ElMessage({ type: 'error', message: res.msg })
+        return new Function()
+      }
+    })
+  }
   return new Promise((resolve) => {
     if (isUtil.isObject(click)) {
       const clickObj = click as JsTypes
+      // alert('进入到了不在使用的方法')
+      console.log('进入到了不在使用的方法', clickObj)
       getJsInfoApi({ code: clickObj.js }).then((res) => {
         if (res.code === 200) {
           resolve({
@@ -81,7 +109,8 @@ export const newFunction = (click: any, binds?: Recordable): Promise<FuncTypes> 
               treeUtil: treeUtil,
               t: t,
               sparkMD5: new SparkMD5(),
-              initTreeComponentData: initTreeComponentData
+              initTreeComponentData: initTreeComponentData,
+              remoteJs: remoteJs
             })(),
             params: clickObj.params || {}
           })
@@ -104,7 +133,8 @@ export const newFunction = (click: any, binds?: Recordable): Promise<FuncTypes> 
           treeUtil: treeUtil,
           t: t,
           sparkMD5: new SparkMD5(),
-          initTreeComponentData: initTreeComponentData
+          initTreeComponentData: initTreeComponentData,
+          remoteJs: remoteJs
         })()
       })
     } else if (isUtil.isFunction(click)) {
@@ -122,7 +152,8 @@ export const newFunction = (click: any, binds?: Recordable): Promise<FuncTypes> 
           treeUtil: treeUtil,
           t: t,
           sparkMD5: new SparkMD5(),
-          initTreeComponentData: initTreeComponentData
+          initTreeComponentData: initTreeComponentData,
+          remoteJs: remoteJs
         })
       })
     }
