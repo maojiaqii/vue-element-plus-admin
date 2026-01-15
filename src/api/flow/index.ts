@@ -14,6 +14,13 @@ export const saveWorkflowApi = (data: WorkflowDesign) => {
   })
 }
 
+export const deleteWorkflowApi = (data: WorkflowDesign) => {
+  return request.post({
+    url: '/flow/deleteWorkflow',
+    data
+  })
+}
+
 export const publishWorkflowApi = (data: object) => {
   return request.post({
     url: '/flow/publishWorkflow',

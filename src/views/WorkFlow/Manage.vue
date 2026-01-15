@@ -13,7 +13,8 @@ import {
   ElSwitch,
   ElTooltip,
   ElTag,
-  ElCheckbox
+  ElCheckbox,
+  ElPopconfirm
 } from 'element-plus'
 import { BaseButton } from '@/components/Button'
 import { useIcon } from '@/hooks/web/useIcon'
@@ -28,7 +29,8 @@ import {
   saveWorkflowApi,
   publishWorkflowApi,
   testWorkflowApi,
-  processHistoryApi
+  processHistoryApi,
+  deleteWorkflowApi
 } from '@/api/flow'
 import { WorkflowDesign } from '@/api/flow/types'
 import { TableSearch } from '@/api/table/types'
@@ -237,7 +239,6 @@ const showFlow = async () => {
 
 const showFlowTimeLine = async () => {
   const res = await processHistoryApi({ processInstanceId: testResult.value.data })
-  console.log(res)
 }
 
 const actionClick = async (row?: any) => {
@@ -250,6 +251,16 @@ const actionView = (row?: any) => {
     drawerVisible1.value = true
     drawerVisible.value = false
   })
+}
+
+const actionDelete = async (row?: any) => {
+  const res = await deleteWorkflowApi(row)
+  if (res.code === 200) {
+    ElMessage.success('删除成功')
+    flowTable.value.refresh()
+  } else {
+    ElMessage.error(res.msg)
+  }
 }
 
 const handleNewClick = () => {
@@ -270,7 +281,6 @@ const cancelClick = () => {
 }
 
 const confirmClick = () => {
-  console.log(flowDesigner.value.getData())
   if (flowDesigner.value.validate()) {
     // 显示流程表单对话框
     formDialogVisible.value = true
@@ -382,9 +392,13 @@ const getStatusStyle = (published: boolean) => {
             <ElLink :underline="false">导出</ElLink>
           </div>
           <ElDivider direction="vertical" />
-          <div class="flex-1 text-center" @click="() => actionClick(item)">
-            <ElLink :underline="false" type="danger">删除</ElLink>
-          </div>
+          <ElPopconfirm title="确定删除当前流程？" @confirm="() => actionDelete(item)">
+            <template #reference>
+              <div class="flex-1 text-center">
+                <ElLink :underline="false" type="danger">删除</ElLink>
+              </div>
+            </template>
+          </ElPopconfirm>
         </div>
       </template>
     </Table>

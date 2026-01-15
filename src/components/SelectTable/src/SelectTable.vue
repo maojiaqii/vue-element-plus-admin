@@ -1,25 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, unref } from 'vue'
-import {
-  ElAside,
-  ElContainer,
-  ElHeader,
-  ElInput,
-  ElMain,
-  ElMessage,
-  ElDrawer,
-  ElScrollbar,
-  ElTree
-} from 'element-plus'
+import { ElMessage, ElDrawer } from 'element-plus'
 import { BaseButton } from '@/components/Button'
 import { propTypes } from '@/utils/propTypes'
 import { useConfigGlobal } from '@/hooks/web/useConfigGlobal'
 import { useDesign } from '@/hooks/web/useDesign'
 import { getDictDataApi, getFormInfoApi, getTableInfoApi } from '@/api/common'
 import { listToTree } from '@/utils/tree'
-import { Search } from '@/components/Search'
-import { Table } from '@/components/Table'
-import { ContentWrap } from '@/components/ContentWrap'
+import { ContainerA } from '@/components/Container'
 
 const { getPrefixCls } = useDesign()
 const { configGlobal } = useConfigGlobal()
@@ -40,29 +28,10 @@ const searchInfo = ref()
 const tableInfo = ref()
 const sideInfo = ref()
 const tableExpose = ref()
-const filterText = ref('')
 const visible = ref(false)
-const treeRef = ref<InstanceType<typeof ElTree>>()
-
-const handleSearch = (data: Recordable) => {
-  unref(tableExpose).setQueryParams(data)
-  unref(tableExpose).refresh()
-}
-
-const currentChange = (data: Recordable) => {
-  unref(tableExpose).setQueryParams({
-    [sideInfo.value!.alias]: data[sideInfo.value!.nodeKey || 'id']
-  })
-  unref(tableExpose).refresh()
-}
 
 const tableRegister = (objs: any) => {
   tableExpose.value = objs
-}
-
-const filterNode = (value: string, data: Recordable) => {
-  if (!value) return true
-  return data[sideInfo.value!.props.label || 'label'].includes(value)
 }
 
 const renderSearch = async (searchCode: string) => {
@@ -161,46 +130,13 @@ onMounted(() => {
     :class="[prefixCls, `${prefixCls}--${configGlobal?.size}`]"
   >
     <div class="h-full">
-      <el-container class="h-full">
-        <el-aside v-if="sideInfo" width="200px" class="mr-10px h-full overflow-hidden">
-          <div class="h-full overflow-hidden">
-            <ContentWrap class="h-full">
-              <ElInput v-model="filterText" clearable style="width: 158px" placeholder="请输入" />
-              <ElScrollbar :height="240" class="mt-2">
-                <ElTree
-                  v-if="sideInfo"
-                  ref="treeRef"
-                  style="width: 250px"
-                  v-bind="sideInfo"
-                  default-expand-all
-                  :expand-on-click-node="false"
-                  :filter-node-method="filterNode"
-                  @current-change="currentChange"
-                />
-              </ElScrollbar>
-            </ContentWrap>
-          </div>
-        </el-aside>
-        <el-container class="h-full overflow-hidden">
-          <el-header v-if="searchInfo" class="h-auto! mb-10px overflow-hidden">
-            <ContentWrap>
-              <ElScrollbar>
-                <Search v-bind="searchInfo" @search="handleSearch" v-on="searchInfo.on" />
-              </ElScrollbar>
-            </ContentWrap>
-          </el-header>
-          <el-main v-if="tableInfo">
-            <ContentWrap>
-              <Table
-                :height="414"
-                v-bind="tableInfo"
-                @register="tableRegister"
-                v-on="tableInfo.on"
-              />
-            </ContentWrap>
-          </el-main>
-        </el-container>
-      </el-container>
+      <ContainerA
+        :search="searchInfo"
+        :table="tableInfo"
+        :side="sideInfo"
+        @register="tableRegister"
+        class="h-full"
+      />
     </div>
     <template #footer>
       <BaseButton type="info" @click="visible = false">取消</BaseButton>

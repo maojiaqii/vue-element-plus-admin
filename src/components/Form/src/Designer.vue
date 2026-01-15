@@ -719,7 +719,7 @@ defineExpose({
                 {{ label }}
               </ElTooltip>
             </template>
-            <ElInput v-model="formInfo.formCode" :disabled="props.formId" clearable />
+            <ElInput v-model="formInfo.formCode" :disabled="props.formId === undefined" clearable />
           </ElFormItem>
           <ElFormItem label="表单名称" :required="true">
             <template #label="{ label }">
